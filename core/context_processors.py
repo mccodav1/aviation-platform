@@ -1,8 +1,10 @@
 # core/context_processors.py
+from core.utils import get_organization
 
-from core.models import Organization
 
 def organization(request):
     return {
-        "organization": getattr(request, "organization", None)
+        "organization": get_organization()
     }
+
+

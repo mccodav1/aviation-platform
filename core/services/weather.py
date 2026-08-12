@@ -2,6 +2,9 @@ import requests
 
 from django.core.cache import cache
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 METAR_URL = "https://aviationweather.gov/api/data/metar"
 
@@ -33,11 +36,12 @@ def format_wind(metar):
 
     return wind
 
-def get_metar(station="KSNS"):
+def get_metar(station):
     cache_key = f"metar:{station}"
 
     cached = cache.get(cache_key)
     if cached:
+        logger.debug(f"Using cached METAR for {station}: {cached}")
         return cached
 
     try:
@@ -55,6 +59,7 @@ def get_metar(station="KSNS"):
         response.raise_for_status()
 
         data = response.json()
+        logger.debug("METAR response for %s: %s", station, data)
 
         if not data:
             return None
@@ -72,4 +77,5 @@ def get_metar(station="KSNS"):
         return metar
 
     except (requests.RequestException, ValueError):
+        logger.exception(f"Failed to retrieve METAR for {station}")
         return None

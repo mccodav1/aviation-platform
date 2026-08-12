@@ -2,24 +2,34 @@
 
     <i class="bi bi-cloud-sun info-panel-icon"></i>
 
-    <h3>KSNS Weather</h3>
+    <h3>
+        {{ organization.airport_icao }} METAR
+
+        {% if metar %}
+            <span class="flight-category flight-category-{{ metar.fltCat|lower }}">
+                {{ metar.fltCat }}
+            </span>
+        {% endif %}
+    </h3>
 
     {% if metar %}
         <p>
-            <strong>{{ metar.fltCat }}</strong><br>
-
-            Wind: {{ metar.wind_text }}
-            <br>
-
+            Wind: {{ metar.wind_text }}<br>
             Visibility: {{ metar.visib }} SM
 
             {% if metar.ceiling %}
                 <br>Ceiling: {{ metar.ceiling }} ft
+            {% elif metar.cover %}
+                <br>Clouds: {{ metar.cover }}
+            {% endif %}
+
+            {% if metar.temp is not None %}
+                <br>Temperature: {{ metar.temp|floatformat:0 }}°C
             {% endif %}
         </p>
 
         <a
-            href="https://aviationweather.gov/data/metar/?id=KSNS"
+            href="https://aviationweather.gov/data/metar/?id={{ organization.airport_icao }}"
             class="info-panel-link"
             target="_blank"
             rel="noopener"

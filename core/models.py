@@ -8,6 +8,11 @@ class Organization(models.Model):
 
     name = models.CharField(max_length=200)
     logo = models.ImageField(upload_to="logos/")
+    airport_icao = models.CharField(
+        max_length=4,
+        blank=True,
+        help_text="ICAO airport identifier, e.g. KSNS"
+    )
 
     # Hero
     hero_title = models.CharField(max_length=200, default="Hero Title")

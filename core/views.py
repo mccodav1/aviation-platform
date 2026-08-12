@@ -1,14 +1,23 @@
 from core.services.weather import get_metar
 from django.shortcuts import render
+from .models import Organization
+from .services.weather import get_metar
+from .utils import get_organization
 
-from core.models import HeroImage
 
 def home(request):
+    organization = get_organization()
+
+    metar = None
+
+    if organization and organization.airport_icao:
+        metar = get_metar(organization.airport_icao)
+
     return render(
         request,
         "app/home.html",
         {
-            "metar": get_metar("KSNS")
+            "metar": metar
         }
     )
 
