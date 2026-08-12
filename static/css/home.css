@@ -155,7 +155,7 @@
 }
 
 .hero-button-primary {
-    background: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 70%, black);
     color: #fff;
 }
 

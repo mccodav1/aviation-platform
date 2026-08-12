@@ -42,8 +42,6 @@
     transform: translateY(-2px) scale(1.02);
     z-index: 10;
 
-    border-color: var(--color-primary);
-
     box-shadow:
         0 4px 12px rgba(17,52,86,.10),
         0 20px 40px rgba(17,52,86,.16);
