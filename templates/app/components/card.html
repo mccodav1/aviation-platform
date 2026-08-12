@@ -1,0 +1,25 @@
+<a href="{{ card.link }}" class="card">
+    {% if card.image %}
+        <img src="{{ card.image.url }}" alt="{{ card.title }}">
+    {% elif card.icon %}
+        <i class="bi bi-{{ card.icon }}"></i>
+    {% endif %}
+
+    <h3>{{ card.title }}</h3>
+
+    {% if card.subtitle %}
+        <h4>{{ card.subtitle }}</h4>
+    {% endif %}
+
+    {% if card.body %}
+        <p>{{ card.body }}</p>
+    {% endif %}
+
+    {% if card.link %}
+        <div class="card-link">
+            {{ card.link_text }}
+            <span class="arrow">→</span>
+        </div>
+    {% endif %}
+
+</a>

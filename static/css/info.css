@@ -1,0 +1,150 @@
+/* ==========================
+   Info Band
+   ========================== */
+
+.info-band {
+    background: var(--color-secondary);
+    color: #fff;
+}
+
+.info-band-inner {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+
+    width: min(2200px, calc(100% - 4rem));
+    margin: 0 auto;
+
+    padding: 2rem 0;
+}
+
+/* ==========================
+   Welcome
+   ========================== */
+
+.info-band-left {
+    padding: 1rem 4rem 1rem 0;
+}
+
+.info-band-left h2 {
+    margin: 0 0 0.75rem;
+
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.info-band-left p {
+    margin: 0 0 1rem;
+
+    max-width: 44rem;
+
+    line-height: 1.5;
+    color: rgb(255 255 255 / 85%);
+}
+
+.info-band-button {
+    display: inline-block;
+
+    padding: 0.75rem 1.25rem;
+
+    border: 1px solid rgb(255 255 255 / 70%);
+    border-radius: 2px;
+
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.info-band-button:hover {
+    background: #fff;
+    color: var(--color-secondary);
+
+    transform: translateY(-2px);
+}
+
+/* ==========================
+   Info Panels
+   ========================== */
+
+.info-band-right {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    width: min(100%, 1050px);
+    justify-self: end;
+
+    background: rgb(255 255 255 / 4%);
+}
+
+.info-panel {
+    padding: 0.75rem 2rem;
+
+    border-left: 1px solid rgb(255 255 255 / 15%);
+}
+
+.info-panel-icon {
+    display: block;
+
+    margin-bottom: 0.5rem;
+
+    font-size: 1.75rem;
+    color: #fff;
+}
+
+.info-panel h3 {
+    margin: 0 0 0.35rem;
+
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.info-panel p {
+    margin: 0 0 0.75rem;
+
+    line-height: 1.4;
+    color: rgb(255 255 255 / 80%);
+}
+
+.info-panel-link {
+    color: #fff;
+
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.info-panel-link:hover {
+    color: var(--color-primary);
+}
+
+/* ==========================
+   Responsive
+   ========================== */
+
+@media (max-width: 900px) {
+    .info-band-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .info-band-left {
+        padding: 1rem 0 2rem;
+    }
+
+    .info-band-right {
+        grid-template-columns: 1fr;
+    }
+
+    .info-panel {
+        border-left: none;
+        border-top: 1px solid rgb(255 255 255 / 15%);
+    }
+}

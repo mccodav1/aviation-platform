@@ -1,0 +1,33 @@
+<div class="info-panel weather-panel">
+
+    <i class="bi bi-cloud-sun info-panel-icon"></i>
+
+    <h3>KSNS Weather</h3>
+
+    {% if metar %}
+        <p>
+            <strong>{{ metar.fltCat }}</strong><br>
+
+            Wind: {{ metar.wind_text }}
+            <br>
+
+            Visibility: {{ metar.visib }} SM
+
+            {% if metar.ceiling %}
+                <br>Ceiling: {{ metar.ceiling }} ft
+            {% endif %}
+        </p>
+
+        <a
+            href="https://aviationweather.gov/data/metar/?id=KSNS"
+            class="info-panel-link"
+            target="_blank"
+            rel="noopener"
+        >
+            Full Aviation Weather →
+        </a>
+    {% else %}
+        <p>Weather currently unavailable.</p>
+    {% endif %}
+
+</div>

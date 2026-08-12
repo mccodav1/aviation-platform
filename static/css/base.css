@@ -1,0 +1,52 @@
+:root {
+    --color-secondary: #1D2647;
+    --color-primary: #DA4144;
+    --font-one: Manrope;
+    --font-two: DM Sans;
+    --font-three: Plus Jakarta Sans;
+    --font-four: Inter;
+    --font-five: Montserrat;
+    --font-six: Outfit;
+    --font-seven: Wingdings;
+
+    --font-current: var(--font-one);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: var(--font-current), sans-serif;
+}
+
+body {
+    background: var(--color-secondary);
+    color: #222;
+    line-height: 1.5;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.container {
+    width: min(1200px, 92%);
+    margin: 0 auto;
+}
+
+.container-wide {
+    width: min(1800px, 94%);
+    margin: 0 auto;
+}
+
+/* ===== Main ===== */
+
+main {
+    min-height: 100vh;
+}
+
+

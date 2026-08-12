@@ -1,0 +1,101 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/cards.css' %}">
+<link rel="stylesheet" href="{% static 'css/info.css' %}">
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="hero-images">
+        {% for image in organization.enabled_hero_images %}
+        <img
+            class="hero-image {% if forloop.first %}active{% endif %}"
+            src="{{ image.image.url }}"
+            alt="{{ image.alt_text|default:'' }}"
+        >
+        {% endfor %}
+    </div>
+
+    <div class="hero-overlay"></div>
+
+    <div class="container">
+        <div class="hero-content">
+
+            <h1>Fly <span class="accent">Together,</span></h1>
+            <h1>Build <span class="accent">Community.</span></h1>
+
+            {% if organization.hero_description %}
+                <p>{{ organization.hero_description }}</p>
+            {% endif %}
+
+            <div class="hero-actions">
+                {% if organization.hero_primary_button_url %}
+                    <a href="{{ organization.hero_primary_button_url }}"
+                       class="hero-button hero-button-primary">
+                        {{ organization.hero_primary_button_text }}
+                    </a>
+                {% endif %}
+
+                {% if organization.hero_secondary_button_url %}
+                    <a href="{{ organization.hero_secondary_button_url }}"
+                       class="hero-button hero-button-secondary">
+                        {{ organization.hero_secondary_button_text }}
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="cards">
+    <div class="container-wide">
+        <div class="card-grid">
+            {% for card in organization.enabled_cards %}
+                {% include "app/components/card.html" %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="info-band">
+    <div class="info-band-inner">
+        <div class="info-band-left">
+            <h2>{{ organization.welcome_title }}</h2>
+
+            {% if organization.welcome_description %}
+                <p>{{ organization.welcome_description }}</p>
+            {% endif %}
+
+            {% if organization.welcome_button_url and organization.welcome_button_text %}
+                <a href="{{ organization.welcome_button_url }}"
+                   class="info-band-button">
+                    {{ organization.welcome_button_text }}
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="info-band-right">
+
+            {% for panel in organization.enabled_info_panels %}
+                {% include "app/components/info_panel.html" %}
+            {% endfor %}
+
+            {% include "app/components/weather_panel.html" %}
+
+
+        </div>
+
+
+    </div>
+</section>
+
+{% endblock %}

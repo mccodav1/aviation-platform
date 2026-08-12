@@ -1,0 +1,19 @@
+/* ===== Footer ===== */
+
+footer {
+    background: var(--color-secondary);
+    color: white;
+    padding: 3rem 0;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+}

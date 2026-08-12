@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}{{ organization.name }}{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+{#    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">#}
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/favicon.png' %}">
+
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="nav-inner">
+        <a class="logo" href="/static">
+            <img src="{{ organization.logo.url }}" alt="{{ organization.name }}">
+        </a>
+
+
+        <div class="nav-actions">
+            <nav>
+                {% for item in organization.enabled_navigation_items %}
+                    <a href="{{ item.url }}"
+                       class="{% if request.path == item.url %}active{% endif %}">
+                        {{ item.title }}
+                    </a>
+                {% endfor %}
+            </nav>
+
+            {% if organization.join_url %}
+                <a class="join-button" href="{{ organization.join_url }}">{{ organization.join_button_text }}</a>
+            {% endif %}
+        </div>
+
+    </div>
+</header>
+
+<main>
+{% block content %}
+{% endblock %}
+</main>
+
+<footer>
+
+    <div class="container footer">
+
+        <div class="footer-brand">
+
+            <strong style="font-size:1.25rem;">Powered by AvGas</strong>
+
+            <p>
+                Fueling aviation organizations.
+            </p>
+
+        </div>
+
+        <div class="footer-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Contact</a>
+        </div>
+
+        <div class="copyright">
+            © 2026 AvGas
+        </div>
+
+    </div>
+
+</footer>
+
+{% block extra_scripts %}{% endblock %}
+
+</body>
+</html>
