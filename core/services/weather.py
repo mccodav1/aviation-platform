@@ -36,6 +36,9 @@ def format_wind(metar):
 
     return wind
 
+def get_cached_metar(station):
+    return cache.get(f"metar:{station}")
+
 def get_metar(station):
     cache_key = f"metar:{station}"
 

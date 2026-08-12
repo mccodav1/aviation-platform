@@ -14,5 +14,6 @@ urlpatterns = [
     path("join", join, name="join"),
     path("meetings", meetings, name="meetings"),
     path("youngeagles", youngeagles, name="youngeagles"),
+    path("weather", weather_panel, name="weather_panel"),
     path("", home, name="home"),
 ]

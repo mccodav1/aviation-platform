@@ -6,18 +6,19 @@ from .utils import get_organization
 
 
 def home(request):
+    return render(request,"app/home.html")
+
+def weather_panel(request):
     organization = get_organization()
-
     metar = None
-
     if organization and organization.airport_icao:
         metar = get_metar(organization.airport_icao)
 
     return render(
         request,
-        "app/home.html",
+        "app/components/weather_panel.html",
         {
-            "metar": metar
+            "metar": metar,
         }
     )
 

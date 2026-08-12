@@ -89,12 +89,19 @@
                 {% include "app/components/info_panel.html" %}
             {% endfor %}
 
-            {% include "app/components/weather_panel.html" %}
+            <div
+                id="weather-panel"
+                data-url="{% url 'core:weather_panel' %}"
+            >
+                <div class="info-panel weather-panel">
+                    <i class="bi bi-cloud-sun info-panel-icon"></i>
 
+                    <h3>{{ organization.airport_icao }} Weather</h3>
 
+                    <p>Loading weather...</p>
+                </div>
+            </div>
         </div>
-
-
     </div>
 </section>
 
