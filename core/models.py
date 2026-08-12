@@ -138,12 +138,26 @@ class Card(models.Model):
         return self.title
 
 class InfoPanel(models.Model):
+    TYPE_STATIC = "static"
+    TYPE_NEXT_MEETING = "next_meeting"
+
+    TYPE_CHOICES = [
+        (TYPE_STATIC, "Static"),
+        (TYPE_NEXT_MEETING, "Next Meeting"),
+    ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
         related_name="info_panels"
     )
+    panel_type = models.CharField(
+        max_length=32,
+        choices=TYPE_CHOICES,
+        default=TYPE_STATIC,
+    )
+
     title = models.CharField(max_length=200)
     body = models.TextField(blank=True)
     image = models.ImageField(upload_to="info_panels/", blank=True)

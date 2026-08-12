@@ -14,17 +14,17 @@
 
     {% if metar %}
         <p>
-            Wind: {{ metar.wind_text }}<br>
-            Visibility: {{ metar.visib }} SM
+            <strong>Wind</strong>: {{ metar.wind_text }}<br>
+            <strong>Visibility</strong>: {{ metar.visib }} SM
 
             {% if metar.ceiling %}
-                <br>Ceiling: {{ metar.ceiling }} ft
+                <br><strong>Ceiling</strong>: {{ metar.ceiling }} ft
             {% elif metar.cover %}
-                <br>Clouds: {{ metar.cover }}
+                <br><strong>Clouds</strong>: {{ metar.cover }}
             {% endif %}
 
             {% if metar.temp is not None %}
-                <br>Temperature: {{ metar.temp|floatformat:0 }}°C
+                <br><strong>Temperature</strong>: {{ metar.temp|floatformat:0 }}°C
             {% endif %}
         </p>
 

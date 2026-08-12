@@ -1,19 +1,54 @@
-<div class="info-panel">
+{% if panel.panel_type == "next_meeting" %}
 
-    {% if panel.icon %}
-        <i class="bi bi-{{ panel.icon }} info-panel-icon"></i>
-    {% endif %}
+    <div class="info-panel">
 
-    <h3>{{ panel.title }}</h3>
+        {% if panel.icon %}
+            <i class="bi bi-{{ panel.icon }} info-panel-icon"></i>
+        {% endif %}
 
-    {% if panel.body %}
-        <p>{{ panel.body|linebreaksbr }}</p>
-    {% endif %}
+        <h3>{{ panel.title }}</h3>
 
-    {% if panel.link and panel.link_text %}
-        <a href="{{ panel.link }}" class="info-panel-link">
-            {{ panel.link_text }} →
-        </a>
-    {% endif %}
+        {% if next_meeting %}
+            <p>
+                <strong>{{ next_meeting.starts_at|date:"F j, Y" }}</strong><br>
+                {{ next_meeting.starts_at|date:"g:i A" }}
 
-</div>
+                {% if next_meeting.location %}
+                    <br>{{ next_meeting.location }}
+                {% endif %}
+            </p>
+        {% else %}
+            <p>No meetings currently scheduled.</p>
+        {% endif %}
+
+        {% if panel.link and panel.link_text %}
+            <a href="{{ panel.link }}" class="info-panel-link">
+                {{ panel.link_text }} →
+            </a>
+        {% endif %}
+
+    </div>
+
+{% else %}
+
+    <div class="info-panel">
+
+        {% if panel.icon %}
+            <i class="bi bi-{{ panel.icon }} info-panel-icon"></i>
+        {% endif %}
+
+        <h3>{{ panel.title }}</h3>
+
+        {% if panel.body %}
+            <p>{{ panel.body|linebreaksbr }}</p>
+        {% endif %}
+
+        {% if panel.link and panel.link_text %}
+            <a href="{{ panel.link }}" class="info-panel-link">
+                {{ panel.link_text }} →
+            </a>
+        {% endif %}
+
+    </div>
+
+{% endif %}
