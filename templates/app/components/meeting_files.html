@@ -1,0 +1,16 @@
+{% if user.is_authenticated %}
+    {% if meeting.agenda or meeting.minutes %}
+        <p class="meeting-meta meeting-files">
+            {% if meeting.agenda %}
+                <a href="{% url 'core:meeting_agenda_download' meeting.pk %}" target="_blank" class="meeting-file-link">
+                    <i class="bi bi-file-earmark-text"></i> Agenda
+                </a>
+            {% endif %}
+            {% if meeting.minutes %}
+                <a href="{% url 'core:meeting_minutes_download' meeting.pk %}" target="_blank" class="meeting-file-link">
+                    <i class="bi bi-file-earmark-check"></i> Minutes
+                </a>
+            {% endif %}
+        </p>
+    {% endif %}
+{% endif %}

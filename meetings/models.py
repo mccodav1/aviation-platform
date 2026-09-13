@@ -1,5 +1,13 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
+
+from .storage import private_storage
+
+# Kept to common document formats - also keeps FileResponse's content-type
+# guessing in meeting_agenda_download/meeting_minutes_download landing on
+# safe, non-executable types for inline display.
+ALLOWED_MEETING_FILE_EXTENSIONS = ["pdf", "doc", "docx", "odt", "rtf", "txt"]
 
 
 # Create your models here.
@@ -22,6 +30,19 @@ class Meeting(models.Model):
     description = models.TextField(blank=True)
 
     is_cancelled = models.BooleanField(default=False)
+
+    agenda = models.FileField(
+        upload_to="agendas/",
+        storage=private_storage,
+        blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_MEETING_FILE_EXTENSIONS)],
+    )
+    minutes = models.FileField(
+        upload_to="minutes/",
+        storage=private_storage,
+        blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_MEETING_FILE_EXTENSIONS)],
+    )
 
     @property
     def is_past(self):

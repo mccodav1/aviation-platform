@@ -42,6 +42,8 @@
                             {% if meeting.description %}
                                 <p class="meeting-description">{{ meeting.description|linebreaksbr }}</p>
                             {% endif %}
+
+                            {% include "app/components/meeting_files.html" %}
                         </div>
 
                         {% if perms.meetings.change_meeting %}
@@ -51,6 +53,12 @@
                                     {% csrf_token %}
                                     <button type="submit" class="meeting-action-button meeting-action-cancel">Cancel</button>
                                 </form>
+                                <a href="{% url 'core:meeting_agenda_manage' meeting.pk %}" class="meeting-action-link">
+                                    {% if meeting.agenda %}Replace{% else %}Add{% endif %} Agenda
+                                </a>
+                                <a href="{% url 'core:meeting_minutes_manage' meeting.pk %}" class="meeting-action-link">
+                                    {% if meeting.minutes %}Replace{% else %}Add{% endif %} Minutes
+                                </a>
                             </div>
                         {% endif %}
                     </li>
@@ -83,14 +91,24 @@
                                 {{ meeting.starts_at|date:"l, F j, Y" }}
                                 {% if meeting.location %} &middot; {{ meeting.location }}{% endif %}
                             </p>
+
+                            {% include "app/components/meeting_files.html" %}
                         </div>
 
-                        {% if perms.meetings.change_meeting and meeting.is_cancelled and not meeting.is_past %}
+                        {% if perms.meetings.change_meeting %}
                             <div class="meeting-actions">
-                                <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="meeting-action-button meeting-action-uncancel">Un-cancel</button>
-                                </form>
+                                {% if meeting.is_cancelled and not meeting.is_past %}
+                                    <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="meeting-action-button meeting-action-uncancel">Un-cancel</button>
+                                    </form>
+                                {% endif %}
+                                <a href="{% url 'core:meeting_agenda_manage' meeting.pk %}" class="meeting-action-link">
+                                    {% if meeting.agenda %}Replace{% else %}Add{% endif %} Agenda
+                                </a>
+                                <a href="{% url 'core:meeting_minutes_manage' meeting.pk %}" class="meeting-action-link">
+                                    {% if meeting.minutes %}Replace{% else %}Add{% endif %} Minutes
+                                </a>
                             </div>
                         {% endif %}
                     </li>
