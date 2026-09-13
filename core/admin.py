@@ -26,4 +26,8 @@ class InfoPanelAdmin(admin.ModelAdmin):
 
 @admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
-    list_display = ('title', 'order', 'is_enabled')
+    list_display = ('title', 'slug', 'order', 'is_enabled')
+    # Auto-fills the slug field from the title as you type, in-browser -
+    # still editable before saving. Resource.save() is the fallback for
+    # anything created outside the admin (a shell/data migration, say).
+    prepopulated_fields = {'slug': ('title',)}

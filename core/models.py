@@ -2,11 +2,14 @@ import uuid
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.text import slugify
 
 from core.links import link_error
 
 LINK_HELP_TEXT = (
     'Internal page: its URL name, e.g. "core:events". '
+    'Uploaded file: "resource:<slug>" (see Resources - each one shows '
+    'its own slug to reuse here). '
     'Off-site link: full address starting with "https://", "mailto:", '
     'or "tel:".'
 )
@@ -241,7 +244,12 @@ class Resource(models.Model):
     uses the default public MEDIA_ROOT storage rather than
     private_storage. Meant to back both one-off links (like the
     Scholarship page's application download) and the general
-    /resources page once that's built out."""
+    /resources page once that's built out.
+
+    Every Resource has a slug, so it can be linked to from any of this
+    app's link fields (Card.link, InfoPanel.link, NavigationItem.url,
+    Organization's button URLs) as "resource:<slug>" - see core/links.py
+    - without writing a bespoke lookup for each new file."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     organization = models.ForeignKey(
@@ -250,6 +258,14 @@ class Resource(models.Model):
         related_name="resources",
     )
     title = models.CharField(max_length=200)
+    slug = models.SlugField(
+        max_length=200,
+        blank=True,
+        help_text=(
+            "Auto-filled from the title if left blank. Link to this file "
+            'from anywhere on the site with "resource:<slug>".'
+        ),
+    )
     description = models.CharField(max_length=300, blank=True)
     file = models.FileField(upload_to="resources/")
     order = models.PositiveIntegerField(default=100)
@@ -257,6 +273,28 @@ class Resource(models.Model):
 
     class Meta:
         ordering = ["order"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["organization", "slug"],
+                name="unique_resource_slug_per_organization",
+            ),
+        ]
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title) or "resource"
+            candidate = base_slug
+            suffix = 2
+            while (
+                Resource.objects
+                .filter(organization=self.organization, slug=candidate)
+                .exclude(pk=self.pk)
+                .exists()
+            ):
+                candidate = f"{base_slug}-{suffix}"
+                suffix += 1
+            self.slug = candidate
+        super().save(*args, **kwargs)
