@@ -46,6 +46,10 @@ a {
 /* ===== Main ===== */
 
 main {
+    /* Clears the fixed .navbar (84px). The homepage hero is the one
+       exception - it deliberately bleeds full-height under the navbar,
+       so it cancels this back out itself (see .hero in home.css). */
+    padding-top: 84px;
     min-height: 100vh;
 }
 

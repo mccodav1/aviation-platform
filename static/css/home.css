@@ -1,6 +1,7 @@
 .hero {
     position: relative;
     height: clamp(520px, 55vh, 680px);
+    margin-top: -84px; /* cancel main's navbar-clearing padding - bleed under the fixed navbar */
     overflow: hidden;
 
 }
