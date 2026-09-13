@@ -1,4 +1,4 @@
-from core.models import Organization
+from core.utils import get_organization
 
 
 class OrganizationMiddleware:
@@ -7,7 +7,7 @@ class OrganizationMiddleware:
 
     def __call__(self, request):
         # Update this to determine which organization to load
-        request.organization = Organization.objects.first()
+        request.organization = get_organization()
 
         response = self.get_response(request)
 

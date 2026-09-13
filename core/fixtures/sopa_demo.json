@@ -1,0 +1,230 @@
+[
+{
+  "model": "core.organization",
+  "pk": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+  "fields": {
+    "name": "Salinas Pilots Association",
+    "logo": "logos/salinaslogolong.png",
+    "airport_icao": "KSNS",
+    "hero_title": "Fly together.",
+    "hero_subtitle": "Build community.",
+    "hero_description": "The Salinas Pilots Association brings together pilots, aircraft owners, students, and aviation enthusiasts to promote safety, education, and the future of general aviation in the Salinas Valley.",
+    "hero_primary_button_text": "Join The Community",
+    "hero_primary_button_url": "asdf",
+    "hero_secondary_button_text": "Learn More",
+    "hero_secondary_button_url": "fdsa",
+    "welcome_title": "Welcome to Salinas Pilots Association",
+    "welcome_description": "Whether you're a longtime pilot, aircraft owner, student, or simply passionate about aviation, you'll find a community here at Salinas Municipal Airport. Join us for meetings, fly-outs, local events, and opportunities to support aviation throughout the Salinas Valley.",
+    "welcome_button_text": "New Here? Start With Us",
+    "welcome_button_url": "asas",
+    "join_url": "join",
+    "join_button_text": "Join Today"
+  }
+},
+{
+  "model": "core.heroimage",
+  "pk": "52956f27-5ec9-417b-b2c5-2f76713e9290",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "lonepine",
+    "image": "hero/lonepine.png",
+    "is_enabled": true,
+    "order": 2
+  }
+},
+{
+  "model": "core.heroimage",
+  "pk": "62c2bd64-d417-4e78-bf7a-d2349a599ec9",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "distant",
+    "image": "hero/distant.jpg",
+    "is_enabled": true,
+    "order": 0
+  }
+},
+{
+  "model": "core.heroimage",
+  "pk": "abadf439-ba58-40a7-8cff-deeb7ccd56be",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "coastline",
+    "image": "hero/coastline.jpg",
+    "is_enabled": true,
+    "order": 1
+  }
+},
+{
+  "model": "core.navigationitem",
+  "pk": "1a9d35be-92e4-42cb-8165-720d7dbb2e76",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "home",
+    "url": "/",
+    "order": 100,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.navigationitem",
+  "pk": "606ccd24-7db2-4ad5-b4c2-85658cc0b676",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "resources",
+    "url": "/resources",
+    "order": 600,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.navigationitem",
+  "pk": "707b62bc-7c50-4675-bffa-6fd12911468e",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "about",
+    "url": "/about",
+    "order": 200,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.navigationitem",
+  "pk": "7b29bdb3-aaff-467f-8f24-483d712d95a4",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "aircraft",
+    "url": "/aircraft",
+    "order": 400,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.navigationitem",
+  "pk": "ac2d4fac-255a-4f6f-b03c-bdb4529d3fbb",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "contact",
+    "url": "/contact",
+    "order": 700,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.navigationitem",
+  "pk": "b4eb0cf9-30e2-4e1f-ad61-3319cab25cef",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "members",
+    "url": "/members",
+    "order": 300,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.navigationitem",
+  "pk": "fe8fe82d-7b4c-4ae2-88c8-1ad06aa6247b",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "scholarship",
+    "url": "/scholarship",
+    "order": 500,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.card",
+  "pk": "2a007600-bb11-4bc8-ac80-e6a0e1a2aaf7",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "Annual Scholarship",
+    "subtitle": "",
+    "body": "Learn more about SOPA's annual scholarship for aspiring pilots and aviation mechanics.",
+    "image": "",
+    "icon": "award",
+    "link_text": "Learn More",
+    "link": "/scholarship",
+    "order": 300,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.card",
+  "pk": "81798225-f498-4e9c-8de0-759d22f76da8",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "Monthly Meetings",
+    "subtitle": "",
+    "body": "Strengthen our aviation community and shape the future of SOPA.",
+    "image": "",
+    "icon": "people",
+    "link_text": "Attend a Meeting",
+    "link": "/meetings",
+    "order": 200,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.card",
+  "pk": "a1ac7a8b-cbf5-43a9-8b28-00c574b2ef8e",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "Fly With Us",
+    "subtitle": "",
+    "body": "Join fellow pilots for group events, planned fly-outs, and social gatherings.",
+    "image": "",
+    "icon": "airplane",
+    "link_text": "View Schedule",
+    "link": "/events/",
+    "order": 100,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.card",
+  "pk": "c3c05407-8871-42d6-a6e1-1e8933d940e1",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "Young Eagles",
+    "subtitle": "",
+    "body": "Inspire future aviators through EAA Chapter 204's Young Eagles program.",
+    "image": "",
+    "icon": "balloon-heart",
+    "link_text": "Shape the Future",
+    "link": "/youngeagles",
+    "order": 400,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.infopanel",
+  "pk": "9ba0b22c-d9d6-401f-87b9-49b945a38d93",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "panel_type": "next_meeting",
+    "title": "Next Meeting!",
+    "body": "",
+    "image": "",
+    "icon": "calendar3",
+    "link_text": "See meeting agenda",
+    "link": "/agenda",
+    "order": 100,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.infopanel",
+  "pk": "f7bd0a7e-f630-4f9b-b57e-ac61ae9ddb34",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "panel_type": "static",
+    "title": "Our Airport",
+    "body": "Salinas Municipal Airport (KSNS)\r\n30 Mortensen Avenue\r\nSalinas, California",
+    "image": "",
+    "icon": "geo-alt-fill",
+    "link_text": "Airport Information",
+    "link": "https://www.salinas.gov/Government/Departments/Salinas-Municipal-Airport",
+    "order": 100,
+    "is_enabled": true
+  }
+}
+]

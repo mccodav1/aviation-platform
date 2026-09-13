@@ -1,13 +1,12 @@
 # meetings/context_processors.py
 
 from core.models import InfoPanel
-from core.utils import get_organization
 
 from .services import get_next_meeting
 
 
 def meetings(request):
-    organization = get_organization()
+    organization = request.organization
 
     if not organization:
         return {}
