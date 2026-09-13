@@ -182,3 +182,31 @@
 .flight-category-lifr {
     background: #9c27b0;
 }
+
+.weather-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem 1rem;
+
+    margin: 0 0 0.9rem;
+}
+
+.weather-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.weather-stat-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 55%);
+}
+
+.weather-stat-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+}
