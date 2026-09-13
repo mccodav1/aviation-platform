@@ -52,5 +52,9 @@ class Meeting(models.Model):
         ordering = ["starts_at"]
 
     def __str__(self):
-        return f"{self.title} - {self.starts_at:%Y-%m-%d}"
+        # starts_at is stored as an aware UTC instant - format it in the
+        # org's local timezone (see TIME_ZONE in settings) rather than
+        # raw-formatting the UTC value directly, which could show the
+        # wrong calendar date for a meeting near local midnight.
+        return f"{self.title} - {timezone.localtime(self.starts_at):%Y-%m-%d}"
 

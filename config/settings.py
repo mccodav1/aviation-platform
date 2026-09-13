@@ -114,7 +114,14 @@ LOGOUT_REDIRECT_URL = '/'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# The org's local timezone - not UTC. This is a single-tenant-per-deployment
+# app (see core/middleware/organization.py), so there's exactly one real
+# timezone that matters here: wherever this org actually meets. Every
+# naive time typed into a form (e.g. meeting start times) is interpreted
+# as being in this zone, and every timezone-aware display (templates,
+# admin, the .ics calendar export) converts back to it - a future
+# deployment for a different club should update this to that club's zone.
+TIME_ZONE = 'America/Los_Angeles'
 
 USE_I18N = True
 
