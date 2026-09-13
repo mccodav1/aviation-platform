@@ -20,19 +20,14 @@
         {% if upcoming_meetings %}
             <ul class="meeting-list">
                 {% for meeting in upcoming_meetings %}
-                    <li class="meeting-card{% if meeting.is_cancelled %} meeting-card-cancelled{% endif %}">
+                    <li class="meeting-card">
                         <div class="meeting-date">
                             <span class="meeting-date-month">{{ meeting.starts_at|date:"M" }}</span>
                             <span class="meeting-date-day">{{ meeting.starts_at|date:"j" }}</span>
                         </div>
 
                         <div class="meeting-details">
-                            <h3>
-                                {{ meeting.title }}
-                                {% if meeting.is_cancelled %}
-                                    <span class="meeting-badge">Cancelled</span>
-                                {% endif %}
-                            </h3>
+                            <h3>{{ meeting.title }}</h3>
 
                             <p class="meeting-meta">
                                 <i class="bi bi-clock"></i> {{ meeting.starts_at|date:"l, F j, Y" }} at {{ meeting.starts_at|date:"g:i A" }}
@@ -48,6 +43,16 @@
                                 <p class="meeting-description">{{ meeting.description|linebreaksbr }}</p>
                             {% endif %}
                         </div>
+
+                        {% if perms.meetings.change_meeting %}
+                            <div class="meeting-actions">
+                                <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}"
+                                      onsubmit="return confirm('Cancel this meeting?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="meeting-action-button meeting-action-cancel">Cancel</button>
+                                </form>
+                            </div>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>
@@ -55,12 +60,12 @@
             <p class="meetings-empty">No meetings currently scheduled. Check back soon.</p>
         {% endif %}
 
-        {% if past_meetings %}
-            <h2 class="meetings-section-title">Past Meetings</h2>
+        {% if past_or_cancelled_meetings %}
+            <h2 class="meetings-section-title">Past / Cancelled</h2>
 
             <ul class="meeting-list meeting-list-past">
-                {% for meeting in past_meetings %}
-                    <li class="meeting-card meeting-card-past{% if meeting.is_cancelled %} meeting-card-cancelled{% endif %}">
+                {% for meeting in past_or_cancelled_meetings %}
+                    <li class="meeting-card{% if meeting.is_past %} meeting-card-past{% endif %}{% if meeting.is_cancelled %} meeting-card-cancelled{% endif %}">
                         <div class="meeting-date">
                             <span class="meeting-date-month">{{ meeting.starts_at|date:"M" }}</span>
                             <span class="meeting-date-day">{{ meeting.starts_at|date:"j" }}</span>
@@ -79,6 +84,15 @@
                                 {% if meeting.location %} &middot; {{ meeting.location }}{% endif %}
                             </p>
                         </div>
+
+                        {% if perms.meetings.change_meeting and meeting.is_cancelled and not meeting.is_past %}
+                            <div class="meeting-actions">
+                                <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="meeting-action-button meeting-action-uncancel">Un-cancel</button>
+                                </form>
+                            </div>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>

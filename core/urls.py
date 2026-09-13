@@ -2,7 +2,7 @@ from django.urls import path
 
 # Tied to the "meetings" app being installed (see settings.py) - if that
 # app is ever removed for a deployment, drop these routes too.
-from meetings.views import meeting_create, meeting_list
+from meetings.views import meeting_create, meeting_list, meeting_toggle_cancelled
 
 from .views import *
 
@@ -18,6 +18,7 @@ urlpatterns = [
     path("join", join, name="join"),
     path("meetings", meeting_list, name="meetings"),
     path("meetings/add", meeting_create, name="meeting_create"),
+    path("meetings/<int:pk>/cancel", meeting_toggle_cancelled, name="meeting_toggle_cancelled"),
     path("youngeagles", youngeagles, name="youngeagles"),
     path("weather", weather_panel, name="weather_panel"),
     path("", home, name="home"),
