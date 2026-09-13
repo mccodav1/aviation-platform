@@ -1,0 +1,43 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<section class="form-page">
+    <div class="container">
+        <div class="form-card">
+            <h1>{{ field_label }}</h1>
+            <p class="form-subtitle">{{ meeting.title }} &middot; {{ meeting.starts_at|date:"F j, Y" }}</p>
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="form-submit">Save</button>
+            </form>
+
+            <p class="form-back-link">
+                <a href="{% url 'core:meetings' %}">&larr; Back to Meetings</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

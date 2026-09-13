@@ -41,6 +41,19 @@
                 {% endfor %}
             </nav>
 
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="auth-button">
+                        <i class="bi bi-box-arrow-right"></i> Log Out
+                    </button>
+                </form>
+            {% else %}
+                <a class="auth-button" href="{% url 'login' %}">
+                    <i class="bi bi-box-arrow-in-right"></i> Log In
+                </a>
+            {% endif %}
+
             {% if organization.join_url %}
                 <a class="join-button" href="{{ organization.join_url }}">{{ organization.join_button_text }}</a>
             {% endif %}
