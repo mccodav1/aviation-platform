@@ -1,4 +1,5 @@
-<a href="{{ card.link }}" class="card">
+{% load core_extras %}
+<a href="{{ card.link|resolve_link }}" class="card">
     {% if card.image %}
         <img src="{{ card.image.url }}" alt="{{ card.title }}">
     {% elif card.icon %}

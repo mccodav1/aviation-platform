@@ -26,14 +26,18 @@
         {% if upcoming_meetings %}
             <ul class="meeting-list">
                 {% for meeting in upcoming_meetings %}
-                    <li class="meeting-card">
+                    <li class="meeting-card meeting-card-linked">
                         <div class="meeting-date">
                             <span class="meeting-date-month">{{ meeting.starts_at|date:"M" }}</span>
                             <span class="meeting-date-day">{{ meeting.starts_at|date:"j" }}</span>
                         </div>
 
                         <div class="meeting-details">
-                            <h3>{{ meeting.title }}</h3>
+                            <h3>
+                                <a href="{% url 'core:meeting_detail' meeting.pk %}" class="meeting-card-link">
+                                    {{ meeting.title }}
+                                </a>
+                            </h3>
 
                             <p class="meeting-meta">
                                 <i class="bi bi-clock"></i> {{ meeting.starts_at|date:"l, F j, Y" }} at {{ meeting.starts_at|date:"g:i A" }}
@@ -45,17 +49,9 @@
                                 </p>
                             {% endif %}
 
-                            {% if meeting.description %}
-                                <p class="meeting-description">{{ meeting.description|linebreaksbr }}</p>
-                            {% endif %}
-
-                            <p class="meeting-meta">
-                                <a href="{% url 'core:meeting_ics' meeting.pk %}" class="meeting-file-link">
-                                    <i class="bi bi-calendar-plus"></i> Add to Calendar
-                                </a>
+                            <p class="meeting-meta meeting-view-details">
+                                View Details <span class="arrow">&rarr;</span>
                             </p>
-
-                            {% include "app/components/meeting_files.html" %}
                         </div>
 
                         {% if perms.meetings.change_meeting %}
@@ -85,7 +81,7 @@
 
             <ul class="meeting-list meeting-list-past">
                 {% for meeting in past_or_cancelled_meetings %}
-                    <li class="meeting-card{% if meeting.is_past %} meeting-card-past{% endif %}{% if meeting.is_cancelled %} meeting-card-cancelled{% endif %}">
+                    <li class="meeting-card meeting-card-linked{% if meeting.is_past %} meeting-card-past{% endif %}{% if meeting.is_cancelled %} meeting-card-cancelled{% endif %}">
                         <div class="meeting-date">
                             <span class="meeting-date-month">{{ meeting.starts_at|date:"M" }}</span>
                             <span class="meeting-date-day">{{ meeting.starts_at|date:"j" }}</span>
@@ -93,9 +89,13 @@
 
                         <div class="meeting-details">
                             <h3>
-                                {{ meeting.title }}
+                                <a href="{% url 'core:meeting_detail' meeting.pk %}" class="meeting-card-link">
+                                    {{ meeting.title }}
+                                </a>
                                 {% if meeting.is_cancelled %}
                                     <span class="meeting-badge">Cancelled</span>
+                                {% elif meeting.is_past %}
+                                    <span class="meeting-badge meeting-badge-past">Past</span>
                                 {% endif %}
                             </h3>
 
@@ -104,7 +104,9 @@
                                 {% if meeting.location %} &middot; {{ meeting.location }}{% endif %}
                             </p>
 
-                            {% include "app/components/meeting_files.html" %}
+                            <p class="meeting-meta meeting-view-details">
+                                View Details <span class="arrow">&rarr;</span>
+                            </p>
                         </div>
 
                         {% if perms.meetings.change_meeting %}

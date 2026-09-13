@@ -6,6 +6,7 @@ from meetings.views import (
     meeting_agenda_download,
     meeting_agenda_manage,
     meeting_create,
+    meeting_detail,
     meeting_ics,
     meeting_list,
     meeting_minutes_download,
@@ -29,6 +30,7 @@ urlpatterns = [
     path("meetings", meeting_list, name="meetings"),
     path("meetings/feed.ics", meetings_ics_feed, name="meetings_ics_feed"),
     path("meetings/add", meeting_create, name="meeting_create"),
+    path("meetings/<int:pk>", meeting_detail, name="meeting_detail"),
     path("meetings/<int:pk>/ics", meeting_ics, name="meeting_ics"),
     path("meetings/<int:pk>/cancel", meeting_toggle_cancelled, name="meeting_toggle_cancelled"),
     path("meetings/<int:pk>/agenda", meeting_agenda_manage, name="meeting_agenda_manage"),
@@ -36,6 +38,7 @@ urlpatterns = [
     path("meetings/<int:pk>/minutes", meeting_minutes_manage, name="meeting_minutes_manage"),
     path("meetings/<int:pk>/minutes/download", meeting_minutes_download, name="meeting_minutes_download"),
     path("youngeagles", youngeagles, name="youngeagles"),
+    path("events", events, name="events"),
     path("weather", weather_panel, name="weather_panel"),
     path("", home, name="home"),
 ]

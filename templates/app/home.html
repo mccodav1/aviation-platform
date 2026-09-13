@@ -1,5 +1,6 @@
 {% extends "app/base.html" %}
 {% load static %}
+{% load core_extras %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
@@ -38,14 +39,14 @@
 
             <div class="hero-actions">
                 {% if organization.hero_primary_button_url %}
-                    <a href="{{ organization.hero_primary_button_url }}"
+                    <a href="{{ organization.hero_primary_button_url|resolve_link }}"
                        class="hero-button hero-button-primary">
                         {{ organization.hero_primary_button_text }}
                     </a>
                 {% endif %}
 
                 {% if organization.hero_secondary_button_url %}
-                    <a href="{{ organization.hero_secondary_button_url }}"
+                    <a href="{{ organization.hero_secondary_button_url|resolve_link }}"
                        class="hero-button hero-button-secondary">
                         {{ organization.hero_secondary_button_text }}
                     </a>
@@ -76,7 +77,7 @@
             {% endif %}
 
             {% if organization.welcome_button_url and organization.welcome_button_text %}
-                <a href="{{ organization.welcome_button_url }}"
+                <a href="{{ organization.welcome_button_url|resolve_link }}"
                    class="info-band-button">
                     {{ organization.welcome_button_text }}
                 </a>

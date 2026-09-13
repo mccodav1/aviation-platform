@@ -1,6 +1,15 @@
 import uuid
 
+from django.core.exceptions import ValidationError
 from django.db import models
+
+from core.links import link_error
+
+LINK_HELP_TEXT = (
+    'Internal page: its URL name, e.g. "core:events". '
+    'Off-site link: full address starting with "https://", "mailto:", '
+    'or "tel:".'
+)
 
 
 class Organization(models.Model):
@@ -19,9 +28,9 @@ class Organization(models.Model):
     hero_subtitle = models.CharField(max_length=200, default="Hero Subtitle")
     hero_description = models.TextField(blank=True, default="Hero Description")
     hero_primary_button_text = models.CharField(max_length=200, blank=True, default="Hero Primary Button Text")
-    hero_primary_button_url = models.CharField(max_length=200, blank=True)
+    hero_primary_button_url = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
     hero_secondary_button_text = models.CharField(max_length=200, blank=True, default="Hero Secondary Button Text")
-    hero_secondary_button_url = models.CharField(max_length=200, blank=True)
+    hero_secondary_button_url = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
 
     # Welcome
     welcome_title = models.CharField(
@@ -39,10 +48,11 @@ class Organization(models.Model):
     welcome_button_url = models.CharField(
         max_length=200,
         blank=True,
+        help_text=LINK_HELP_TEXT,
     )
 
     # Join CTA
-    join_url = models.CharField(max_length=200, blank=True)
+    join_url = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
     join_button_text = models.CharField(
         max_length=200,
         default="Join Today",
@@ -51,6 +61,21 @@ class Organization(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        super().clean()
+        errors = {}
+        for field_name in (
+            "hero_primary_button_url",
+            "hero_secondary_button_url",
+            "welcome_button_url",
+            "join_url",
+        ):
+            error = link_error(getattr(self, field_name))
+            if error:
+                errors[field_name] = error
+        if errors:
+            raise ValidationError(errors)
 
     # Properties
     @property
@@ -93,7 +118,7 @@ class NavigationItem(models.Model):
         related_name="navigation_items"
     )
     title = models.CharField(max_length=200)
-    url = models.CharField(max_length=200)
+    url = models.CharField(max_length=200, help_text=LINK_HELP_TEXT)
     order = models.PositiveIntegerField(default=100)
     is_enabled = models.BooleanField(default=True)
 
@@ -113,6 +138,12 @@ class NavigationItem(models.Model):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        super().clean()
+        error = link_error(self.url)
+        if error:
+            raise ValidationError({"url": error})
+
 
 class Card(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -127,7 +158,7 @@ class Card(models.Model):
     image = models.ImageField(upload_to="cards/", blank=True)
     icon = models.CharField(max_length=50, blank=True)
     link_text = models.CharField(max_length=200, blank=True)
-    link = models.CharField(max_length=200, blank=True)
+    link = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
     order = models.PositiveIntegerField(default=100)
     is_enabled = models.BooleanField(default=True)
 
@@ -136,6 +167,12 @@ class Card(models.Model):
 
     def __str__(self):
         return self.title
+
+    def clean(self):
+        super().clean()
+        error = link_error(self.link)
+        if error:
+            raise ValidationError({"link": error})
 
 class InfoPanel(models.Model):
     TYPE_STATIC = "static"
@@ -163,7 +200,14 @@ class InfoPanel(models.Model):
     image = models.ImageField(upload_to="info_panels/", blank=True)
     icon = models.CharField(max_length=50, blank=True)
     link_text = models.CharField(max_length=200, blank=True)
-    link = models.CharField(max_length=200, blank=True)
+    link = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text=LINK_HELP_TEXT + (
+            ' Ignored for a "Next Meeting" panel - its link always '
+            "points at whichever meeting is actually next."
+        ),
+    )
     order = models.PositiveIntegerField(default=100)
     is_enabled = models.BooleanField(default=True)
 
@@ -172,3 +216,15 @@ class InfoPanel(models.Model):
 
     def __str__(self):
         return self.title
+
+    def clean(self):
+        super().clean()
+        # A "Next Meeting" panel's link is computed from whichever
+        # meeting is actually next (see app/components/info_panel.html)
+        # rather than taken from this field, so there's nothing to
+        # validate here for that panel type.
+        if self.panel_type == self.TYPE_NEXT_MEETING:
+            return
+        error = link_error(self.link)
+        if error:
+            raise ValidationError({"link": error})

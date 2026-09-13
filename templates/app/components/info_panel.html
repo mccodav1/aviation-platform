@@ -1,3 +1,4 @@
+{% load core_extras %}
 {% if panel.panel_type == "next_meeting" %}
 
     <div class="info-panel">
@@ -21,8 +22,11 @@
             <p>No meetings currently scheduled.</p>
         {% endif %}
 
-        {% if panel.link and panel.link_text %}
-            <a href="{{ panel.link }}" class="info-panel-link">
+        {% if next_meeting and panel.link_text %}
+            {# Deliberately not panel.link - "next meeting" changes over #}
+            {# time, so this resolves to whichever meeting is actually  #}
+            {# next at render time, not a fixed, stored link value.     #}
+            <a href="{% url 'core:meeting_detail' next_meeting.pk %}" class="info-panel-link">
                 {{ panel.link_text }} →
             </a>
         {% endif %}
@@ -44,7 +48,7 @@
         {% endif %}
 
         {% if panel.link and panel.link_text %}
-            <a href="{{ panel.link }}" class="info-panel-link">
+            <a href="{{ panel.link|resolve_link }}" class="info-panel-link">
                 {{ panel.link_text }} →
             </a>
         {% endif %}
