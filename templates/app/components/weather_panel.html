@@ -1,30 +1,28 @@
 <div class="info-panel weather-panel">
 
-    <i class="bi bi-cloud-sun info-panel-icon"></i>
-
-    <h3>
-        {{ organization.airport_icao }} METAR
+    <div class="weather-panel-header">
+        <i class="bi bi-cloud-sun info-panel-icon"></i>
 
         {% if metar %}
             <span class="flight-category flight-category-{{ metar.fltCat|lower }}">
                 {{ metar.fltCat }}
             </span>
         {% endif %}
-    </h3>
+    </div>
+
+    <h3>{{ organization.airport_icao }} METAR</h3>
 
     {% if metar %}
         <div class="weather-grid">
-            {% if metar.temp is not None %}
-                <div class="weather-stat">
-                    <span class="weather-stat-label">Temperature</span>
-                    <span class="weather-stat-value">{{ metar.temp|floatformat:0 }}°C</span>
-                </div>
-            {% endif %}
+            <div class="weather-stat">
+                <span class="weather-stat-label">Wind</span>
+                <span class="weather-stat-value">{{ metar.wind_text }}</span>
+            </div>
 
-            {% if metar.dewp is not None %}
+            {% if metar.altim_text %}
                 <div class="weather-stat">
-                    <span class="weather-stat-label">Dewpoint</span>
-                    <span class="weather-stat-value">{{ metar.dewp|floatformat:0 }}°C</span>
+                    <span class="weather-stat-label">Altimeter</span>
+                    <span class="weather-stat-value">{{ metar.altim_text }}</span>
                 </div>
             {% endif %}
 
@@ -45,15 +43,17 @@
                 <span class="weather-stat-value">{{ metar.visib }} SM</span>
             </div>
 
-            <div class="weather-stat">
-                <span class="weather-stat-label">Wind</span>
-                <span class="weather-stat-value">{{ metar.wind_text }}</span>
-            </div>
-
-            {% if metar.altim_text %}
+            {% if metar.temp is not None %}
                 <div class="weather-stat">
-                    <span class="weather-stat-label">Altimeter</span>
-                    <span class="weather-stat-value">{{ metar.altim_text }}</span>
+                    <span class="weather-stat-label">Temperature</span>
+                    <span class="weather-stat-value">{{ metar.temp|floatformat:0 }}°C</span>
+                </div>
+            {% endif %}
+
+            {% if metar.dewp is not None %}
+                <div class="weather-stat">
+                    <span class="weather-stat-label">Dewpoint</span>
+                    <span class="weather-stat-value">{{ metar.dewp|floatformat:0 }}°C</span>
                 </div>
             {% endif %}
         </div>
