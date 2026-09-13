@@ -200,7 +200,14 @@ class InfoPanel(models.Model):
     image = models.ImageField(upload_to="info_panels/", blank=True)
     icon = models.CharField(max_length=50, blank=True)
     link_text = models.CharField(max_length=200, blank=True)
-    link = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
+    link = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text=LINK_HELP_TEXT + (
+            ' Ignored for a "Next Meeting" panel - its link always '
+            "points at whichever meeting is actually next."
+        ),
+    )
     order = models.PositiveIntegerField(default=100)
     is_enabled = models.BooleanField(default=True)
 
@@ -212,6 +219,12 @@ class InfoPanel(models.Model):
 
     def clean(self):
         super().clean()
+        # A "Next Meeting" panel's link is computed from whichever
+        # meeting is actually next (see app/components/info_panel.html)
+        # rather than taken from this field, so there's nothing to
+        # validate here for that panel type.
+        if self.panel_type == self.TYPE_NEXT_MEETING:
+            return
         error = link_error(self.link)
         if error:
             raise ValidationError({"link": error})

@@ -1,0 +1,77 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/meetings.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="meetings-page">
+    <div class="container meeting-detail">
+        <a href="{% url 'core:meetings' %}" class="meeting-detail-back">
+            <i class="bi bi-arrow-left"></i> All Meetings
+        </a>
+
+        <div class="meeting-card meeting-detail-card{% if meeting.is_cancelled %} meeting-card-cancelled{% endif %}">
+            <div class="meeting-date">
+                <span class="meeting-date-month">{{ meeting.starts_at|date:"M" }}</span>
+                <span class="meeting-date-day">{{ meeting.starts_at|date:"j" }}</span>
+            </div>
+
+            <div class="meeting-details">
+                <h1>
+                    {{ meeting.title }}
+                    {% if meeting.is_cancelled %}
+                        <span class="meeting-badge">Cancelled</span>
+                    {% endif %}
+                </h1>
+
+                <p class="meeting-meta">
+                    <i class="bi bi-clock"></i> {{ meeting.starts_at|date:"l, F j, Y" }} at {{ meeting.starts_at|date:"g:i A" }}
+                </p>
+
+                {% if meeting.location %}
+                    <p class="meeting-meta">
+                        <i class="bi bi-geo-alt"></i> {{ meeting.location }}
+                    </p>
+                {% endif %}
+
+                {% if meeting.description %}
+                    <p class="meeting-description">{{ meeting.description|linebreaksbr }}</p>
+                {% endif %}
+
+                {% if not meeting.is_past and not meeting.is_cancelled %}
+                    <p class="meeting-meta">
+                        <a href="{% url 'core:meeting_ics' meeting.pk %}" class="meeting-file-link">
+                            <i class="bi bi-calendar-plus"></i> Add to Calendar
+                        </a>
+                    </p>
+                {% endif %}
+
+                {% include "app/components/meeting_files.html" %}
+            </div>
+        </div>
+
+        {% if perms.meetings.change_meeting %}
+            <div class="meeting-detail-actions">
+                <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}"
+                      onsubmit="return confirm('{% if meeting.is_cancelled %}Un-cancel{% else %}Cancel{% endif %} this meeting?');">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="meeting-action-button {% if meeting.is_cancelled %}meeting-action-uncancel{% else %}meeting-action-cancel{% endif %}">
+                        {% if meeting.is_cancelled %}Un-cancel{% else %}Cancel{% endif %} Meeting
+                    </button>
+                </form>
+                <a href="{% url 'core:meeting_agenda_manage' meeting.pk %}" class="meeting-action-link">
+                    {% if meeting.agenda %}Replace{% else %}Add{% endif %} Agenda
+                </a>
+                <a href="{% url 'core:meeting_minutes_manage' meeting.pk %}" class="meeting-action-link">
+                    {% if meeting.minutes %}Replace{% else %}Add{% endif %} Minutes
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

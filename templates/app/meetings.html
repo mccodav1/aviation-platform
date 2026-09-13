@@ -33,7 +33,7 @@
                         </div>
 
                         <div class="meeting-details">
-                            <h3>{{ meeting.title }}</h3>
+                            <h3><a href="{% url 'core:meeting_detail' meeting.pk %}">{{ meeting.title }}</a></h3>
 
                             <p class="meeting-meta">
                                 <i class="bi bi-clock"></i> {{ meeting.starts_at|date:"l, F j, Y" }} at {{ meeting.starts_at|date:"g:i A" }}
@@ -45,17 +45,11 @@
                                 </p>
                             {% endif %}
 
-                            {% if meeting.description %}
-                                <p class="meeting-description">{{ meeting.description|linebreaksbr }}</p>
-                            {% endif %}
-
                             <p class="meeting-meta">
-                                <a href="{% url 'core:meeting_ics' meeting.pk %}" class="meeting-file-link">
-                                    <i class="bi bi-calendar-plus"></i> Add to Calendar
+                                <a href="{% url 'core:meeting_detail' meeting.pk %}" class="meeting-file-link">
+                                    View Details <span class="arrow">&rarr;</span>
                                 </a>
                             </p>
-
-                            {% include "app/components/meeting_files.html" %}
                         </div>
 
                         {% if perms.meetings.change_meeting %}
@@ -93,7 +87,7 @@
 
                         <div class="meeting-details">
                             <h3>
-                                {{ meeting.title }}
+                                <a href="{% url 'core:meeting_detail' meeting.pk %}">{{ meeting.title }}</a>
                                 {% if meeting.is_cancelled %}
                                     <span class="meeting-badge">Cancelled</span>
                                 {% endif %}
@@ -104,7 +98,11 @@
                                 {% if meeting.location %} &middot; {{ meeting.location }}{% endif %}
                             </p>
 
-                            {% include "app/components/meeting_files.html" %}
+                            <p class="meeting-meta">
+                                <a href="{% url 'core:meeting_detail' meeting.pk %}" class="meeting-file-link">
+                                    View Details <span class="arrow">&rarr;</span>
+                                </a>
+                            </p>
                         </div>
 
                         {% if perms.meetings.change_meeting %}

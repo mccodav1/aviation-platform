@@ -12,6 +12,13 @@ from .models import Meeting
 from .services import get_feed_meetings, get_past_or_cancelled_meetings, get_upcoming_meetings
 
 
+def meeting_detail(request, pk):
+    # Public, same as meeting_list - no reason to require an account just
+    # to see the date, location, and description of a meeting.
+    meeting = get_object_or_404(Meeting, pk=pk, organization=request.organization)
+    return render(request, "app/meeting_detail.html", {"meeting": meeting})
+
+
 def meeting_list(request):
     organization = request.organization
 
