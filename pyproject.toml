@@ -8,4 +8,5 @@ dependencies = [
     "django>=6.1.0",
     "pillow>=12.3.0",
     "requests>=2.34.2",
+    "whitenoise>=6.12.0",
 ]

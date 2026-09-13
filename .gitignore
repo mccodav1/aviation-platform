@@ -98,3 +98,7 @@ media/
 # Meeting agenda/minutes uploads - private, never publicly served (see
 # meetings/storage.py); per-deployment content like media/, not tracked.
 private_media/
+
+# collectstatic output - a build artifact regenerated from static/ on
+# each deploy, not source and not runtime state.
+staticfiles/
