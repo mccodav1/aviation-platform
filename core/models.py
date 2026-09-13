@@ -94,6 +94,10 @@ class Organization(models.Model):
     def enabled_info_panels(self):
         return self.info_panels.filter(is_enabled=True)
 
+    @property
+    def enabled_resources(self):
+        return self.resources.filter(is_enabled=True)
+
 
 
 class HeroImage(models.Model):
@@ -228,3 +232,31 @@ class InfoPanel(models.Model):
         error = link_error(self.link)
         if error:
             raise ValidationError({"link": error})
+
+
+class Resource(models.Model):
+    """An admin-uploadable downloadable file - a scholarship application,
+    a membership form, bylaws, etc. Public and unauthenticated, unlike
+    meetings' agenda/minutes uploads (see meetings/storage.py), so it
+    uses the default public MEDIA_ROOT storage rather than
+    private_storage. Meant to back both one-off links (like the
+    Scholarship page's application download) and the general
+    /resources page once that's built out."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="resources",
+    )
+    title = models.CharField(max_length=200)
+    description = models.CharField(max_length=300, blank=True)
+    file = models.FileField(upload_to="resources/")
+    order = models.PositiveIntegerField(default=100)
+    is_enabled = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return self.title

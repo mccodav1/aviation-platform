@@ -69,14 +69,16 @@
                 <a href="mailto:scholarship@salinaspilots.org">scholarship@salinaspilots.org</a>,
                 or by mail to 80 Mortensen Avenue, Salinas, CA 93905.
             </p>
-            <a
-                href="https://salinaspilots.org/scholarship/Salinas-Pilots-Association-Scholarship-Interactive-Application.pdf"
-                class="page-cta"
-                target="_blank"
-                rel="noopener"
-            >
-                <i class="bi bi-file-earmark-arrow-down"></i> Download Application
-            </a>
+            {% if application %}
+                <a
+                    href="{{ application.file.url }}"
+                    class="page-cta"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    <i class="bi bi-file-earmark-arrow-down"></i> Download Application
+                </a>
+            {% endif %}
         </div>
 
         <div class="page-block">
