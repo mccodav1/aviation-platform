@@ -29,7 +29,7 @@ def aircraft(request):
     return under_construction(request,"Aircraft")
 
 def scholarship(request):
-    return under_construction(request,"Scholarship")
+    return render(request, "app/scholarship.html")
 
 def resources(request):
     return under_construction(request,"Resources")
@@ -41,7 +41,7 @@ def join(request):
     return under_construction(request,"Join")
 
 def youngeagles(request):
-    return under_construction(request,"Young Eagles")
+    return render(request, "app/youngeagles.html")
 
 def events(request):
     return under_construction(
