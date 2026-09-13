@@ -24,6 +24,8 @@
                     {{ meeting.title }}
                     {% if meeting.is_cancelled %}
                         <span class="meeting-badge">Cancelled</span>
+                    {% elif meeting.is_past %}
+                        <span class="meeting-badge meeting-badge-past">Past</span>
                     {% endif %}
                 </h1>
 

@@ -270,6 +270,10 @@
     vertical-align: middle;
 }
 
+.meeting-badge-past {
+    background: #64748b;
+}
+
 .meeting-detail {
     max-width: 45rem;
 }
