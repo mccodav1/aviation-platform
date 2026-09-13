@@ -44,10 +44,14 @@
             {% if user.is_authenticated %}
                 <form method="post" action="{% url 'logout' %}" class="logout-form">
                     {% csrf_token %}
-                    <button type="submit">Log Out</button>
+                    <button type="submit" class="auth-icon-button" title="Log out" aria-label="Log out">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
                 </form>
             {% else %}
-                <a class="auth-link" href="{% url 'login' %}">Log In</a>
+                <a class="auth-icon-button" href="{% url 'login' %}" title="Log in" aria-label="Log in">
+                    <i class="bi bi-person-circle"></i>
+                </a>
             {% endif %}
 
             {% if organization.join_url %}
