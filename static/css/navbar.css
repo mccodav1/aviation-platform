@@ -154,33 +154,52 @@
 }
 
 /* ==========================
-   Auth icon button (login / logout)
+   Auth button (login / logout)
    ========================== */
 
-.auth-icon-button {
+.auth-button {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: .4rem;
 
-    width: 2rem;
-    height: 2rem;
+    padding: .6rem 1.1rem;
 
     background: none;
-    border: none;
-
     color: var(--color-secondary);
-    font-size: 1.4rem;
-    line-height: 1;
+
+    border: 2px solid var(--color-secondary);
+    border-radius: 8px;
+
+    font: inherit;
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    text-decoration: none;
     cursor: pointer;
 
-    transition: color .2s ease;
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .15s ease;
 }
 
-.auth-icon-button:hover {
-    color: var(--color-primary);
+.auth-button i {
+    font-size: 1rem;
 }
 
-.auth-icon-button:focus-visible {
+.auth-button:hover {
+    background: var(--color-secondary);
+    color: #fff;
+
+    transform: translateY(-1px);
+}
+
+.auth-button:active {
+    transform: translateY(0);
+}
+
+.auth-button:focus-visible {
     outline: 2px solid var(--color-secondary);
     outline-offset: 3px;
 }
