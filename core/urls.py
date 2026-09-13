@@ -36,6 +36,7 @@ urlpatterns = [
     path("meetings/<int:pk>/minutes", meeting_minutes_manage, name="meeting_minutes_manage"),
     path("meetings/<int:pk>/minutes/download", meeting_minutes_download, name="meeting_minutes_download"),
     path("youngeagles", youngeagles, name="youngeagles"),
+    path("events", events, name="events"),
     path("weather", weather_panel, name="weather_panel"),
     path("", home, name="home"),
 ]
