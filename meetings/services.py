@@ -33,3 +33,16 @@ def get_past_or_cancelled_meetings(organization):
         .filter(Q(starts_at__lt=timezone.now()) | Q(is_cancelled=True))
         .order_by("-starts_at")
     )
+
+
+def get_feed_meetings(organization):
+    # Unlike get_upcoming_meetings, this deliberately includes cancelled
+    # meetings that are still in the future: the .ics feed represents
+    # them with STATUS:CANCELLED (see meetings/ics.py) so a subscribed
+    # calendar app can update its copy of the event instead of it just
+    # disappearing on the next refresh.
+    return (
+        organization.meetings
+        .filter(starts_at__gte=timezone.now())
+        .order_by("starts_at")
+    )

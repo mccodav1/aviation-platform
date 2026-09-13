@@ -1,13 +1,15 @@
 from pathlib import Path
 
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.text import slugify
 from django.views.decorators.http import require_POST
 
 from .forms import MeetingAgendaForm, MeetingForm, MeetingMinutesForm
+from .ics import build_meeting_ics, build_meetings_feed_ics
 from .models import Meeting
-from .services import get_past_or_cancelled_meetings, get_upcoming_meetings
+from .services import get_feed_meetings, get_past_or_cancelled_meetings, get_upcoming_meetings
 
 
 def meeting_list(request):
@@ -109,3 +111,24 @@ def meeting_agenda_download(request, pk):
 @login_required
 def meeting_minutes_download(request, pk):
     return _download_meeting_file(request, pk, "minutes")
+
+
+def meeting_ics(request, pk):
+    # Public, same as the meetings list itself - no reason to require an
+    # account just to put a public meeting on your own calendar.
+    meeting = get_object_or_404(Meeting, pk=pk, organization=request.organization)
+    ics = build_meeting_ics(meeting)
+    response = HttpResponse(ics, content_type="text/calendar")
+    response["Content-Disposition"] = f'attachment; filename="{slugify(meeting.title)}.ics"'
+    return response
+
+
+def meetings_ics_feed(request):
+    organization = request.organization
+    meetings = get_feed_meetings(organization) if organization else []
+    calendar_name = f"{organization.name} Meetings" if organization else "Meetings"
+
+    ics = build_meetings_feed_ics(meetings, calendar_name)
+    response = HttpResponse(ics, content_type="text/calendar")
+    response["Content-Disposition"] = 'inline; filename="meetings.ics"'
+    return response

@@ -11,9 +11,15 @@
     <div class="container">
         <h1>Meetings</h1>
 
-        {% if perms.meetings.add_meeting %}
-            <a class="join-button" href="{% url 'core:meeting_create' %}">+ Add Meeting</a>
-        {% endif %}
+        <div class="meetings-toolbar">
+            <a href="{% url 'core:meetings_ics_feed' %}" class="meeting-action-link meeting-subscribe-link">
+                <i class="bi bi-calendar-week"></i> Subscribe to all meetings
+            </a>
+
+            {% if perms.meetings.add_meeting %}
+                <a class="join-button" href="{% url 'core:meeting_create' %}">+ Add Meeting</a>
+            {% endif %}
+        </div>
 
         <h2 class="meetings-section-title">Upcoming</h2>
 
@@ -42,6 +48,12 @@
                             {% if meeting.description %}
                                 <p class="meeting-description">{{ meeting.description|linebreaksbr }}</p>
                             {% endif %}
+
+                            <p class="meeting-meta">
+                                <a href="{% url 'core:meeting_ics' meeting.pk %}" class="meeting-file-link">
+                                    <i class="bi bi-calendar-plus"></i> Add to Calendar
+                                </a>
+                            </p>
 
                             {% include "app/components/meeting_files.html" %}
                         </div>
