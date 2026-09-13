@@ -40,9 +40,6 @@ def contact(request):
 def join(request):
     return under_construction(request,"Join")
 
-def meetings(request):
-    return under_construction(request,"Meetings")
-
 def youngeagles(request):
     return under_construction(request,"Young Eagles")
 

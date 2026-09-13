@@ -122,6 +122,17 @@
 },
 {
   "model": "core.navigationitem",
+  "pk": "b95f3a4f-da25-4453-b8a5-57140847a07a",
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "meetings",
+    "url": "/meetings",
+    "order": 650,
+    "is_enabled": true
+  }
+},
+{
+  "model": "core.navigationitem",
   "pk": "fe8fe82d-7b4c-4ae2-88c8-1ad06aa6247b",
   "fields": {
     "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",

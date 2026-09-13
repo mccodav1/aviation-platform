@@ -1,0 +1,85 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/meetings.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="meetings-page">
+    <div class="container">
+        <h1>Meetings</h1>
+
+        <h2 class="meetings-section-title">Upcoming</h2>
+
+        {% if upcoming_meetings %}
+            <ul class="meeting-list">
+                {% for meeting in upcoming_meetings %}
+                    <li class="meeting-card{% if meeting.is_cancelled %} meeting-card-cancelled{% endif %}">
+                        <div class="meeting-date">
+                            <span class="meeting-date-month">{{ meeting.starts_at|date:"M" }}</span>
+                            <span class="meeting-date-day">{{ meeting.starts_at|date:"j" }}</span>
+                        </div>
+
+                        <div class="meeting-details">
+                            <h3>
+                                {{ meeting.title }}
+                                {% if meeting.is_cancelled %}
+                                    <span class="meeting-badge">Cancelled</span>
+                                {% endif %}
+                            </h3>
+
+                            <p class="meeting-meta">
+                                <i class="bi bi-clock"></i> {{ meeting.starts_at|date:"l, F j, Y" }} at {{ meeting.starts_at|date:"g:i A" }}
+                            </p>
+
+                            {% if meeting.location %}
+                                <p class="meeting-meta">
+                                    <i class="bi bi-geo-alt"></i> {{ meeting.location }}
+                                </p>
+                            {% endif %}
+
+                            {% if meeting.description %}
+                                <p class="meeting-description">{{ meeting.description|linebreaksbr }}</p>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="meetings-empty">No meetings currently scheduled. Check back soon.</p>
+        {% endif %}
+
+        {% if past_meetings %}
+            <h2 class="meetings-section-title">Past Meetings</h2>
+
+            <ul class="meeting-list meeting-list-past">
+                {% for meeting in past_meetings %}
+                    <li class="meeting-card meeting-card-past{% if meeting.is_cancelled %} meeting-card-cancelled{% endif %}">
+                        <div class="meeting-date">
+                            <span class="meeting-date-month">{{ meeting.starts_at|date:"M" }}</span>
+                            <span class="meeting-date-day">{{ meeting.starts_at|date:"j" }}</span>
+                        </div>
+
+                        <div class="meeting-details">
+                            <h3>
+                                {{ meeting.title }}
+                                {% if meeting.is_cancelled %}
+                                    <span class="meeting-badge">Cancelled</span>
+                                {% endif %}
+                            </h3>
+
+                            <p class="meeting-meta">
+                                {{ meeting.starts_at|date:"l, F j, Y" }}
+                                {% if meeting.location %} &middot; {{ meeting.location }}{% endif %}
+                            </p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}
