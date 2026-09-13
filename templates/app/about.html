@@ -1,0 +1,108 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% with banner=organization.enabled_hero_images.first %}
+<section class="about-hero">
+    {% if banner %}
+        <img src="{{ banner.image.url }}" alt="" class="about-hero-image">
+    {% endif %}
+    <div class="about-hero-overlay"></div>
+    <div class="container">
+        <h1>About {{ organization.name }}</h1>
+        <p class="about-lede">
+            A non-profit California corporation promoting aviation fellowship,
+            advocacy, and education from our base at {{ organization.airport_icao }}
+            &ndash; Salinas Municipal Airport.
+        </p>
+    </div>
+</section>
+{% endwith %}
+
+<section class="about-stats">
+    <div class="container-wide about-stats-grid">
+        <div class="about-stat">
+            <i class="bi bi-geo-alt"></i>
+            <strong>{{ organization.airport_icao }}</strong>
+            <span>Home base &mdash; Salinas Municipal Airport</span>
+        </div>
+        <div class="about-stat">
+            <i class="bi bi-calendar-week"></i>
+            <strong>2nd Tuesday</strong>
+            <span>Monthly meetings at Gate 1</span>
+        </div>
+        <div class="about-stat">
+            <i class="bi bi-clock"></i>
+            <strong>10 AM Saturdays</strong>
+            <span>Flyout meet-up time, SNS terminal</span>
+        </div>
+        <div class="about-stat">
+            <i class="bi bi-mortarboard"></i>
+            <strong>EAA Chapter 204</strong>
+            <span>Our Young Eagles partner</span>
+        </div>
+    </div>
+</section>
+
+<section class="about-page">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-block">
+                <i class="bi bi-airplane about-block-icon"></i>
+                <h2>What We Do</h2>
+                <ul>
+                    <li>Monthly Saturday flyouts, meeting at the SNS terminal at 10 AM</li>
+                    <li>Seasonal interstate trips and other flying get-togethers</li>
+                    <li>Support for the Young Eagles program with EAA Chapter 204</li>
+                    <li>An annual membership dinner</li>
+                    <li>A scholarship program for qualifying student pilots and mechanics</li>
+                </ul>
+            </div>
+
+            <div class="about-block">
+                <i class="bi bi-calendar-week about-block-icon"></i>
+                <h2>Meetings</h2>
+                <p>
+                    We meet on the second Tuesday of each month at Gate 1 in the
+                    Salinas Municipal Airport Terminal.
+                </p>
+                <a href="{% url 'core:meetings' %}" class="about-link">See upcoming meetings &rarr;</a>
+            </div>
+
+            <div class="about-block">
+                <i class="bi bi-people about-block-icon"></i>
+                <h2>Membership</h2>
+                <p>
+                    Members receive invites to flyouts, a fuel discount, an annual
+                    dinner, and more.
+                </p>
+                {% if organization.join_url %}
+                    <a href="{{ organization.join_url }}" class="about-link">{{ organization.join_button_text }} &rarr;</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="about-flyouts">
+            <h2 class="about-section-title">2026 Flyout Destinations</h2>
+            <p class="about-section-subtitle">
+                A full season of Saturday flyouts to airports up and down the state.
+            </p>
+
+            <ul class="about-flyout-list">
+                <li class="about-flyout-chip"><i class="bi bi-airplane-engines"></i> Panoche International</li>
+                <li class="about-flyout-chip"><i class="bi bi-airplane-engines"></i> Oceano, CA</li>
+                <li class="about-flyout-chip"><i class="bi bi-airplane-engines"></i> Columbia, CA</li>
+                <li class="about-flyout-chip"><i class="bi bi-airplane-engines"></i> Petaluma, CA</li>
+                <li class="about-flyout-chip"><i class="bi bi-airplane-engines"></i> Harris Ranch</li>
+                <li class="about-flyout-chip"><i class="bi bi-airplane-engines"></i> Santa Maria</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
