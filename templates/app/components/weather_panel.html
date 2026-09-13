@@ -14,28 +14,6 @@
 
     {% if metar %}
         <div class="weather-grid">
-            <div class="weather-stat">
-                <span class="weather-stat-label">Wind</span>
-                <span class="weather-stat-value">{{ metar.wind_text }}</span>
-            </div>
-
-            <div class="weather-stat">
-                <span class="weather-stat-label">Visibility</span>
-                <span class="weather-stat-value">{{ metar.visib }} SM</span>
-            </div>
-
-            {% if metar.ceiling %}
-                <div class="weather-stat">
-                    <span class="weather-stat-label">Ceiling</span>
-                    <span class="weather-stat-value">{{ metar.ceiling }} ft</span>
-                </div>
-            {% elif metar.cover %}
-                <div class="weather-stat">
-                    <span class="weather-stat-label">Clouds</span>
-                    <span class="weather-stat-value">{{ metar.cover }}</span>
-                </div>
-            {% endif %}
-
             {% if metar.temp is not None %}
                 <div class="weather-stat">
                     <span class="weather-stat-label">Temperature</span>
@@ -49,6 +27,28 @@
                     <span class="weather-stat-value">{{ metar.dewp|floatformat:0 }}°C</span>
                 </div>
             {% endif %}
+
+            {% if metar.ceiling %}
+                <div class="weather-stat">
+                    <span class="weather-stat-label">Ceiling</span>
+                    <span class="weather-stat-value">{{ metar.ceiling }} ft</span>
+                </div>
+            {% elif metar.cover %}
+                <div class="weather-stat">
+                    <span class="weather-stat-label">Clouds</span>
+                    <span class="weather-stat-value">{{ metar.cover }}</span>
+                </div>
+            {% endif %}
+
+            <div class="weather-stat">
+                <span class="weather-stat-label">Visibility</span>
+                <span class="weather-stat-value">{{ metar.visib }} SM</span>
+            </div>
+
+            <div class="weather-stat">
+                <span class="weather-stat-label">Wind</span>
+                <span class="weather-stat-value">{{ metar.wind_text }}</span>
+            </div>
 
             {% if metar.altim_text %}
                 <div class="weather-stat">
