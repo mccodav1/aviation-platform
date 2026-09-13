@@ -18,7 +18,11 @@ from django.urls import NoReverseMatch, reverse
 #   - "resource:scholarship-application" -> an uploaded Resource
 #                                      (core.models.Resource), looked
 #                                      up by its slug and resolved to
-#                                      that file's download URL. Lets
+#                                      the gated resource_download URL
+#                                      for it (Resource.file lives in
+#                                      private storage - there's no raw
+#                                      public URL to hand out even for a
+#                                      "public"-visibility one). Lets
 #                                      any link field point straight at
 #                                      an admin-uploaded file without
 #                                      bespoke per-page lookup code.
@@ -60,7 +64,9 @@ def resolve_link(value):
         return value
     if value.startswith(_RESOURCE_PREFIX):
         resource = _find_resource(value[len(_RESOURCE_PREFIX):])
-        return resource.file.url if resource else value
+        if resource is None:
+            return value
+        return reverse("core:resource_download", kwargs={"slug": resource.slug})
     try:
         return reverse(value)
     except NoReverseMatch:

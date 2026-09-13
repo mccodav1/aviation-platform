@@ -1,4 +1,12 @@
-from django.shortcuts import render
+from pathlib import Path
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.views import redirect_to_login
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import ResourceForm
+from .models import Resource
 from .services.weather import get_metar
 
 
@@ -38,7 +46,53 @@ def scholarship(request):
     return render(request, "app/scholarship.html", {"application": application})
 
 def resources(request):
-    return render(request, "app/resources.html")
+    organization = request.organization
+    categories = []
+
+    if organization:
+        for category in organization.enabled_resource_categories:
+            visible = [
+                resource
+                for resource in category.resources.filter(is_enabled=True)
+                if resource.visible_to(request.user)
+            ]
+            if visible:
+                categories.append({"category": category, "resources": visible})
+
+    return render(request, "app/resources.html", {"categories": categories})
+
+
+@login_required
+@permission_required("core.add_resource", raise_exception=True)
+def resource_create(request):
+    organization = request.organization
+
+    if request.method == "POST":
+        form = ResourceForm(request.POST, request.FILES, organization=organization)
+        if form.is_valid():
+            form.save()
+            return redirect("core:resources")
+    else:
+        form = ResourceForm(organization=organization)
+
+    return render(request, "app/resource_form.html", {"form": form})
+
+
+def resource_download(request, slug):
+    # Visibility (public vs. members), not a permission, gates this -
+    # any signed-in user can reach a "members" resource, matching how
+    # the rest of the site treats a plain Member (see user-roles).
+    resource = get_object_or_404(
+        Resource, slug=slug, organization=request.organization, is_enabled=True,
+    )
+    if not resource.visible_to(request.user):
+        return redirect_to_login(request.get_full_path())
+
+    return FileResponse(
+        resource.file.open("rb"),
+        filename=Path(resource.file.name).name,
+        as_attachment=False,
+    )
 
 def contact(request):
     return under_construction(request,"Contact")

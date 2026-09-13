@@ -1,0 +1,45 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<section class="form-page">
+    <div class="container">
+        <div class="form-card">
+            <h1>Add Resource</h1>
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="form-field-help">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="form-submit">Save Resource</button>
+            </form>
+
+            <p class="form-back-link">
+                <a href="{% url 'core:resources' %}">&larr; Back to Resources</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

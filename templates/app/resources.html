@@ -3,6 +3,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
+<link rel="stylesheet" href="{% static 'css/resources.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -18,20 +19,42 @@
 
 <section class="page-body">
     <div class="container">
-        {% for resource in organization.enabled_resources %}
-            <div class="page-block">
-                <h2>{{ resource.title }}</h2>
-                {% if resource.description %}
-                    <p>{{ resource.description }}</p>
-                {% endif %}
-                <a
-                    href="{{ resource.file.url }}"
-                    class="page-cta"
-                    target="_blank"
-                    rel="noopener"
-                >
-                    <i class="bi bi-file-earmark-arrow-down"></i> Download
-                </a>
+
+        {% if perms.core.add_resource %}
+            <div class="resources-toolbar">
+                <a class="join-button" href="{% url 'core:resource_create' %}">+ Add Resource</a>
+            </div>
+        {% endif %}
+
+        {% for group in categories %}
+            <div class="page-block resource-category">
+                <h2>{{ group.category.title }}</h2>
+
+                <ul class="resource-list">
+                    {% for resource in group.resources %}
+                        <li class="resource-item">
+                            <div class="resource-item-info">
+                                <span class="resource-item-title">
+                                    {{ resource.title }}
+                                    {% if resource.is_members_only %}
+                                        <span class="resource-badge">Members</span>
+                                    {% endif %}
+                                </span>
+                                {% if resource.description %}
+                                    <span class="resource-item-description">{{ resource.description }}</span>
+                                {% endif %}
+                            </div>
+                            <a
+                                href="{% url 'core:resource_download' resource.slug %}"
+                                class="page-cta resource-item-download"
+                                target="_blank"
+                                rel="noopener"
+                            >
+                                <i class="bi bi-file-earmark-arrow-down"></i> Download
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
         {% empty %}
             <div class="page-block">

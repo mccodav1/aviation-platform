@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from core.models import HeroImage, Organization, NavigationItem, Card, InfoPanel, Resource
+from core.models import HeroImage, Organization, NavigationItem, Card, InfoPanel, Resource, ResourceCategory
 
 
 # Register your models here.
@@ -24,9 +24,14 @@ class CardAdmin(admin.ModelAdmin):
 class InfoPanelAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(ResourceCategory)
+class ResourceCategoryAdmin(admin.ModelAdmin):
+    list_display = ('title', 'order', 'is_enabled')
+
 @admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
-    list_display = ('title', 'slug', 'order', 'is_enabled')
+    list_display = ('title', 'category', 'visibility', 'slug', 'order', 'is_enabled')
+    list_filter = ('category', 'visibility', 'is_enabled')
     # Auto-fills the slug field from the title as you type, in-browser -
     # still editable before saving. Resource.save() is the fallback for
     # anything created outside the admin (a shell/data migration, say).

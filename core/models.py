@@ -1,10 +1,12 @@
 import uuid
 
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils.text import slugify
 
 from core.links import link_error
+from core.storage import private_storage
 
 LINK_HELP_TEXT = (
     'Internal page: its URL name, e.g. "core:events". '
@@ -13,6 +15,15 @@ LINK_HELP_TEXT = (
     'Off-site link: full address starting with "https://", "mailto:", '
     'or "tel:".'
 )
+
+# Kept to common document/image formats - also keeps FileResponse's
+# content-type guessing (see resource_download in views.py) landing on
+# safe, non-executable types for inline display. Mirrors, but doesn't
+# import, meetings.models.ALLOWED_MEETING_FILE_EXTENSIONS - core must
+# not depend on the optional meetings app.
+ALLOWED_RESOURCE_FILE_EXTENSIONS = [
+    "pdf", "doc", "docx", "odt", "rtf", "txt", "png", "jpg", "jpeg",
+]
 
 
 class Organization(models.Model):
@@ -100,6 +111,10 @@ class Organization(models.Model):
     @property
     def enabled_resources(self):
         return self.resources.filter(is_enabled=True)
+
+    @property
+    def enabled_resource_categories(self):
+        return self.resource_categories.filter(is_enabled=True)
 
 
 
@@ -237,25 +252,75 @@ class InfoPanel(models.Model):
             raise ValidationError({"link": error})
 
 
-class Resource(models.Model):
-    """An admin-uploadable downloadable file - a scholarship application,
-    a membership form, bylaws, etc. Public and unauthenticated, unlike
-    meetings' agenda/minutes uploads (see meetings/storage.py), so it
-    uses the default public MEDIA_ROOT storage rather than
-    private_storage. Meant to back both one-off links (like the
-    Scholarship page's application download) and the general
-    /resources page once that's built out.
+class ResourceCategory(models.Model):
+    """A named grouping Resources are filed under - rendered as its own
+    card on /resources. Officers can pick an existing one or type a new
+    one when adding a Resource (see core/forms.py); there's no separate
+    "manage categories" page since a category is only ever created
+    alongside the first Resource that needs it."""
 
-    Every Resource has a slug, so it can be linked to from any of this
-    app's link fields (Card.link, InfoPanel.link, NavigationItem.url,
-    Organization's button URLs) as "resource:<slug>" - see core/links.py
-    - without writing a bespoke lookup for each new file."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="resource_categories",
+    )
+    title = models.CharField(max_length=200)
+    order = models.PositiveIntegerField(default=100)
+    is_enabled = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["order", "title"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["organization", "title"],
+                name="unique_resource_category_title_per_organization",
+            ),
+        ]
+
+    def __str__(self):
+        return self.title
+
+
+class Resource(models.Model):
+    """An uploadable downloadable file - a scholarship application, a
+    membership form, bylaws, etc. Meant to back both one-off links (like
+    the Scholarship page's application download) and the general
+    /resources page.
+
+    Every file lives in private storage (see core/storage.py) and is
+    only ever served through resource_download (core/views.py), which
+    checks `visibility` itself - VISIBILITY_PUBLIC is just "no login
+    required," not "served as a raw public URL." That's what makes
+    VISIBILITY_MEMBERS an actual access control rather than a cosmetic
+    label: there's no public MEDIA_ROOT URL for any Resource file to
+    leak in the first place, regardless of visibility.
+
+    Every Resource also has a slug, so it can be linked to from any of
+    this app's link fields (Card.link, InfoPanel.link, NavigationItem.
+    url, Organization's button URLs) as "resource:<slug>" - see
+    core/links.py - without writing a bespoke lookup for each new
+    file."""
+
+    VISIBILITY_PUBLIC = "public"
+    VISIBILITY_MEMBERS = "members"
+
+    VISIBILITY_CHOICES = [
+        (VISIBILITY_PUBLIC, "Public - anyone"),
+        (VISIBILITY_MEMBERS, "Members - signed-in users only"),
+    ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
         related_name="resources",
+    )
+    category = models.ForeignKey(
+        ResourceCategory,
+        on_delete=models.PROTECT,
+        related_name="resources",
+        help_text="Delete or reassign this category's other resources before deleting it.",
     )
     title = models.CharField(max_length=200)
     slug = models.SlugField(
@@ -267,7 +332,16 @@ class Resource(models.Model):
         ),
     )
     description = models.CharField(max_length=300, blank=True)
-    file = models.FileField(upload_to="resources/")
+    file = models.FileField(
+        upload_to="resources/",
+        storage=private_storage,
+        validators=[FileExtensionValidator(allowed_extensions=ALLOWED_RESOURCE_FILE_EXTENSIONS)],
+    )
+    visibility = models.CharField(
+        max_length=16,
+        choices=VISIBILITY_CHOICES,
+        default=VISIBILITY_PUBLIC,
+    )
     order = models.PositiveIntegerField(default=100)
     is_enabled = models.BooleanField(default=True)
 
@@ -282,6 +356,16 @@ class Resource(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def is_members_only(self):
+        return self.visibility == self.VISIBILITY_MEMBERS
+
+    def visible_to(self, user):
+        return self.is_enabled and (
+            self.visibility == self.VISIBILITY_PUBLIC
+            or (user is not None and user.is_authenticated)
+        )
 
     def save(self, *args, **kwargs):
         if not self.slug:
