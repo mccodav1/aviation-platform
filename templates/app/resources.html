@@ -1,0 +1,44 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container">
+        <h1>Resources</h1>
+        <p class="page-lede">
+            Forms, applications, and other documents for {{ organization.name }}.
+        </p>
+    </div>
+</section>
+
+<section class="page-body">
+    <div class="container">
+        {% for resource in organization.enabled_resources %}
+            <div class="page-block">
+                <h2>{{ resource.title }}</h2>
+                {% if resource.description %}
+                    <p>{{ resource.description }}</p>
+                {% endif %}
+                <a
+                    href="{{ resource.file.url }}"
+                    class="page-cta"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    <i class="bi bi-file-earmark-arrow-down"></i> Download
+                </a>
+            </div>
+        {% empty %}
+            <div class="page-block">
+                <p>No resources are posted right now. Check back soon.</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

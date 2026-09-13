@@ -38,7 +38,7 @@ def scholarship(request):
     return render(request, "app/scholarship.html", {"application": application})
 
 def resources(request):
-    return under_construction(request,"Resources")
+    return render(request, "app/resources.html")
 
 def contact(request):
     return under_construction(request,"Contact")
