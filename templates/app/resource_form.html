@@ -20,16 +20,46 @@
                 {% csrf_token %}
 
                 {% for field in form %}
-                    <div class="form-field">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.help_text %}
-                            <p class="form-field-help">{{ field.help_text }}</p>
-                        {% endif %}
-                        {% for error in field.errors %}
-                            <div class="form-errors">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+                    {% if field.name == "category" %}
+                        <div class="form-field">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+                            <div class="resource-category-field">
+                                {{ field }}
+                                <button type="button" class="resource-category-add-toggle" id="resource-category-add-toggle">
+                                    + New Category
+                                </button>
+                            </div>
+
+                            {% for error in field.errors %}
+                                <div class="form-errors">{{ error }}</div>
+                            {% endfor %}
+
+                            <div class="resource-category-add" id="resource-category-add" hidden>
+                                <input
+                                    type="text"
+                                    id="resource-category-add-input"
+                                    placeholder="New category name"
+                                    maxlength="200"
+                                >
+                                <button type="button" class="form-submit resource-category-add-submit" id="resource-category-add-submit">
+                                    Create
+                                </button>
+                                <div class="form-errors" id="resource-category-add-error" hidden></div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="form-field">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <p class="form-field-help">{{ field.help_text }}</p>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="form-errors">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 {% endfor %}
 
                 <button type="submit" class="form-submit">Save Resource</button>
@@ -42,4 +72,11 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block extra_scripts %}
+<script
+    src="{% static 'js/resource_form.js' %}"
+    data-add-category-url="{% url 'core:resource_category_create' %}"
+></script>
 {% endblock %}

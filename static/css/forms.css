@@ -132,3 +132,72 @@
 .form-back-link a:hover {
     color: var(--color-primary);
 }
+
+/* "+ Add new" next to a foreign-key dropdown (see resource_form.html /
+   resource_form.js) - a small stand-in for what Django admin's own "+"
+   icon does next to a FK field, without the popup-window machinery. */
+.resource-category-field {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.resource-category-field select {
+    flex: 1;
+}
+
+.resource-category-add-toggle {
+    padding: 0.5rem 0.9rem;
+
+    background: none;
+    border: 1px solid rgb(17 52 86 / 20%);
+    border-radius: 6px;
+
+    color: var(--color-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.resource-category-add-toggle:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.resource-category-add {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+
+    margin-top: 0.75rem;
+}
+
+/* An explicit `display` above always beats the browser's own default
+   [hidden] { display: none } rule, regardless of selector specificity -
+   author styles outrank user-agent styles in the cascade regardless of
+   specificity. Without this, toggling the `hidden` attribute in JS
+   still leaves the element visible. Same story for the error box. */
+.resource-category-add[hidden],
+.form-errors[hidden] {
+    display: none;
+}
+
+.resource-category-add input {
+    flex: 1;
+    min-width: 10rem;
+    padding: 0.5rem 0.7rem;
+
+    border: 1px solid rgb(17 52 86 / 20%);
+    border-radius: 6px;
+
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.resource-category-add-submit {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    text-transform: none;
+}

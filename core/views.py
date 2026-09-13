@@ -2,11 +2,13 @@ from pathlib import Path
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.views import redirect_to_login
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.html import format_html
+from django.views.decorators.http import require_POST
 
 from .forms import ResourceForm
-from .models import Resource
+from .models import Resource, ResourceCategory
 from .services.weather import get_metar
 
 
@@ -76,6 +78,34 @@ def resource_create(request):
         form = ResourceForm(organization=organization)
 
     return render(request, "app/resource_form.html", {"form": form})
+
+
+@login_required
+@permission_required("core.add_resourcecategory", raise_exception=True)
+@require_POST
+def resource_category_create(request):
+    # Backs the "+ Add a new category" widget on resource_form.html - a
+    # small fetch() call, not a full page (see static/js/resource_form.js),
+    # so the category dropdown stays the one real answer to "which
+    # category" instead of a second competing "or type a new one" field.
+    #
+    # Returns a rendered <option> fragment rather than JSON, matching
+    # weather_panel's existing fetch()-for-an-HTML-fragment convention
+    # (see home.js) instead of inventing a second response shape for
+    # what's the same kind of interaction. format_html escapes the
+    # title, since unlike a JSON response consumed via .textContent,
+    # HTML built server-side has to escape untrusted input itself.
+    title = request.POST.get("title", "").strip()
+    if not title:
+        return HttpResponseBadRequest("Category name can't be blank.")
+
+    category, _ = ResourceCategory.objects.get_or_create(
+        organization=request.organization, title=title,
+    )
+    option_html = format_html(
+        '<option value="{}" selected>{}</option>', category.pk, category.title,
+    )
+    return HttpResponse(option_html, status=201)
 
 
 def resource_download(request, slug):
