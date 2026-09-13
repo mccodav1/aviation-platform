@@ -20,7 +20,7 @@ def weather_panel(request):
     )
 
 def about(request):
-    return under_construction(request,"About")
+    return render(request, "app/about.html")
 
 def members(request):
     return under_construction(request,"Members")

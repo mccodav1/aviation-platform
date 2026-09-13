@@ -1,0 +1,91 @@
+/* ==========================
+   About Page
+   ========================== */
+
+.about-page {
+    padding: 3rem 0 4rem;
+    background: #f8fafc;
+    min-height: 65vh;
+}
+
+.about-page h1 {
+    margin-bottom: 1rem;
+
+    color: var(--color-secondary);
+    font-size: clamp(2rem, 4vw, 2.5rem);
+}
+
+.about-lede {
+    max-width: 48rem;
+    margin-bottom: 2.5rem;
+
+    color: #334155;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.about-block {
+    padding: 1.75rem;
+
+    background: #fff;
+    border: 1px solid rgb(17 52 86 / 10%);
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px rgb(17 52 86 / 6%);
+}
+
+.about-block-icon {
+    display: block;
+    margin-bottom: 0.75rem;
+
+    color: var(--color-primary);
+    font-size: 1.75rem;
+}
+
+.about-block h2 {
+    margin: 0 0 0.75rem;
+
+    color: var(--color-secondary);
+    font-size: 1.1rem;
+}
+
+.about-block p,
+.about-block ul {
+    margin: 0 0 1rem;
+
+    color: #475569;
+    line-height: 1.6;
+}
+
+.about-block ul {
+    padding-left: 1.2rem;
+}
+
+.about-block li {
+    margin-bottom: 0.4rem;
+}
+
+.about-link {
+    display: inline-block;
+
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.about-link:hover {
+    color: var(--color-primary);
+}
+
+@media (max-width: 900px) {
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+}

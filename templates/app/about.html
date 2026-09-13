@@ -1,0 +1,58 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="about-page">
+    <div class="container">
+        <h1>About {{ organization.name }}</h1>
+
+        <p class="about-lede">
+            {{ organization.name }} is a non-profit California corporation promoting
+            aviation fellowship, advocacy, and education from our base at
+            {{ organization.airport_icao }} &ndash; Salinas Municipal Airport.
+        </p>
+
+        <div class="about-grid">
+            <div class="about-block">
+                <i class="bi bi-airplane about-block-icon"></i>
+                <h2>What We Do</h2>
+                <ul>
+                    <li>Monthly Saturday flyouts, meeting at the SNS terminal at 10 AM</li>
+                    <li>Seasonal interstate trips and other flying get-togethers</li>
+                    <li>Support for the Young Eagles program with EAA Chapter 204</li>
+                    <li>An annual membership dinner</li>
+                    <li>A scholarship program for qualifying student pilots and mechanics</li>
+                </ul>
+            </div>
+
+            <div class="about-block">
+                <i class="bi bi-calendar-week about-block-icon"></i>
+                <h2>Meetings</h2>
+                <p>
+                    We meet on the second Tuesday of each month at Gate 1 in the
+                    Salinas Municipal Airport Terminal.
+                </p>
+                <a href="{% url 'core:meetings' %}" class="about-link">See upcoming meetings &rarr;</a>
+            </div>
+
+            <div class="about-block">
+                <i class="bi bi-people about-block-icon"></i>
+                <h2>Membership</h2>
+                <p>
+                    Members receive invites to flyouts, a fuel discount, an annual
+                    dinner, and more.
+                </p>
+                {% if organization.join_url %}
+                    <a href="{{ organization.join_url }}" class="about-link">{{ organization.join_button_text }} &rarr;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
