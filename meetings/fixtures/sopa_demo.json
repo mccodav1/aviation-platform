@@ -1,0 +1,14 @@
+[
+{
+  "model": "meetings.meeting",
+  "pk": 3,
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "title": "Monthly Meeting 3",
+    "starts_at": "2026-11-26T02:44:14Z",
+    "location": "123 Easy Street, Salinas, CA",
+    "description": "",
+    "is_cancelled": false
+  }
+}
+]
