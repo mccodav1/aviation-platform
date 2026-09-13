@@ -11,6 +11,10 @@
     <div class="container">
         <h1>Meetings</h1>
 
+        {% if perms.meetings.add_meeting %}
+            <a class="join-button" href="{% url 'core:meeting_create' %}">+ Add Meeting</a>
+        {% endif %}
+
         <h2 class="meetings-section-title">Upcoming</h2>
 
         {% if upcoming_meetings %}

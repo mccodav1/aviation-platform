@@ -1,0 +1,106 @@
+/* ==========================
+   Forms (login, add meeting, etc.)
+   ========================== */
+
+.form-page {
+    padding: 3rem 0 4rem;
+    background: #f8fafc;
+    min-height: 65vh;
+}
+
+.form-card {
+    width: min(480px, 100%);
+    margin: 0 auto;
+    padding: 2.5rem;
+
+    background: #fff;
+    border: 1px solid rgb(17 52 86 / 10%);
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px rgb(17 52 86 / 6%);
+}
+
+.form-card h1 {
+    margin: 0 0 1.5rem;
+
+    color: var(--color-secondary);
+    font-size: 1.75rem;
+}
+
+.form-field {
+    margin-bottom: 1.25rem;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 0.4rem;
+
+    color: var(--color-secondary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.form-field input,
+.form-field textarea {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+
+    border: 1px solid rgb(17 52 86 / 20%);
+    border-radius: 6px;
+
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+}
+
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-checkbox label {
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+}
+
+.form-errors {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+
+    background: rgb(218 65 68 / 8%);
+    border: 1px solid rgb(218 65 68 / 30%);
+    border-radius: 6px;
+
+    color: var(--color-primary);
+    font-size: 0.9rem;
+}
+
+.form-submit {
+    display: inline-block;
+
+    padding: 0.75rem 1.5rem;
+
+    background: var(--color-primary);
+    border: none;
+    border-radius: 6px;
+
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    transition: transform 0.2s ease;
+}
+
+.form-submit:hover {
+    transform: translateY(-1px);
+}
