@@ -1,4 +1,5 @@
 {% load static %}
+{% load core_extras %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,8 +35,8 @@
         <div class="nav-actions">
             <nav>
                 {% for item in organization.enabled_navigation_items %}
-                    <a href="{{ item.url }}"
-                       class="{% if request.path == item.url %}active{% endif %}">
+                    <a href="{{ item.url|resolve_link }}"
+                       class="{% if request.path == item.url|resolve_link %}active{% endif %}">
                         {{ item.title }}
                     </a>
                 {% endfor %}
@@ -55,7 +56,7 @@
             {% endif %}
 
             {% if organization.join_url %}
-                <a class="join-button" href="{{ organization.join_url }}">{{ organization.join_button_text }}</a>
+                <a class="join-button" href="{{ organization.join_url|resolve_link }}">{{ organization.join_button_text }}</a>
             {% endif %}
         </div>
 

@@ -1,5 +1,6 @@
 {% extends "app/base.html" %}
 {% load static %}
+{% load core_extras %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/about.css' %}">
@@ -82,7 +83,7 @@
                     dinner, and more.
                 </p>
                 {% if organization.join_url %}
-                    <a href="{{ organization.join_url }}" class="about-link">{{ organization.join_button_text }} &rarr;</a>
+                    <a href="{{ organization.join_url|resolve_link }}" class="about-link">{{ organization.join_button_text }} &rarr;</a>
                 {% endif %}
             </div>
         </div>
