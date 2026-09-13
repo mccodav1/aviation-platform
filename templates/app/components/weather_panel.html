@@ -26,6 +26,14 @@
             {% if metar.temp is not None %}
                 <br><strong>Temperature</strong>: {{ metar.temp|floatformat:0 }}°C
             {% endif %}
+
+            {% if metar.dewp is not None %}
+                <br><strong>Dewpoint</strong>: {{ metar.dewp|floatformat:0 }}°C
+            {% endif %}
+
+            {% if metar.altim_text %}
+                <br><strong>Altimeter</strong>: {{ metar.altim_text }}
+            {% endif %}
         </p>
 
         <a

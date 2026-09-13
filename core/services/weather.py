@@ -18,6 +18,16 @@ def get_ceiling(clouds):
 
     return min(ceilings) if ceilings else None
 
+def format_altimeter(metar):
+    # The API reports altim in hectopascals (e.g. 1017.4), but US METARs
+    # are conventionally read in inches of mercury (e.g. "A3004" -> 30.04
+    # in Hg) - convert rather than show the raw hPa value.
+    altim_hpa = metar.get("altim")
+    if altim_hpa is None:
+        return None
+
+    return f'{altim_hpa / 33.8639:.2f}"'
+
 def format_wind(metar):
     speed = metar.get("wspd")
     direction = metar.get("wdir")
@@ -74,6 +84,7 @@ def get_metar(station):
         )
 
         metar["wind_text"] = format_wind(metar)
+        metar["altim_text"] = format_altimeter(metar)
 
         cache.set(cache_key, metar, 300)
 
