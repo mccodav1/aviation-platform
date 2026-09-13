@@ -11,8 +11,8 @@
     <div class="container">
         <h1>Scholarship Program</h1>
         <p class="page-lede">
-            {{ organization.name }} offers a scholarship to qualifying student
-            pilots and mechanics.
+            {{ organization.name }} awards a $2,000 scholarship each year to a
+            local student pilot or mechanic advancing their aviation training.
         </p>
     </div>
 </section>
@@ -20,28 +20,95 @@
 <section class="page-body">
     <div class="container">
         <div class="page-block">
+            <h2>About the Scholarship</h2>
+            <p>
+                The scholarship is intended for advancement in aviation - earning
+                a private pilot license, an advanced rating, or training in
+                aircraft maintenance. Other related aviation training will also
+                be considered.
+            </p>
+        </div>
+
+        <div class="page-block">
+            <h2>Eligibility</h2>
+            <ul class="page-list">
+                <li>Must live in Monterey County and be at least 16 years old.</li>
+                <li>
+                    Applying for flying purposes: must hold a student pilot
+                    license and an airman's medical certificate, and must have
+                    soloed an aircraft.
+                </li>
+                <li>Applying for an advanced rating: a current flight review is required.</li>
+                <li>Must read, speak, and understand English, per FAA requirements.</li>
+            </ul>
+        </div>
+
+        <div class="page-block">
             <h2>How to Apply</h2>
             <p>
-                Download the program description and application form, fill it
-                out, and submit it following the instructions included with
-                the application.
+                Applications are due <strong>June 1</strong> of the current year,
+                with the winner announced by <strong>July 15</strong>. A complete
+                application includes:
             </p>
-            <a
-                href="https://salinaspilots.org/scholarship/Salinas-Pilots-Association-Scholarship-Interactive-Application.pdf"
-                class="page-cta"
-                target="_blank"
-                rel="noopener"
-            >
-                <i class="bi bi-file-earmark-arrow-down"></i> Download Application
-            </a>
+            <ul class="page-list">
+                <li>The application form (below)</li>
+                <li>
+                    A personal essay of at least 500 words covering your
+                    aviation goals, first interest in aviation, relevant
+                    experience, obstacles you've faced, and how you'd like to
+                    contribute back to {{ organization.name }} and the aviation
+                    community
+                </li>
+                <li>
+                    Two letters of recommendation, at least one from someone
+                    familiar with your aviation interests and accomplishments
+                </li>
+            </ul>
+            <p>
+                Submit your materials to the Scholarship Committee at
+                <a href="mailto:scholarship@salinaspilots.org">scholarship@salinaspilots.org</a>,
+                or by mail to 80 Mortensen Avenue, Salinas, CA 93905.
+            </p>
+            {% if application %}
+                <a
+                    href="{{ application.file.url }}"
+                    class="page-cta"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    <i class="bi bi-file-earmark-arrow-down"></i> Download Application
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="page-block">
+            <h2>If You're Selected</h2>
+            <p>
+                Scholarship funds are paid directly to the flight school,
+                training center, or instructor, against submitted receipts and
+                signed hour logs. Recipients are asked to:
+            </p>
+            <ul class="page-list">
+                <li>Attend at least two monthly association meetings during the award year</li>
+                <li>Submit monthly progress reports signed off by an instructor</li>
+                <li>
+                    Volunteer for one aviation-related event - an airshow,
+                    fundraiser, Young Eagles rally, or airport activity
+                </li>
+            </ul>
+            <p>
+                Recipients who complete their training are also encouraged to
+                write an article or give a presentation about their experience
+                to the club.
+            </p>
         </div>
 
         <div class="page-block">
             <h2>Questions?</h2>
             <p>
                 Stop by a monthly meeting - second Tuesday of each month, Gate 1
-                in the Salinas Municipal Airport Terminal - and an officer can
-                point you in the right direction.
+                in the Salinas Municipal Airport Terminal - and a member of the
+                Scholarship Committee can help.
             </p>
             <a href="{% url 'core:meetings' %}" class="page-link">See upcoming meetings &rarr;</a>
         </div>

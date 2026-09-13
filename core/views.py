@@ -29,7 +29,13 @@ def aircraft(request):
     return under_construction(request,"Aircraft")
 
 def scholarship(request):
-    return render(request, "app/scholarship.html")
+    application = None
+    if request.organization:
+        application = request.organization.resources.filter(
+            title="Scholarship Application", is_enabled=True,
+        ).first()
+
+    return render(request, "app/scholarship.html", {"application": application})
 
 def resources(request):
     return under_construction(request,"Resources")
