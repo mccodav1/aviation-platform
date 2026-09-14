@@ -71,7 +71,7 @@
             </p>
             {% if application %}
                 <a
-                    href="{{ application.file.url }}"
+                    href="{% url 'core:resource_download' application.slug %}"
                     class="page-cta"
                     target="_blank"
                     rel="noopener"

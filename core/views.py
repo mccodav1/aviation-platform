@@ -1,4 +1,14 @@
-from django.shortcuts import render
+from pathlib import Path
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.views import redirect_to_login
+from django.http import FileResponse, Http404, HttpResponse, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.html import format_html
+from django.views.decorators.http import require_POST
+
+from .forms import ResourceForm
+from .models import Resource, ResourceCategory
 from .services.weather import get_metar
 
 
@@ -38,7 +48,115 @@ def scholarship(request):
     return render(request, "app/scholarship.html", {"application": application})
 
 def resources(request):
-    return under_construction(request,"Resources")
+    organization = request.organization
+    can_manage = request.user.has_perm("core.change_resource")
+    categories = []
+
+    if organization:
+        # prefetch_related loads every category's resources in one extra
+        # query total, rather than one query per category - then all
+        # filtering below happens in Python against that already-fetched
+        # list, so it doesn't cost a query of its own either.
+        categories_qs = organization.enabled_resource_categories.prefetch_related("resources")
+        for category in categories_qs:
+            all_resources = category.resources.all()
+            if can_manage:
+                # Officers see disabled resources too (and can re-enable
+                # them here) - everyone else only ever sees an enabled,
+                # visible-to-them resource (visible_to() checks
+                # is_enabled itself).
+                visible = list(all_resources)
+            else:
+                visible = [r for r in all_resources if r.visible_to(request.user)]
+            if visible:
+                categories.append({"category": category, "resources": visible})
+
+    return render(
+        request, "app/resources.html",
+        {"categories": categories, "can_manage": can_manage},
+    )
+
+
+@login_required
+@permission_required("core.add_resource", raise_exception=True)
+def resource_create(request):
+    organization = request.organization
+    if not organization:
+        raise Http404
+
+    if request.method == "POST":
+        form = ResourceForm(request.POST, request.FILES, organization=organization)
+        if form.is_valid():
+            form.save()
+            return redirect("core:resources")
+    else:
+        form = ResourceForm(organization=organization)
+
+    return render(request, "app/resource_form.html", {"form": form})
+
+
+@login_required
+@permission_required("core.add_resourcecategory", raise_exception=True)
+@require_POST
+def resource_category_create(request):
+    # Backs the "+ Add a new category" widget on resource_form.html - a
+    # small fetch() call, not a full page (see static/js/resource_form.js),
+    # so the category dropdown stays the one real answer to "which
+    # category" instead of a second competing "or type a new one" field.
+    #
+    # Returns a rendered <option> fragment rather than JSON, matching
+    # weather_panel's existing fetch()-for-an-HTML-fragment convention
+    # (see home.js) instead of inventing a second response shape for
+    # what's the same kind of interaction. format_html escapes the
+    # title, since unlike a JSON response consumed via .textContent,
+    # HTML built server-side has to escape untrusted input itself.
+    organization = request.organization
+    if not organization:
+        raise Http404
+
+    title = request.POST.get("title", "").strip()
+    if not title:
+        return HttpResponseBadRequest("Category name can't be blank.")
+
+    category, _ = ResourceCategory.objects.get_or_create(
+        organization=organization, title=title,
+    )
+    option_html = format_html(
+        '<option value="{}" selected>{}</option>', category.pk, category.title,
+    )
+    return HttpResponse(option_html, status=201)
+
+
+@login_required
+@permission_required("core.change_resource", raise_exception=True)
+@require_POST
+def resource_toggle_enabled(request, slug):
+    # Reversible, front-end - mirrors meeting_toggle_cancelled. A
+    # permanent delete stays an /admin-only action, same reasoning as
+    # meetings: this view only ever flips is_enabled, never deletes.
+    resource = get_object_or_404(
+        Resource, slug=slug, organization=request.organization,
+    )
+    resource.is_enabled = not resource.is_enabled
+    resource.save(update_fields=["is_enabled"])
+    return redirect("core:resources")
+
+
+def resource_download(request, slug):
+    # Visibility (public vs. members), not a permission, gates this -
+    # any signed-in user can reach a "members" resource, matching how
+    # the rest of the site treats a plain Member (see user-roles).
+    resource = get_object_or_404(
+        Resource, slug=slug, organization=request.organization, is_enabled=True,
+    )
+    if not resource.visible_to(request.user):
+        return redirect_to_login(request.get_full_path())
+
+    return FileResponse(
+        resource.file.open("rb"),
+        filename=Path(resource.file.name).name,
+        as_attachment=False,
+    )
 
 def contact(request):
     return under_construction(request,"Contact")
