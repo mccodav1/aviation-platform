@@ -29,6 +29,7 @@ urlpatterns = [
     path("resources/categories/add", resource_category_create, name="resource_category_create"),
     path("resources/<slug:slug>/download", resource_download, name="resource_download"),
     path("resources/<slug:slug>/toggle", resource_toggle_enabled, name="resource_toggle_enabled"),
+    path("privacy", privacy_policy, name="privacy"),
     path("contact", contact, name="contact"),
     path("join", join, name="join"),
     path("meetings", meeting_list, name="meetings"),
