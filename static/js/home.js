@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         activate(next);
 
-    }, 8000);
+    }, 9000); // matches the kenburns animation duration in home.css
 
 
     // ==========================
