@@ -108,6 +108,11 @@
    Join Button
    ========================== */
 
+.nav-logout-form {
+    display: inline-flex;
+    margin: 0;
+}
+
 .join-button {
     display: inline-flex;
     align-items: center;
@@ -121,11 +126,13 @@
     border: 2px solid var(--color-secondary);
     border-radius: 8px;
 
+    font: inherit;
     font-size: .9rem;
     font-weight: 700;
     letter-spacing: .05em;
     text-transform: uppercase;
     text-decoration: none;
+    cursor: pointer;
 
     transition:
         background .2s ease,

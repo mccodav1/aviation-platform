@@ -42,7 +42,12 @@
                 {% endfor %}
             </nav>
 
-            {% if organization.join_url %}
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}" class="nav-logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="join-button">Log Out</button>
+                </form>
+            {% elif organization.join_url %}
                 <a class="join-button" href="{{ organization.join_url|resolve_link }}">{{ organization.join_button_text }}</a>
             {% endif %}
         </div>
@@ -67,12 +72,7 @@
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Use</a>
 
-            {% if user.is_authenticated %}
-                <form method="post" action="{% url 'logout' %}" class="footer-logout-form">
-                    {% csrf_token %}
-                    <button type="submit">Log Out</button>
-                </form>
-            {% else %}
+            {% if not user.is_authenticated %}
                 <a href="{% url 'login' %}">Member Login</a>
             {% endif %}
 
