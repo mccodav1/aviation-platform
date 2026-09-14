@@ -3,7 +3,7 @@
 footer {
     background: var(--color-secondary);
     color: white;
-    padding: 2.5rem 0 1.5rem;
+    padding: 1.5rem 0;
 }
 
 .footer-row {
@@ -12,23 +12,6 @@ footer {
     justify-content: space-between;
     align-items: center;
     gap: 1.5rem;
-
-    padding-bottom: 1.25rem;
-    margin-bottom: 1rem;
-
-    border-bottom: 1px solid rgb(255 255 255 / 12%);
-}
-
-.footer-brand strong {
-    display: block;
-    font-size: 1.1rem;
-}
-
-.footer-brand p {
-    margin-top: 0.15rem;
-
-    color: rgb(255 255 255 / 70%);
-    font-size: 0.85rem;
 }
 
 .footer-links {
