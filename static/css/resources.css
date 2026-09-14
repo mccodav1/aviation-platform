@@ -75,3 +75,51 @@
     text-transform: uppercase;
     vertical-align: middle;
 }
+
+.resource-badge-disabled {
+    background: #64748b;
+}
+
+.resource-item-disabled {
+    opacity: 0.7;
+}
+
+.resource-item-toggle {
+    margin: 0;
+}
+
+.resource-action-button {
+    padding: 0.5rem 0.9rem;
+
+    background: none;
+    border: 2px solid currentColor;
+    border-radius: 6px;
+
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.resource-action-disable {
+    color: var(--color-primary);
+}
+
+.resource-action-disable:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.resource-action-enable {
+    color: var(--color-secondary);
+}
+
+.resource-action-enable:hover {
+    background: var(--color-secondary);
+    color: #fff;
+}

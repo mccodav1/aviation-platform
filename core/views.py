@@ -49,19 +49,29 @@ def scholarship(request):
 
 def resources(request):
     organization = request.organization
+    can_manage = request.user.has_perm("core.change_resource")
     categories = []
 
     if organization:
         for category in organization.enabled_resource_categories:
-            visible = [
-                resource
-                for resource in category.resources.filter(is_enabled=True)
-                if resource.visible_to(request.user)
-            ]
+            if can_manage:
+                # Officers see disabled resources too (and can re-enable
+                # them here) - everyone else only ever sees an enabled,
+                # visible-to-them resource.
+                visible = list(category.resources.all())
+            else:
+                visible = [
+                    resource
+                    for resource in category.resources.filter(is_enabled=True)
+                    if resource.visible_to(request.user)
+                ]
             if visible:
                 categories.append({"category": category, "resources": visible})
 
-    return render(request, "app/resources.html", {"categories": categories})
+    return render(
+        request, "app/resources.html",
+        {"categories": categories, "can_manage": can_manage},
+    )
 
 
 @login_required
@@ -106,6 +116,21 @@ def resource_category_create(request):
         '<option value="{}" selected>{}</option>', category.pk, category.title,
     )
     return HttpResponse(option_html, status=201)
+
+
+@login_required
+@permission_required("core.change_resource", raise_exception=True)
+@require_POST
+def resource_toggle_enabled(request, slug):
+    # Reversible, front-end - mirrors meeting_toggle_cancelled. A
+    # permanent delete stays an /admin-only action, same reasoning as
+    # meetings: this view only ever flips is_enabled, never deletes.
+    resource = get_object_or_404(
+        Resource, slug=slug, organization=request.organization,
+    )
+    resource.is_enabled = not resource.is_enabled
+    resource.save(update_fields=["is_enabled"])
+    return redirect("core:resources")
 
 
 def resource_download(request, slug):
