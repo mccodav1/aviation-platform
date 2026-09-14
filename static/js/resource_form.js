@@ -103,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     existing.selected = true;
                 } else {
                     select.appendChild(newOption);
+                    newOption.selected = true;
                 }
 
                 closeAddRow();

@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.views import redirect_to_login
-from django.http import FileResponse, HttpResponse, HttpResponseBadRequest
+from django.http import FileResponse, Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.html import format_html
 from django.views.decorators.http import require_POST
@@ -53,18 +53,21 @@ def resources(request):
     categories = []
 
     if organization:
-        for category in organization.enabled_resource_categories:
+        # prefetch_related loads every category's resources in one extra
+        # query total, rather than one query per category - then all
+        # filtering below happens in Python against that already-fetched
+        # list, so it doesn't cost a query of its own either.
+        categories_qs = organization.enabled_resource_categories.prefetch_related("resources")
+        for category in categories_qs:
+            all_resources = category.resources.all()
             if can_manage:
                 # Officers see disabled resources too (and can re-enable
                 # them here) - everyone else only ever sees an enabled,
-                # visible-to-them resource.
-                visible = list(category.resources.all())
+                # visible-to-them resource (visible_to() checks
+                # is_enabled itself).
+                visible = list(all_resources)
             else:
-                visible = [
-                    resource
-                    for resource in category.resources.filter(is_enabled=True)
-                    if resource.visible_to(request.user)
-                ]
+                visible = [r for r in all_resources if r.visible_to(request.user)]
             if visible:
                 categories.append({"category": category, "resources": visible})
 
@@ -78,6 +81,8 @@ def resources(request):
 @permission_required("core.add_resource", raise_exception=True)
 def resource_create(request):
     organization = request.organization
+    if not organization:
+        raise Http404
 
     if request.method == "POST":
         form = ResourceForm(request.POST, request.FILES, organization=organization)
@@ -105,12 +110,16 @@ def resource_category_create(request):
     # what's the same kind of interaction. format_html escapes the
     # title, since unlike a JSON response consumed via .textContent,
     # HTML built server-side has to escape untrusted input itself.
+    organization = request.organization
+    if not organization:
+        raise Http404
+
     title = request.POST.get("title", "").strip()
     if not title:
         return HttpResponseBadRequest("Category name can't be blank.")
 
     category, _ = ResourceCategory.objects.get_or_create(
-        organization=request.organization, title=title,
+        organization=organization, title=title,
     )
     option_html = format_html(
         '<option value="{}" selected>{}</option>', category.pk, category.title,
