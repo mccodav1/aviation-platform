@@ -56,8 +56,7 @@
 
                         {% if perms.meetings.change_meeting %}
                             <div class="meeting-actions">
-                                <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}"
-                                      onsubmit="return confirm('Cancel this meeting?');">
+                                <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}">
                                     {% csrf_token %}
                                     <button type="submit" class="meeting-action-button meeting-action-cancel">Cancel</button>
                                 </form>
