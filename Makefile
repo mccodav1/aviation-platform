@@ -11,7 +11,7 @@ seed-media:
 	uv run manage.py seed_media
 
 load-demo:
-	uv run manage.py loaddata core/fixtures/sopa_demo.json meetings/fixtures/sopa_demo.json
+	uv run manage.py loaddata core/fixtures/spa_demo.json meetings/fixtures/spa_demo.json
 
 bootstrap: migrate seed-media load-demo
 

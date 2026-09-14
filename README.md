@@ -1,6 +1,6 @@
 # Aviation Platform
 
-Django site for the Salinas Pilots Association (SOPA). Site content (hero
+Django site for the Salinas Pilots Association (SPA). Site content (hero
 images, nav, cards, info panels) is data-driven through the Django admin
 rather than hardcoded in templates, with the goal of eventually reusing this
 codebase as a template for other flying clubs (each on its own deployment).
