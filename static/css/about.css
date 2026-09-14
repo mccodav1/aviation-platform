@@ -51,45 +51,39 @@
 }
 
 /* ==========================
-   Stat Band
+   Hero Quick Facts
    ========================== */
+/* Folded into the hero itself, rather than a separate full-bleed
+   band - red stays an accent (icons only) here, matching how it's
+   used everywhere else on the site, instead of introducing a large
+   saturated-color section that appears nowhere else. */
 
-.about-stats {
-    background: var(--color-primary);
-}
-
-.about-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-
-    padding: 1.75rem 0;
-}
-
-.about-stat {
+.about-facts {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.75rem;
+
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+
+    border-top: 1px solid rgb(255 255 255 / 20%);
+
+    list-style: none;
+}
+
+.about-facts li {
+    display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
 
-    padding: 0.5rem 1rem;
-
-    color: #fff;
-    text-align: center;
+    color: rgb(255 255 255 / 90%);
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
-.about-stat i {
-    margin-bottom: 0.5rem;
-    font-size: 1.5rem;
-}
-
-.about-stat strong {
-    font-size: 1.15rem;
-}
-
-.about-stat span {
-    margin-top: 0.25rem;
-
-    color: rgb(255 255 255 / 85%);
-    font-size: 0.8rem;
+.about-facts i {
+    color: var(--color-primary);
+    font-size: 1.1rem;
 }
 
 /* ==========================
@@ -101,51 +95,76 @@
     background: #f8fafc;
 }
 
-.about-grid {
+/* Alternating (zigzag) rows rather than equal-width cards - each row's
+   icon stands in for a photo (there isn't one per item), alternating
+   sides so the eye has to travel across the row instead of just down
+   a column. The icon is navy, not red: red is an accent color
+   everywhere else on the site (buttons, small icons, borders), and a
+   big red circle per row would reintroduce the "red as a large
+   background field" problem the old stat band had. */
+
+.about-features {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+}
+
+.about-feature {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: minmax(140px, 220px) 1fr;
+    align-items: center;
+    gap: 2.5rem;
 }
 
-.about-block {
-    padding: 1.75rem;
-
-    background: #fff;
-    border: 1px solid rgb(17 52 86 / 10%);
-    border-top: 3px solid var(--color-primary);
-    border-radius: 12px;
-
-    box-shadow: 0 4px 12px rgb(17 52 86 / 6%);
+.about-feature:nth-child(even) {
+    grid-template-columns: 1fr minmax(140px, 220px);
 }
 
-.about-block-icon {
-    display: block;
-    margin-bottom: 0.75rem;
-
-    color: var(--color-primary);
-    font-size: 1.75rem;
+.about-feature:nth-child(even) .about-feature-icon {
+    order: 2;
 }
 
-.about-block h2 {
+.about-feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    max-width: 200px;
+    aspect-ratio: 1;
+    margin: 0 auto;
+
+    background: var(--color-secondary);
+    border-radius: 50%;
+
+    box-shadow: 0 10px 24px rgb(17 52 86 / 18%);
+}
+
+.about-feature-icon i {
+    font-size: 3.5rem;
+    color: #fff;
+}
+
+.about-feature-content h2 {
     margin: 0 0 0.75rem;
 
     color: var(--color-secondary);
-    font-size: 1.1rem;
+    font-size: 1.4rem;
 }
 
-.about-block p,
-.about-block ul {
+.about-feature-content p,
+.about-feature-content ul {
     margin: 0 0 1rem;
 
     color: #475569;
     line-height: 1.6;
 }
 
-.about-block ul {
+.about-feature-content ul {
     padding-left: 1.2rem;
 }
 
-.about-block li {
+.about-feature-content li {
     margin-bottom: 0.4rem;
 }
 
@@ -183,51 +202,28 @@
     color: #64748b;
 }
 
-.about-flyout-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-
-    list-style: none;
-}
-
-.about-flyout-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-
-    padding: 0.6rem 1.1rem;
-
-    background: #fff;
-    border: 1px solid rgb(17 52 86 / 12%);
-    border-radius: 999px;
-
-    color: var(--color-secondary);
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.about-flyout-chip i {
-    color: var(--color-primary);
-}
-
 /* ==========================
    Responsive
    ========================== */
 
-@media (max-width: 900px) {
-    .about-grid {
+@media (max-width: 700px) {
+    .about-feature,
+    .about-feature:nth-child(even) {
         grid-template-columns: 1fr;
+        justify-items: center;
+
+        text-align: center;
     }
 
-    .about-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
+    .about-feature:nth-child(even) .about-feature-icon {
+        order: 0;
     }
-}
 
-@media (max-width: 500px) {
-    .about-stats-grid {
-        grid-template-columns: 1fr;
+    .about-feature-icon {
+        max-width: 140px;
+    }
+
+    .about-feature-content ul {
+        text-align: left;
     }
 }
