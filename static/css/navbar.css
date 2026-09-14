@@ -73,6 +73,10 @@
     transition: color .2s ease;
 }
 
+.navbar nav a:hover {
+    color: var(--color-primary);
+}
+
 .navbar nav a::after {
     content: "";
 
@@ -86,13 +90,26 @@
     background: var(--color-primary);
     border-radius: 2px;
 
+    opacity: 1;
     transform: scaleX(0);
-    transition: transform .2s ease;
+    transition: transform .2s ease, opacity .2s ease;
 }
 
-.navbar nav a:hover::after,
-.navbar nav a.active::after {
+/* Hover and active both show the bar, but at different weights, so
+   they read as two different things rather than two links both
+   claiming to be "the current page": hover is a faint preview, active
+   is the solid, unambiguous "you are here." Hovering the active link
+   itself keeps the solid version - it doesn't downgrade to a preview
+   of itself. */
+.navbar nav a:hover::after {
     transform: scaleX(1);
+    opacity: 0.35;
+}
+
+.navbar nav a.active::after,
+.navbar nav a.active:hover::after {
+    transform: scaleX(1);
+    opacity: 1;
 }
 
 .navbar nav a:focus-visible {
