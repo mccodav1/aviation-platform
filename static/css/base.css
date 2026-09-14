@@ -23,6 +23,10 @@ html, body {
 }
 
 body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
     background: var(--color-secondary);
     color: #222;
     line-height: 1.5;
@@ -50,7 +54,12 @@ main {
        exception - it deliberately bleeds full-height under the navbar,
        so it cancels this back out itself (see .hero in home.css). */
     padding-top: 84px;
-    min-height: 100vh;
+
+    /* flex: 1 (not min-height: 100vh) is what actually pins the footer
+       to the bottom of the viewport on short pages, rather than after
+       a full extra screen of empty space - body is the flex column
+       (see above) that makes this work. */
+    flex: 1;
 }
 
 
