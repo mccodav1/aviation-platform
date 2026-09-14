@@ -21,29 +21,39 @@
 
 .hero-image {
     position: absolute;
-    inset: -10% 0;
+    /* Just enough buffer for the animated zoom below to have room to
+       pan without ever revealing an edge - kept small on purpose: the
+       old -10%/120% buffer plus a further scale(1.12) on top of it
+       compounded to ~134% total upscaling at its most-zoomed point,
+       which is what was reading as pixelated/soft. */
+    inset: -4% 0;
 
     width: 100%;
-    height: 120%;
+    height: 108%;
 
     object-fit: cover;
     opacity: 0;
 
-    transition: opacity 1s ease;
+    will-change: transform, opacity;
+    transition: opacity 1.2s ease-in-out;
 }
 
 .hero-image.active {
     opacity: 1;
-    animation: kenburns 8s linear forwards;
+    animation: kenburns 9s ease-in-out forwards;
 }
 
+/* A slow push-in (scale(1) -> a modest scale(1.06)) rather than the
+   previous zoom-out (1.12 -> 1.04) - that direction reads backwards
+   for a Ken Burns effect, and starting already zoomed in is exactly
+   what was compounding with the buffer above to look soft. */
 @keyframes kenburns {
     from {
-        transform: scale(1.12) translateX(-10px);
+        transform: scale(1) translateX(0);
     }
 
     to {
-        transform: scale(1.04) translateX(10px);
+        transform: scale(1.06) translateX(-1.5%);
     }
 }
 
