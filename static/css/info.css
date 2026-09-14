@@ -3,18 +3,24 @@
    ========================== */
 
 .info-band {
+    flex-shrink: 0; /* main is a flex column - never compress this, .cards absorbs extra space instead */
+
     background: var(--color-secondary);
     color: #fff;
 }
 
 .info-band-inner {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    /* Sized to the welcome column's actual content (not an arbitrary
+       1fr/2fr split of the total width) - that fixed fraction left a
+       large dead gap between the welcome text/button and the info
+       panels whenever the container was wider than the text needed. */
+    grid-template-columns: minmax(320px, 460px) 1fr;
 
     width: min(2200px, calc(100% - 4rem));
     margin: 0 auto;
 
-    padding: 2rem 0;
+    padding: 1.25rem 0;
 }
 
 /* ==========================
@@ -22,7 +28,7 @@
    ========================== */
 
 .info-band-left {
-    padding: 1rem 4rem 1rem 0;
+    padding: 1rem 2.5rem 1rem 0;
 }
 
 .info-band-left h2 {
@@ -84,7 +90,10 @@
 }
 
 .info-panel {
-    padding: 0.75rem 2rem;
+    display: flex;
+    flex-direction: column;
+
+    padding: 0.75rem 1.25rem;
 
     border-left: 1px solid rgb(255 255 255 / 15%);
 }
@@ -114,6 +123,13 @@
 }
 
 .info-panel-link {
+    /* Pushes the link to the bottom of the panel regardless of how
+       much text precedes it - .info-panel is a flex column now (see
+       above), and all three panels share one grid row's height, so
+       without this each panel's link just fell wherever its own,
+       differently-lengthed content happened to end. */
+    margin-top: auto;
+
     color: #fff;
 
     font-size: 0.8rem;
