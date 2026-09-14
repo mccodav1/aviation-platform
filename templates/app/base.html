@@ -42,19 +42,6 @@
                 {% endfor %}
             </nav>
 
-            {% if user.is_authenticated %}
-                <form method="post" action="{% url 'logout' %}" class="logout-form">
-                    {% csrf_token %}
-                    <button type="submit" class="auth-button">
-                        <i class="bi bi-box-arrow-right"></i> Log Out
-                    </button>
-                </form>
-            {% else %}
-                <a class="auth-button" href="{% url 'login' %}">
-                    <i class="bi bi-box-arrow-in-right"></i> Log In
-                </a>
-            {% endif %}
-
             {% if organization.join_url %}
                 <a class="join-button" href="{{ organization.join_url|resolve_link }}">{{ organization.join_button_text }}</a>
             {% endif %}
@@ -72,24 +59,36 @@
 
     <div class="container footer">
 
-        <div class="footer-brand">
+        <div class="footer-row">
 
-            <strong style="font-size:1.25rem;">Powered by AvGas</strong>
+            <div class="footer-brand">
+                <strong>Powered by AvGas</strong>
+                <p>Fueling aviation organizations.</p>
+            </div>
 
-            <p>
-                Fueling aviation organizations.
-            </p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
 
-        </div>
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'logout' %}" class="footer-logout-form">
+                        {% csrf_token %}
+                        <button type="submit">Log Out</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Member Login</a>
+                {% endif %}
 
-        <div class="footer-links">
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Contact</a>
+                <span class="footer-socials">
+                    <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                </span>
+            </div>
+
         </div>
 
         <div class="copyright">
-            © 2026 AvGas
+            © {% now "Y" %} {{ organization.name }}. All rights reserved.
         </div>
 
     </div>
