@@ -158,6 +158,9 @@ def resource_download(request, slug):
         as_attachment=False,
     )
 
+def privacy_policy(request):
+    return render(request, "app/privacy_policy.html")
+
 def contact(request):
     return under_construction(request,"Contact")
 

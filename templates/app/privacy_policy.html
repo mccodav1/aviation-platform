@@ -1,0 +1,154 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container">
+        <h1>Privacy Policy</h1>
+        <p class="page-lede">
+            How {{ organization.name }} collects, uses, and protects information on this site.
+        </p>
+    </div>
+</section>
+
+<section class="page-body">
+    <div class="container">
+
+        <div class="page-block">
+            <p>Last updated: September 13, 2026</p>
+            <p>
+                {{ organization.name }} ("we," "us," or "our") operates this website to
+                serve our members and the local flying community. This policy explains
+                what information the site collects, how it's used, and the choices you
+                have. It applies only to this website, not to any other site or service
+                we may link to.
+            </p>
+        </div>
+
+        <div class="page-block">
+            <h2>Information We Collect</h2>
+            <p>We collect information in two ways:</p>
+            <ul class="page-list">
+                <li>
+                    <strong>Account information.</strong> If you create a member account,
+                    we store the details you provide - such as your name, email address,
+                    and password (stored in encrypted form, never as plain text) - so you
+                    can sign in and access member-only content.
+                </li>
+                <li>
+                    <strong>Automatically collected information.</strong> Like most
+                    websites, our server logs basic technical data (such as IP address
+                    and browser type) for security and troubleshooting. We also use
+                    strictly necessary cookies to keep you signed in and to protect forms
+                    from cross-site attacks. These cookies aren't used for advertising or
+                    tracking, and we don't currently use any analytics or advertising
+                    cookies.
+                </li>
+            </ul>
+        </div>
+
+        <div class="page-block">
+            <h2>How We Use Information</h2>
+            <p>We use the information we collect to:</p>
+            <ul class="page-list">
+                <li>Create and maintain your member account</li>
+                <li>Provide access to member-only resources, meeting information, and event details</li>
+                <li>Respond to questions or requests you send us</li>
+                <li>Keep the site secure and working correctly</li>
+            </ul>
+            <p>We don't sell your information, and we don't use it for advertising.</p>
+        </div>
+
+        <div class="page-block">
+            <h2>Third-Party Services</h2>
+            <p>
+                This site loads fonts from Google Fonts and icons from a public icon
+                library (Bootstrap Icons) to display correctly. Loading these may share
+                your IP address and browser information with those providers under their
+                own privacy policies. Live weather information shown on this site is
+                fetched by our server, not your browser, so your information isn't sent
+                to the weather provider.
+            </p>
+        </div>
+
+        <div class="page-block">
+            <h2>Data Sharing</h2>
+            <p>
+                We don't sell, rent, or trade your personal information to third
+                parties. We may share information if required by law, to protect the
+                rights or safety of our members or the public, or with service
+                providers who help us run this website (such as hosting), under
+                obligations to keep it confidential.
+            </p>
+        </div>
+
+        <div class="page-block">
+            <h2>Data Security</h2>
+            <p>
+                We take reasonable steps to protect the information you provide,
+                including encrypting passwords and restricting access to member-only
+                content. That said, no method of transmission or storage is completely
+                secure, and we can't guarantee absolute security.
+            </p>
+        </div>
+
+        <div class="page-block">
+            <h2>Children's Privacy</h2>
+            <p>
+                This site is intended for members and visitors of the general aviation
+                community and isn't directed at children under 13. We don't knowingly
+                collect personal information from children under 13. Programs like
+                Young Eagles that involve youth are administered in person, not through
+                account creation on this site.
+            </p>
+        </div>
+
+        <div class="page-block">
+            <h2>Your Rights</h2>
+            <p>You can:</p>
+            <ul class="page-list">
+                <li>Ask us what information we have about you</li>
+                <li>Ask us to correct or update your account information</li>
+                <li>Ask us to delete your account and associated information</li>
+            </ul>
+            <p>To make any of these requests, reach out using the contact information below.</p>
+        </div>
+
+        <div class="page-block">
+            <h2>Changes to This Policy</h2>
+            <p>
+                We may update this policy from time to time as the site changes. We'll
+                update the "Last updated" date above when we do. Continued use of the
+                site after a change means you accept the updated policy.
+            </p>
+        </div>
+
+        <div class="page-block">
+            <h2>Contact Us</h2>
+            <p>
+                If you have questions about this privacy policy or how your information
+                is handled, reach out through our <a class="page-link" href="{% url 'core:contact' %}">contact page</a>,
+                or bring it up at one of our monthly meetings - we're happy to talk it
+                through.
+            </p>
+        </div>
+
+        <div class="page-block">
+            <p>
+                <em>
+                    This page is provided as a general, good-faith privacy notice for a
+                    small club website. It isn't a substitute for legal advice, and
+                    hasn't been reviewed by an attorney.
+                </em>
+            </p>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
