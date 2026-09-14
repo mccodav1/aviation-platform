@@ -39,7 +39,11 @@
 }
 
 .card:hover {
-    transform: translateY(-2px) scale(1.02);
+    /* No scale() here on purpose - scaling text via transform doesn't
+       sub-pixel-render as cleanly as it does for shapes/images, so it
+       can look soft/swimmy mid-transition no matter how the timing is
+       tuned. A pure lift avoids that entirely. */
+    transform: translateY(-2px);
     z-index: 10;
 
     box-shadow:
