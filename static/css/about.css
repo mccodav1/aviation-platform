@@ -51,45 +51,39 @@
 }
 
 /* ==========================
-   Stat Band
+   Hero Quick Facts
    ========================== */
+/* Folded into the hero itself, rather than a separate full-bleed
+   band - red stays an accent (icons only) here, matching how it's
+   used everywhere else on the site, instead of introducing a large
+   saturated-color section that appears nowhere else. */
 
-.about-stats {
-    background: var(--color-primary);
-}
-
-.about-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-
-    padding: 1.75rem 0;
-}
-
-.about-stat {
+.about-facts {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.75rem;
+
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+
+    border-top: 1px solid rgb(255 255 255 / 20%);
+
+    list-style: none;
+}
+
+.about-facts li {
+    display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
 
-    padding: 0.5rem 1rem;
-
-    color: #fff;
-    text-align: center;
+    color: rgb(255 255 255 / 90%);
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
-.about-stat i {
-    margin-bottom: 0.5rem;
-    font-size: 1.5rem;
-}
-
-.about-stat strong {
-    font-size: 1.15rem;
-}
-
-.about-stat span {
-    margin-top: 0.25rem;
-
-    color: rgb(255 255 255 / 85%);
-    font-size: 0.8rem;
+.about-facts i {
+    color: var(--color-primary);
+    font-size: 1.1rem;
 }
 
 /* ==========================
@@ -183,51 +177,12 @@
     color: #64748b;
 }
 
-.about-flyout-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-
-    list-style: none;
-}
-
-.about-flyout-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-
-    padding: 0.6rem 1.1rem;
-
-    background: #fff;
-    border: 1px solid rgb(17 52 86 / 12%);
-    border-radius: 999px;
-
-    color: var(--color-secondary);
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.about-flyout-chip i {
-    color: var(--color-primary);
-}
-
 /* ==========================
    Responsive
    ========================== */
 
 @media (max-width: 900px) {
     .about-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .about-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-    }
-}
-
-@media (max-width: 500px) {
-    .about-stats-grid {
         grid-template-columns: 1fr;
     }
 }
