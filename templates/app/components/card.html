@@ -1,26 +1,31 @@
 {% load core_extras %}
-<a href="{{ card.link|resolve_link }}" class="card">
+<a href="{{ card.link|resolve_link }}" class="card {% if card.image %}has-image{% endif %}">
     {% if card.image %}
         <img src="{{ card.image.url }}" alt="{{ card.title }}">
-    {% elif card.icon %}
-        <i class="bi bi-{{ card.icon }}"></i>
     {% endif %}
 
-    <h3>{{ card.title }}</h3>
+    <div class="card-body">
+        <div class="card-title-row">
+            {% if card.icon %}
+                <span class="card-icon"><i class="bi bi-{{ card.icon }}"></i></span>
+            {% endif %}
 
-    {% if card.subtitle %}
-        <h4>{{ card.subtitle }}</h4>
-    {% endif %}
-
-    {% if card.body %}
-        <p>{{ card.body }}</p>
-    {% endif %}
-
-    {% if card.link %}
-        <div class="card-link">
-            {{ card.link_text }}
-            <span class="arrow">→</span>
+            <h3>{{ card.title }}</h3>
         </div>
-    {% endif %}
 
+        {% if card.subtitle %}
+            <h4>{{ card.subtitle }}</h4>
+        {% endif %}
+
+        {% if card.body %}
+            <p>{{ card.body }}</p>
+        {% endif %}
+
+        {% if card.link %}
+            <div class="card-link">
+                {{ card.link_text }}
+                <span class="arrow">→</span>
+            </div>
+        {% endif %}
+    </div>
 </a>

@@ -1,134 +1,73 @@
 /* ==========================
-   Info Band
+   Stat Band
    ========================== */
 
-.info-band {
+.stat-band {
     flex-shrink: 0; /* main is a flex column - never compress this, .cards absorbs extra space instead */
 
     background: var(--color-secondary);
     color: #fff;
 }
 
-.info-band-inner {
+.stat-band-inner {
     display: grid;
-    /* Centers the welcome column vertically against the info panels,
-       which are usually taller - a fixed top padding would need manual
-       retuning any time the panels' content changes height (a longer
-       meeting title, a different number of weather stats), where this
-       just tracks whichever column is actually taller. */
-    align-items: center;
-    /* Sized to the welcome column's actual content (not an arbitrary
-       1fr/2fr split of the total width) - that fixed fraction left a
-       large dead gap between the welcome text/button and the info
-       panels whenever the container was wider than the text needed.
-       Max matches .info-band-left p's own max-width below - it's the
-       real limit on how wide that text should read, so the column
-       shouldn't cut it off any narrower than that. */
-    grid-template-columns: minmax(320px, 44rem) 1fr;
+    grid-template-columns: repeat(3, 1fr);
 
     width: min(2200px, calc(100% - 4rem));
     margin: 0 auto;
-
-    padding: 1.25rem 0;
-}
-
-/* ==========================
-   Welcome
-   ========================== */
-
-.info-band-left {
-    padding: 1rem 2.5rem 1rem 0;
-}
-
-.info-band-left h2 {
-    margin: 0 0 0.75rem;
-
-    font-size: 1.1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.info-band-left p {
-    margin: 0 0 1rem;
-
-    max-width: 44rem;
-
-    line-height: 1.5;
-    color: rgb(255 255 255 / 85%);
-}
-
-.info-band-button {
-    display: inline-block;
-
-    padding: 0.75rem 1.25rem;
-
-    border: 1px solid rgb(255 255 255 / 70%);
-    border-radius: 2px;
-
-    color: #fff;
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-decoration: none;
-    text-transform: uppercase;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.info-band-button:hover {
-    background: #fff;
-    color: var(--color-secondary);
-
-    transform: translateY(-2px);
 }
 
 /* ==========================
    Info Panels
    ========================== */
 
-.info-band-right {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-
-    width: min(100%, 1050px);
-    justify-self: end;
-
-    background: rgb(255 255 255 / 4%);
-}
-
 .info-panel {
     display: flex;
     flex-direction: column;
 
-    padding: 0.75rem 1.25rem;
+    padding: 1.75rem 2rem;
 
-    border-left: 1px solid rgb(255 255 255 / 15%);
+    border-left: 1px solid rgb(255 255 255 / 12%);
+}
+
+/* The weather panel is a grid item wrapped in its own #weather-panel
+   div (see home.html - its content is swapped in over fetch(), so it
+   needs a stable element to fetch into), which puts its .info-panel
+   one level deeper than the loop-rendered panels' direct-child
+   .info-panel. Only the visually-first grid column should lose its
+   border, so this covers both shapes rather than assuming .info-panel
+   is always a direct child. */
+.stat-band-inner > .info-panel:first-child,
+.stat-band-inner > :first-child .info-panel {
+    border-left: none;
 }
 
 .info-panel-icon {
     display: block;
 
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
 
-    font-size: 1.75rem;
-    color: #fff;
+    font-size: 1.5rem;
+    color: var(--color-primary);
 }
 
 .info-panel h3 {
-    margin: 0 0 0.35rem;
+    margin: 0 0 0.5rem;
 
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 700;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
+    color: rgb(255 255 255 / 65%);
 }
 
 .info-panel p {
     margin: 0 0 0.75rem;
 
+    font-size: 1.05rem;
+    font-weight: 600;
     line-height: 1.4;
-    color: rgb(255 255 255 / 80%);
+    color: #fff;
 }
 
 .info-panel-link {
@@ -156,21 +95,18 @@
    ========================== */
 
 @media (max-width: 900px) {
-    .info-band-inner {
-        grid-template-columns: 1fr;
-    }
-
-    .info-band-left {
-        padding: 1rem 0 2rem;
-    }
-
-    .info-band-right {
+    .stat-band-inner {
         grid-template-columns: 1fr;
     }
 
     .info-panel {
         border-left: none;
         border-top: 1px solid rgb(255 255 255 / 15%);
+    }
+
+    .stat-band-inner > .info-panel:first-child,
+    .stat-band-inner > :first-child .info-panel {
+        border-top: none;
     }
 }
 

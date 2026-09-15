@@ -1,23 +1,7 @@
-.cards {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    /* Absorbs whatever room is left in main (see main's flex: 1 and
-       .hero/.info-band's flex-shrink: 0 in base.css/info.css) - any
-       extra space on a tall viewport becomes breathing room around
-       the card row itself, rather than a gap with nothing claiming it
-       sitting somewhere else on the page. */
-    flex: 1;
-
-    padding: 1rem 0;
-}
-
 .card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-    justify-content: center;
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
 }
 
 .card {
@@ -28,23 +12,19 @@
     flex-direction: column;
     height: 100%;
 
-    padding: 1.5rem 1.25rem;
-
     background: #fff;
 
-    border: 1px solid var(--color-secondary);
-    border-radius: 16px;
+    border: 1px solid #e6ebef;
+    border-radius: 12px;
 
     box-shadow:
-        0 4px 8px rgba(17, 52, 86, 0.08),
-        0 10px 24px rgba(17, 52, 86, 0.06);
+        0 4px 8px rgba(17, 52, 86, 0.06),
+        0 10px 24px rgba(17, 52, 86, 0.05);
 
     transition:
         transform .25s ease,
         box-shadow .25s ease;
 
-    text-align: center;
-    align-items: center;
     text-decoration: none;
     color: inherit;
 }
@@ -54,85 +34,96 @@
        sub-pixel-render as cleanly as it does for shapes/images, so it
        can look soft/swimmy mid-transition no matter how the timing is
        tuned. A pure lift avoids that entirely. */
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     z-index: 10;
 
     box-shadow:
         0 4px 12px rgba(17,52,86,.10),
-        0 20px 40px rgba(17,52,86,.16);
+        0 20px 40px rgba(17,52,86,.14);
 }
 
 .card img {
     width: 100%;
-    height: 180px;
+    height: 160px;
     object-fit: cover;
-
-    margin-bottom: 1.5rem;
-
-    border-radius: 10px;
 }
 
-.card i {
-    margin-bottom: 0.75rem;
+.card-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 
-    font-size: 2.25rem;
+    padding: 1.5rem;
+}
+
+.card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+
+    margin-bottom: 0.5rem;
+}
+
+.card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 2.25rem;
+    height: 2.25rem;
+
+    background: color-mix(in srgb, var(--color-primary) 12%, white);
+    border-radius: 8px;
+}
+
+/* An icon-only card (no image) has no top visual, so its icon reads
+   as the card's whole header - larger and standing on its own rather
+   than sitting inline with the title. */
+.card:not(.has-image) .card-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.card:not(.has-image) .card-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.card-icon i {
+    font-size: 1.15rem;
     color: var(--color-primary);
 }
 
-.card h3 {
-    margin-bottom: 0.4rem;
+.card:not(.has-image) .card-icon i {
+    font-size: 1.35rem;
+}
 
-    font-size: 1.5rem;
+.card h3 {
+    font-size: 1.15rem;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.3;
 
     color: var(--color-secondary);
 }
 
 .card h4 {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
 
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 500;
 
-    color: var(--color-secondary);
+    color: #6b7684;
 }
 
 .card p {
-    max-width: 21rem;
+    margin: 0 0 1.1rem;
 
-    margin: 0 0 1.25rem;
-
-    font-size: 1.125rem;
-    font-weight: 400;
+    font-size: 0.95rem;
     line-height: 1.55;
 
-    color: var(--color-secondary);
-}
-
-.card .btn {
-    display: inline-block;
-    align-self: center;
-
-    margin-top: auto;
-    padding: .75rem 1.4rem;
-
-    border: 1px solid transparent;
-    border-radius: 999px;
-
-    background: var(--color-secondary);
-    color: white;
-
-    text-decoration: none;
-    font-weight: 600;
-
-    transition:
-        background .2s ease,
-        border-color .2s ease;
-}
-
-.card .btn:hover {
-    background: var(--color-primary);
+    color: #5a6472;
 }
 
 .card-link {
@@ -145,14 +136,15 @@
     color: var(--color-secondary);
     text-decoration: none;
     font-weight: 700;
+    font-size: 0.9rem;
 }
 
-.card-link:hover {
+.card:hover .card-link {
     color: var(--color-primary);
 }
 
 .card-link .arrow {
-    font-size: 1.35em;
+    font-size: 1.2em;
     line-height: 1;
 
     transition: transform .2s ease;

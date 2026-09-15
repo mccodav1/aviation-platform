@@ -14,24 +14,28 @@
 
 {% block content %}
 
+{% with hero_image=organization.enabled_hero_images.first %}
 <section class="hero">
-    <div class="hero-images">
-        {% for image in organization.enabled_hero_images %}
-        <img
-            class="hero-image {% if forloop.first %}active{% endif %}"
-            src="{{ image.image.url }}"
-            alt="{{ image.title }}"
-        >
-        {% endfor %}
-    </div>
-
-    <div class="hero-overlay"></div>
+    {% if hero_image %}
+        <div class="hero-images">
+            <img
+                class="hero-image"
+                src="{{ hero_image.image.url }}"
+                alt="{{ hero_image.title }}"
+            >
+        </div>
+    {% endif %}
 
     <div class="container">
         <div class="hero-content">
 
-            <h1>Fly <span class="accent">Together,</span></h1>
-            <h1>Build <span class="accent">Community.</span></h1>
+            <div class="eyebrow eyebrow-light">
+                <span class="eyebrow-bar"></span>
+                {{ organization.name }}
+            </div>
+
+            <h1>Aviation</h1>
+            <h1><span class="accent">Starts Here.</span></h1>
 
             {% if organization.hero_description %}
                 <p>{{ organization.hero_description }}</p>
@@ -56,9 +60,56 @@
         </div>
     </div>
 </section>
+{% endwith %}
+
+<section class="highlights">
+    <div class="container-wide highlights-grid">
+        <div class="highlight">
+            <i class="bi bi-people"></i>
+            <div class="highlight-text">
+                <strong>Pilots &amp; enthusiasts</strong>
+                <span>All are welcome</span>
+            </div>
+        </div>
+
+        <div class="highlight">
+            <i class="bi bi-mortarboard"></i>
+            <div class="highlight-text">
+                <strong>Support education</strong>
+                <span>Scholarships &amp; Young Eagles</span>
+            </div>
+        </div>
+
+        <div class="highlight">
+            <i class="bi bi-airplane-engines"></i>
+            <div class="highlight-text">
+                <strong>Local events</strong>
+                <span>Fly-outs, speakers, and more</span>
+            </div>
+        </div>
+
+        <div class="highlight">
+            <i class="bi bi-people-fill"></i>
+            <div class="highlight-text">
+                <strong>Stronger together</strong>
+                <span>Building our aviation community</span>
+            </div>
+        </div>
+    </div>
+</section>
 
 <section class="cards">
     <div class="container-wide">
+
+        <div class="section-heading">
+            <div class="eyebrow">
+                <span class="eyebrow-bar"></span>
+                Get Involved
+            </div>
+            <h2>Programs &amp; Activities</h2>
+            <p>From fly-outs to scholarships, we support aviation in the Salinas Valley.</p>
+        </div>
+
         <div class="card-grid">
             {% for card in organization.enabled_cards %}
                 {% include "app/components/card.html" %}
@@ -67,43 +118,57 @@
     </div>
 </section>
 
-<section class="info-band">
-    <div class="info-band-inner">
-        <div class="info-band-left">
+<section class="stat-band">
+    <div class="stat-band-inner">
+
+        {% for panel in organization.enabled_info_panels %}
+            {% include "app/components/info_panel.html" %}
+        {% endfor %}
+
+        <div
+            id="weather-panel"
+            data-url="{% url 'core:weather_panel' %}"
+        >
+            <div class="info-panel weather-panel">
+                <i class="bi bi-cloud-sun info-panel-icon"></i>
+
+                <h3>{{ organization.airport_icao }} Weather</h3>
+
+                <p>Loading weather...</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if organization.welcome_title or organization.welcome_description %}
+{% with bg_image=organization.enabled_hero_images.first %}
+<section class="welcome-cta" {% if bg_image %}style="background-image: url('{{ bg_image.image.url }}')"{% endif %}>
+    <div class="welcome-cta-overlay"></div>
+
+    <div class="container-wide welcome-cta-inner">
+        <div class="welcome-cta-text">
+            <div class="eyebrow eyebrow-light">
+                <span class="eyebrow-bar"></span>
+                All Are Welcome
+            </div>
+
             <h2>{{ organization.welcome_title }}</h2>
 
             {% if organization.welcome_description %}
                 <p>{{ organization.welcome_description }}</p>
             {% endif %}
-
-            {% if organization.welcome_button_url and organization.welcome_button_text %}
-                <a href="{{ organization.welcome_button_url|resolve_link }}"
-                   class="info-band-button">
-                    {{ organization.welcome_button_text }}
-                </a>
-            {% endif %}
         </div>
 
-        <div class="info-band-right">
-
-            {% for panel in organization.enabled_info_panels %}
-                {% include "app/components/info_panel.html" %}
-            {% endfor %}
-
-            <div
-                id="weather-panel"
-                data-url="{% url 'core:weather_panel' %}"
-            >
-                <div class="info-panel weather-panel">
-                    <i class="bi bi-cloud-sun info-panel-icon"></i>
-
-                    <h3>{{ organization.airport_icao }} Weather</h3>
-
-                    <p>Loading weather...</p>
-                </div>
-            </div>
-        </div>
+        {% if organization.welcome_button_url and organization.welcome_button_text %}
+            <a href="{{ organization.welcome_button_url|resolve_link }}"
+               class="welcome-cta-button">
+                {{ organization.welcome_button_text }}
+                <span class="arrow">→</span>
+            </a>
+        {% endif %}
     </div>
 </section>
+{% endwith %}
+{% endif %}
 
 {% endblock %}

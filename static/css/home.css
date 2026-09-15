@@ -1,6 +1,6 @@
 .hero {
     position: relative;
-    height: clamp(450px, 48vh, 580px);
+    height: clamp(560px, 62vh, 720px);
     flex-shrink: 0; /* main is a flex column - never compress the hero */
     margin-top: -84px; /* cancel main's navbar-clearing padding - bleed under the fixed navbar */
     overflow: hidden;
@@ -19,60 +19,44 @@
     overflow: hidden;
 }
 
-.hero-image {
-    position: absolute;
-    /* Just enough buffer for the animated zoom below to have room to
-       pan without ever revealing an edge - kept small on purpose: the
-       old -10%/120% buffer plus a further scale(1.12) on top of it
-       compounded to ~134% total upscaling at its most-zoomed point,
-       which is what was reading as pixelated/soft. */
-    inset: -4% 0;
-
-    width: 100%;
-    height: 108%;
-
-    object-fit: cover;
-    opacity: 0;
-
-    will-change: transform, opacity;
-    transition: opacity 1.2s ease-in-out;
-}
-
-.hero-image.active {
-    opacity: 1;
-    animation: kenburns 9s ease-in-out forwards;
-}
-
-/* A slow push-in (scale(1) -> a modest scale(1.06)) rather than the
-   previous zoom-out (1.12 -> 1.04) - that direction reads backwards
-   for a Ken Burns effect, and starting already zoomed in is exactly
-   what was compounding with the buffer above to look soft. */
-@keyframes kenburns {
-    from {
-        transform: scale(1) translateX(0);
-    }
-
-    to {
-        transform: scale(1.06) translateX(-1.5%);
-    }
-}
-
-/* ==========================
-   Hero Overlay
-   ========================== */
-
-.hero-overlay {
+.hero-images::after {
+    content: "";
     position: absolute;
     inset: 0;
 
+    /* A light wash, but only over the left column where the headline
+       actually sits, fading out well before the photo's right two-
+       thirds - a flat wash across the whole hero (tried earlier) hit
+       every pixel at the same strength and read as the photo being
+       grayed out. Confining it to a gradient, and keeping the peak
+       well under full-flat opacity, is what actually reads as "this
+       photo happens to be a bit hazy here" instead of a filter
+       sitting on top of it. */
+    /* Warm/orange rather than plain white - reads as a low sun rather
+       than a flat lightening effect. */
     background: linear-gradient(
-        90deg,
-        rgb(17 52 86 / 80%) 0%,
-        rgb(17 52 86 / 65%) 20%,
-        rgb(17 52 86 / 35%) 35%,
-        rgb(17 52 86 / 10%) 50%,
-        transparent 65%
+        100deg,
+        rgb(255 176 110 / 32%) 0%,
+        rgb(255 176 110 / 19%) 30%,
+        rgb(255 190 140 / 6%) 48%,
+        transparent 60%
     );
+}
+
+.hero-image {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    /* Biases the crop toward the top of the photo - the hazier sky/
+       ocean band - rather than the default center crop, which lands
+       the "Starts Here." accent squarely on the darkest plowed fields
+       further down the frame. Tune the 30% if a different hero photo
+       needs a different bias. */
+    object-position: center 30%;
 }
 
 /* ==========================
@@ -95,7 +79,7 @@
        extra space) - too indirect to dial in reliably, which is why
        2rem and then 5rem both barely registered. transform moves it
        by exactly this amount instead, no halving. */
-    transform: translateY(3.5rem);
+    transform: translateY(-0.5rem);
 
     padding-left: clamp(2rem, 6vw, 5rem);
 
@@ -113,45 +97,147 @@
     color: #fff;
 }
 
-.hero-content h1,
-.hero-content h2 {
-    font-size: clamp(2.25rem, 4vw, 3.5rem);
-    line-height: 1.05;
+.hero-content h1 {
+    /* Outfit rather than the sitewide Manrope (--font-current) - same
+       rounder, softer choice as the paragraph below, just heavier
+       here so it still reads as a display headline rather than body
+       copy blown up. */
+    font-family: "Outfit", sans-serif;
+    font-size: clamp(3.5rem, 7.5vw, 6.5rem);
+    line-height: 0.95;
 
-    text-transform: uppercase;
+    /* Mixed case (not the old all-caps treatment) reads closer to a
+       modern display headline and lets the accent span below do the
+       emphasis work instead of the whole line shouting. Both lines
+       carry the same heavy weight now - it's the accent color, not a
+       weight difference, that sets "Starts Here." apart. */
+    font-weight: 900;
 
     text-shadow:
         0 2px 4px rgb(0 0 0 / 80%),
         0 8px 20px rgb(0 0 0 / 60%);
 }
 
-.hero-content h1 {
-    margin-bottom: 1rem;
-    font-weight: 400;
+.hero-content h1:first-of-type {
+    margin-bottom: 0.15rem;
 }
 
-.hero-content h2 {
-    margin-bottom: 2rem;
-    font-weight: 600;
+.hero-content h1 + h1 {
+    margin-bottom: 1.75rem;
 }
 
 .hero-content p {
     max-width: 46rem;
 
-    font-size: 1.15rem;
-    font-weight: 500;
-    letter-spacing: 0.03rem;
-    line-height: 1.6;
+    /* transform, not margin - margin-top would grow .hero-content's own
+       height, and since that box is centered as a whole (.hero's
+       align-items: center on .container), growing it pushes its *top*
+       edge up too, dragging the headline along with it. transform
+       moves the rendered box after layout/centering is already
+       resolved, so it shifts the description (and, with the matching
+       transform below, the buttons) down without moving anything
+       above. */
+    transform: translateY(3.5rem);
+
+    /* Outfit rather than the sitewide Manrope (--font-current) - just
+       for this paragraph, it's rounder and softer than body copy needs
+       to be everywhere else, which is why it's set here rather than on
+       --font-current. */
+    font-family: "Outfit", sans-serif;
+    font-size: 1.45rem;
+    font-weight: 400;
+    letter-spacing: 0.015em;
+    line-height: 1.55;
 
     color: #fff;
 
-    text-shadow:
-        0 1px 2px rgb(0 0 0 / 70%),
-        0 2px 6px rgb(0 0 0 / 45%);
+    /* A single, tight shadow rather than the old pair - the previous
+       second shadow's 6px blur was soft enough to read as a smudge
+       behind Outfit's rounder, thinner strokes rather than as
+       contrast. This is just enough to lift the text off the photo
+       without blurring the letterforms themselves. */
+    text-shadow: 0 1px 3px rgb(0 0 0 / 65%);
 }
 
 .accent {
-    color: var(--color-primary);
+    color: var(--color-secondary);
+
+    /* The h1 drop shadow above is a dark shadow tuned for white text -
+       on navy it doesn't add contrast, it just blurs into a muddy
+       halo. Plain and un-shadowed reads cleaner; the actual lift for
+       this color comes from the light gradient behind it (see
+       .hero-images::after below) rather than an effect on the text
+       itself. */
+    text-shadow: none;
+}
+
+/* ==========================
+   Eyebrow
+   ========================== */
+
+/* Shared by the hero, the cards heading, and the welcome CTA - a small
+   tagged label with the same red tick the navbar already uses under
+   its active link (see .navbar nav a::after in navbar.css), so it
+   reads as one house device rather than a new one invented per
+   section. */
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    margin-bottom: 0.85rem;
+
+    color: var(--color-secondary);
+
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.eyebrow-bar {
+    width: 1.5rem;
+    height: 3px;
+
+    background: var(--color-primary);
+    border-radius: 2px;
+}
+
+.eyebrow-light {
+    color: rgb(255 255 255 / 90%);
+    text-shadow: 0 1px 3px rgb(0 0 0 / 50%);
+}
+
+/* The hero's own eyebrow is blue rather than the plain light variant
+   above (still used as-is by the welcome CTA, which sits on a solid
+   navy band where blue text would disappear) - no text-shadow here
+   either, for the same reason .accent's h1 lost its shadow: a dark
+   shadow on dark text just blurs into a muddy halo instead of adding
+   contrast. */
+.hero .eyebrow-light {
+    color: var(--color-secondary);
+    font-size: 1rem;
+    text-shadow: none;
+}
+
+/* Only the hero's eyebrow gets the bar as an underline below the text
+   - the cards heading and welcome CTA keep .eyebrow's default reading
+   as a leading tick beside the label (column-reverse puts the bar,
+   which comes first in the markup, last visually - i.e. underneath -
+   without having to reorder the HTML itself). */
+.hero .eyebrow {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 0.45rem;
+}
+
+/* As an underline (see .hero .eyebrow above), the default 1.5rem tick
+   reads as too short - the column layout's width fits the text line
+   above it, so a percentage here scales the bar with however long the
+   org's name actually is, rather than a fixed length that'd look
+   right for one name and wrong for another. */
+.hero .eyebrow-bar {
+    width: 10%;
 }
 
 /* ==========================
@@ -163,6 +249,11 @@
     gap: 1rem;
 
     margin-top: 1.5rem;
+
+    /* Matches .hero-content p's own translateY above so the buttons
+       move down together with the description, not just the
+       description on its own. */
+    transform: translateY(3.5rem);
 }
 
 .hero-button {
@@ -214,10 +305,209 @@
 }
 
 /* ==========================
+   Highlights
+   ========================== */
+
+.highlights {
+    flex-shrink: 0;
+
+    background: #fff;
+    border-bottom: 1px solid #e6ebef;
+}
+
+.highlights-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    padding: 1.75rem 0;
+}
+
+.highlight {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+
+    padding: 0 1.5rem;
+
+    border-left: 1px solid #e6ebef;
+}
+
+.highlight:first-child {
+    border-left: none;
+    padding-left: 0;
+}
+
+.highlight i {
+    font-size: 1.5rem;
+    color: var(--color-secondary);
+}
+
+.highlight-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.highlight-text strong {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+}
+
+.highlight-text span {
+    font-size: 0.85rem;
+    color: #6b7684;
+}
+
+/* ==========================
    Cards
    ========================== */
 
 .cards {
-    padding: 1.5rem 0 5rem;
+    padding: 4.5rem 0 5rem;
     background: #f8fafc;
+}
+
+.section-heading {
+    max-width: 40rem;
+
+    margin: 0 auto 2.75rem;
+
+    text-align: center;
+}
+
+.section-heading .eyebrow {
+    justify-content: center;
+}
+
+.section-heading h2 {
+    margin-bottom: 0.6rem;
+
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 700;
+    color: var(--color-secondary);
+}
+
+.section-heading p {
+    color: #5a6472;
+    line-height: 1.5;
+}
+
+/* ==========================
+   Welcome CTA
+   ========================== */
+
+.welcome-cta {
+    position: relative;
+    flex-shrink: 0;
+    overflow: hidden;
+
+    background-color: var(--color-secondary);
+    background-size: cover;
+    background-position: center;
+}
+
+.welcome-cta-overlay {
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        100deg,
+        rgb(29 38 71 / 92%) 0%,
+        rgb(29 38 71 / 88%) 45%,
+        rgb(29 38 71 / 65%) 100%
+    );
+}
+
+.welcome-cta-inner {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+
+    padding: 3.5rem 0;
+}
+
+.welcome-cta-text {
+    max-width: 40rem;
+}
+
+.welcome-cta-text h2 {
+    margin-bottom: 0.75rem;
+
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    font-weight: 700;
+    line-height: 1.25;
+    color: #fff;
+}
+
+.welcome-cta-text p {
+    max-width: 38rem;
+
+    line-height: 1.55;
+    color: rgb(255 255 255 / 80%);
+}
+
+.welcome-cta-button {
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    padding: 0.9rem 1.6rem;
+
+    background: var(--color-primary);
+    border-radius: 6px;
+
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.welcome-cta-button:hover {
+    background: color-mix(in srgb, var(--color-primary) 85%, black);
+    transform: translateY(-2px);
+}
+
+.welcome-cta-button .arrow {
+    transition: transform 0.2s ease;
+}
+
+.welcome-cta-button:hover .arrow {
+    transform: translateX(3px);
+}
+
+/* ==========================
+   Responsive
+   ========================== */
+
+@media (max-width: 900px) {
+    .highlights-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem 0;
+    }
+
+    .highlight {
+        border-left: none;
+        padding-left: 0;
+    }
+
+    .welcome-cta-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 560px) {
+    .highlights-grid {
+        grid-template-columns: 1fr;
+    }
 }
