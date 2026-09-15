@@ -49,7 +49,7 @@ def format_wind(metar):
 def get_cached_metar(station):
     return cache.get(f"metar:{station}")
 
-def get_metar(station):
+def get_metar(station, org_name=None):
     cache_key = f"metar:{station}"
 
     cached = cache.get(cache_key)
@@ -65,7 +65,11 @@ def get_metar(station):
                 "format": "json",
             },
             headers={
-                "User-Agent": "Salinas Pilots Association Website",
+                # Identifies the calling site to aviationweather.gov, per
+                # their API etiquette - not this deployment's own name, so
+                # it's built from the Organization rather than hardcoded
+                # for one club.
+                "User-Agent": f"Aviation Website: {org_name}" if org_name else "Aviation Website",
             },
             timeout=5,
         )

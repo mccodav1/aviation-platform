@@ -19,7 +19,7 @@ def weather_panel(request):
     organization = request.organization
     metar = None
     if organization and organization.airport_icao:
-        metar = get_metar(organization.airport_icao)
+        metar = get_metar(organization.airport_icao, org_name=organization.name)
 
     return render(
         request,
@@ -160,6 +160,9 @@ def resource_download(request, slug):
 
 def privacy_policy(request):
     return render(request, "app/privacy_policy.html")
+
+def terms(request):
+    return under_construction(request, "Terms of Use")
 
 def contact(request):
     return under_construction(request,"Contact")

@@ -7,15 +7,7 @@
 
 {% block content %}
 
-<section class="page-hero">
-    <div class="container">
-        <h1>Young Eagles</h1>
-        <p class="page-lede">
-            Introducing the next generation to the joy of flight, alongside our
-            partners at EAA Chapter 204.
-        </p>
-    </div>
-</section>
+{% include "app/components/page_hero.html" with title="Young Eagles" lede="Introducing the next generation to the joy of flight, alongside our partners at EAA Chapter 204." %}
 
 <section class="page-body">
     <div class="container">
@@ -43,9 +35,9 @@
             <h2>Get Involved</h2>
             <p>
                 Want to volunteer as a pilot or ground crew, or sign a young
-                aviator up for a flight? Come to a monthly meeting - second
-                Tuesday of each month, Gate 1 in the Salinas Municipal Airport
-                Terminal - and connect with an officer.
+                aviator up for a flight? Come to a monthly meeting - see
+                upcoming meetings for the next date, time, and location - and
+                connect with an officer.
             </p>
             <a href="{% url 'core:meetings' %}" class="page-link">See upcoming meetings &rarr;</a>
         </div>

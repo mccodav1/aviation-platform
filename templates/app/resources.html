@@ -8,14 +8,7 @@
 
 {% block content %}
 
-<section class="page-hero">
-    <div class="container">
-        <h1>Resources</h1>
-        <p class="page-lede">
-            Forms, applications, and other documents for {{ organization.name }}.
-        </p>
-    </div>
-</section>
+{% include "app/components/page_hero.html" with title="Resources" lede="Forms, applications, and other documents for "|add:organization.name|add:"." %}
 
 <section class="page-body">
     <div class="container">

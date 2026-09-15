@@ -20,7 +20,7 @@
         <img
             class="hero-image {% if forloop.first %}active{% endif %}"
             src="{{ image.image.url }}"
-            alt="{{ image.alt_text|default:'' }}"
+            alt="{{ image.title }}"
         >
         {% endfor %}
     </div>

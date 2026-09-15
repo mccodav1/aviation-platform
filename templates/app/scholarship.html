@@ -7,15 +7,7 @@
 
 {% block content %}
 
-<section class="page-hero">
-    <div class="container">
-        <h1>Scholarship Program</h1>
-        <p class="page-lede">
-            {{ organization.name }} awards a $2,000 scholarship each year to a
-            local student pilot or mechanic advancing their aviation training.
-        </p>
-    </div>
-</section>
+{% include "app/components/page_hero.html" with title="Scholarship Program" lede=organization.name|add:" awards a $2,000 scholarship each year to a local student pilot or mechanic advancing their aviation training." %}
 
 <section class="page-body">
     <div class="container">
@@ -106,9 +98,9 @@
         <div class="page-block">
             <h2>Questions?</h2>
             <p>
-                Stop by a monthly meeting - second Tuesday of each month, Gate 1
-                in the Salinas Municipal Airport Terminal - and a member of the
-                Scholarship Committee can help.
+                Stop by a monthly meeting - see upcoming meetings for the next
+                date, time, and location - and a member of the Scholarship
+                Committee can help.
             </p>
             <a href="{% url 'core:meetings' %}" class="page-link">See upcoming meetings &rarr;</a>
         </div>

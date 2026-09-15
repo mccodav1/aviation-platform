@@ -38,8 +38,10 @@ class Organization(models.Model):
     )
 
     # Hero
-    hero_title = models.CharField(max_length=200, default="Hero Title")
-    hero_subtitle = models.CharField(max_length=200, default="Hero Subtitle")
+    # The headline ("Fly Together, Build Community.") is fixed markup in
+    # app/home.html, not a DB field - it's brand copy that's expected to
+    # change by editing the template/CSS directly for a given deployment,
+    # not something an admin needs to retype at content-entry time.
     hero_description = models.TextField(blank=True, default="Hero Description")
     hero_primary_button_text = models.CharField(max_length=200, blank=True, default="Hero Primary Button Text")
     hero_primary_button_url = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
@@ -73,6 +75,12 @@ class Organization(models.Model):
         blank=True,
     )
 
+    # Social - each footer icon only renders when its field is set (see
+    # app/base.html), so an org with no Instagram presence just shows no
+    # Instagram icon rather than a dead link.
+    facebook_url = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
+    instagram_url = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
+
     def __str__(self):
         return self.name
 
@@ -84,6 +92,8 @@ class Organization(models.Model):
             "hero_secondary_button_url",
             "welcome_button_url",
             "join_url",
+            "facebook_url",
+            "instagram_url",
         ):
             error = link_error(getattr(self, field_name))
             if error:
@@ -219,7 +229,11 @@ class InfoPanel(models.Model):
 
     title = models.CharField(max_length=200)
     body = models.TextField(blank=True)
-    image = models.ImageField(upload_to="info_panels/", blank=True)
+    # No image field, unlike Card - an info panel is meant to render as a
+    # small icon-led tile (see components/info_panel.html), and an
+    # arbitrary photo doesn't fit that layout. Add it back deliberately
+    # (with matching template/CSS work) if a future design calls for it,
+    # rather than leaving an admin-editable field that nothing renders.
     icon = models.CharField(max_length=50, blank=True)
     link_text = models.CharField(max_length=200, blank=True)
     link = models.CharField(

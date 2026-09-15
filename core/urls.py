@@ -1,7 +1,10 @@
 from django.urls import path
 
-# Tied to the "meetings" app being installed (see settings.py) - if that
-# app is ever removed for a deployment, drop these routes too.
+# meetings is a required, permanent part of this template (see the note
+# on INSTALLED_APPS in config/settings.py), split into its own Django app
+# for code organization only - not something a deployment can drop, so
+# these routes are wired in unconditionally rather than guarded by
+# whether the app is installed.
 from meetings.views import (
     meeting_agenda_download,
     meeting_agenda_manage,
@@ -30,6 +33,7 @@ urlpatterns = [
     path("resources/<slug:slug>/download", resource_download, name="resource_download"),
     path("resources/<slug:slug>/toggle", resource_toggle_enabled, name="resource_toggle_enabled"),
     path("privacy", privacy_policy, name="privacy"),
+    path("terms", terms, name="terms"),
     path("contact", contact, name="contact"),
     path("join", join, name="join"),
     path("meetings", meeting_list, name="meetings"),
