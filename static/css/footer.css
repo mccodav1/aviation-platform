@@ -12,6 +12,18 @@ footer {
     justify-content: space-between;
     align-items: center;
     gap: 1.5rem;
+
+    /* Matches .info-band-inner's cap (static/css/info.css) rather than
+       the narrower shared .container-wide (1800px) it'd otherwise
+       inherit - the footer sits directly under the info band, and a
+       narrower cap there made it look oddly over-padded next to it on
+       wide screens. The cards row above the info band still uses the
+       plain 1800px .container-wide; only the two directly-stacked
+       sections needed to match. Defined here (footer.css, loaded after
+       base.css - see site.css) so it overrides .container-wide's width
+       at equal specificity. */
+    width: min(2200px, calc(100% - 4rem));
+    margin: 0 auto;
 }
 
 .footer-links {

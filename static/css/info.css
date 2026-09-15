@@ -11,11 +11,20 @@
 
 .info-band-inner {
     display: grid;
+    /* Centers the welcome column vertically against the info panels,
+       which are usually taller - a fixed top padding would need manual
+       retuning any time the panels' content changes height (a longer
+       meeting title, a different number of weather stats), where this
+       just tracks whichever column is actually taller. */
+    align-items: center;
     /* Sized to the welcome column's actual content (not an arbitrary
        1fr/2fr split of the total width) - that fixed fraction left a
        large dead gap between the welcome text/button and the info
-       panels whenever the container was wider than the text needed. */
-    grid-template-columns: minmax(320px, 460px) 1fr;
+       panels whenever the container was wider than the text needed.
+       Max matches .info-band-left p's own max-width below - it's the
+       real limit on how wide that text should read, so the column
+       shouldn't cut it off any narrower than that. */
+    grid-template-columns: minmax(320px, 44rem) 1fr;
 
     width: min(2200px, calc(100% - 4rem));
     margin: 0 auto;
