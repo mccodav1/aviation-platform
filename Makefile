@@ -5,6 +5,7 @@ migrations:
 	uv run manage.py makemigrations
 
 runserver:
+	uv run manage.py check_links
 	uv run manage.py runserver
 
 seed-media:

@@ -1,10 +1,10 @@
 from django.conf import settings
 
-# meetings depends on core (never the other way - see the "make
-# optional" note on INSTALLED_APPS in config/settings.py and the
-# comment atop core/urls.py), so the actual private-storage class lives
-# once in core/storage.py and this module just reuses it, rather than
-# keeping a second, drifting copy of the same class.
+# meetings depends on core (never the other way - see the note on
+# INSTALLED_APPS in config/settings.py and the comment atop
+# core/urls.py), so the actual private-storage class lives once in
+# core/storage.py and this module just reuses it, rather than keeping a
+# second, drifting copy of the same class.
 from core.storage import PrivateFileSystemStorage
 
 __all__ = ["PrivateFileSystemStorage", "private_storage"]

@@ -38,7 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "core",
-    "meetings", # make optional
+    # A required, permanent part of this template, not a toggleable/
+    # pluggable app - split out from core for code organization only.
+    # core still must not import from meetings (see core/urls.py and
+    # core/storage.py) so that direction of separation stays meaningful,
+    # but nothing here conditionally includes or excludes it.
+    "meetings",
 ]
 
 MIDDLEWARE = [
@@ -66,7 +71,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.organization',
-                'meetings.context_processors.meetings', # only add when meetings app is present
+                'meetings.context_processors.meetings',
             ],
         },
     },
