@@ -96,54 +96,69 @@
     background: #f8fafc;
 }
 
-/* Alternating (zigzag) rows rather than equal-width cards - each row's
-   icon stands in for a photo (there isn't one per item), alternating
-   sides so the eye has to travel across the row instead of just down
-   a column. The icon is navy, not red: red is an accent color
+/* One larger feature (the longest content - a 5-item list) paired
+   with two shorter ones side by side below it, rather than three
+   equal-height zigzag rows - "What We Do" earns the bigger anchor
+   spot, and pairing Meetings/Membership keeps two short blurbs from
+   each dragging out into their own mostly-empty full-width row. The
+   media boxes are navy rather than red: red is an accent color
    everywhere else on the site (buttons, small icons, borders), and a
-   big red circle per row would reintroduce the "red as a large
-   background field" problem the old stat band had. */
+   big red panel would reintroduce the "red as a large background
+   field" problem the old stat band had. */
 
-.about-features {
-    display: flex;
-    flex-direction: column;
-    gap: 3.5rem;
-}
-
-.about-feature {
-    display: grid;
-    grid-template-columns: minmax(140px, 220px) 1fr;
-    align-items: center;
-    gap: 2.5rem;
-}
-
-.about-feature:nth-child(even) {
-    grid-template-columns: 1fr minmax(140px, 220px);
-}
-
-.about-feature:nth-child(even) .about-feature-icon {
-    order: 2;
-}
-
-.about-feature-icon {
+/* Placeholder for a photo the club hasn't uploaded yet (see
+   about.html) - shaped like an actual photo panel (rounded rectangle,
+   sized to the content next to it) rather than a small icon circle, so
+   the layout already reads correctly once a real image replaces it. */
+.about-feature-media {
     display: flex;
     align-items: center;
     justify-content: center;
 
-    width: 100%;
-    max-width: 200px;
-    aspect-ratio: 1;
-    margin: 0 auto;
+    aspect-ratio: 4 / 3;
 
     background: var(--color-secondary);
-    border-radius: 50%;
+    border-radius: 16px;
 
     box-shadow: 0 10px 24px rgb(17 52 86 / 18%);
 }
 
-.about-feature-icon i {
-    font-size: 3.5rem;
+.about-feature-media i {
+    font-size: 4rem;
     color: #fff;
+}
+
+.about-feature-media-sm {
+    max-width: 280px;
+}
+
+.about-feature-media-sm i {
+    font-size: 3rem;
+}
+
+.about-feature-primary {
+    display: grid;
+    grid-template-columns: minmax(320px, 480px) 1fr;
+    align-items: center;
+    gap: 3.5rem;
+
+    margin-bottom: 4rem;
+}
+
+.about-feature-content {
+    max-width: 640px;
+}
+
+.about-feature-pair {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4rem;
+}
+
+.about-feature-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
 .about-feature-content h2 {
@@ -265,20 +280,24 @@
    ========================== */
 
 @media (max-width: 700px) {
-    .about-feature,
-    .about-feature:nth-child(even) {
+    .about-feature-primary {
         grid-template-columns: 1fr;
         justify-items: center;
 
         text-align: center;
     }
 
-    .about-feature:nth-child(even) .about-feature-icon {
-        order: 0;
+    .about-feature-primary .about-feature-media {
+        max-width: 220px;
     }
 
-    .about-feature-icon {
-        max-width: 140px;
+    .about-feature-pair {
+        grid-template-columns: 1fr;
+    }
+
+    .about-feature-card {
+        align-items: center;
+        text-align: center;
     }
 
     .about-feature-content ul {
