@@ -10,16 +10,6 @@ logger = logging.getLogger(__name__)
 
 METAR_URL = "https://aviationweather.gov/api/data/metar"
 
-def get_ceiling(clouds):
-    ceilings = [
-        cloud["base"]
-        for cloud in clouds
-        if cloud.get("cover") in {"BKN", "OVC", "VV"}
-        and cloud.get("base") is not None
-    ]
-
-    return min(ceilings) if ceilings else None
-
 def format_altimeter(metar):
     # The API reports altim in hectopascals (e.g. 1017.4), but US METARs
     # are conventionally read in inches of mercury (e.g. "A3004" -> 30.04
@@ -87,9 +77,6 @@ def format_observed(metar):
     hours = minutes // 60
     return f"{hours} hr ago" if hours == 1 else f"{hours} hrs ago"
 
-def get_cached_metar(station):
-    return cache.get(f"metar:{station}")
-
 def get_metar(station, org_name=None):
     cache_key = f"metar:{station}"
 
@@ -123,10 +110,6 @@ def get_metar(station, org_name=None):
             return None
 
         metar = data[0]
-
-        metar["ceiling"] = get_ceiling(
-            metar.get("clouds", [])
-        )
 
         metar["wind_text"] = format_wind(metar)
         metar["altim_text"] = format_altimeter(metar)
