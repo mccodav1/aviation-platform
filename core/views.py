@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 
 from .forms import ResourceForm
 from .models import Resource, ResourceCategory
-from .services.weather import get_metar
+from .services.weather import format_observed, get_metar
 
 
 def home(request):
@@ -18,14 +18,18 @@ def home(request):
 def weather_panel(request):
     organization = request.organization
     metar = None
+    observed_text = None
     if organization and organization.airport_icao:
         metar = get_metar(organization.airport_icao, org_name=organization.name)
+        if metar:
+            observed_text = format_observed(metar)
 
     return render(
         request,
         "app/components/weather_panel.html",
         {
             "metar": metar,
+            "observed_text": observed_text,
         }
     )
 

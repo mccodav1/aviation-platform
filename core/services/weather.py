@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import requests
 
 from django.core.cache import cache
@@ -42,9 +44,48 @@ def format_wind(metar):
         wind = f"{direction:03.0f}° at {speed} kt"
 
     if gust:
-        wind += f", gusting {gust} kt"
+        wind += f" (gusts {gust} kt)"
 
     return wind
+
+def format_sky(metar):
+    # The API reports sky as a list of cloud layers, each with its own
+    # coverage code and base height in feet AGL - surface both per layer
+    # rather than collapsing to one code, since "BKN" alone doesn't say
+    # whether that ceiling is at 500 ft or 15,000 ft.
+    clouds = metar.get("clouds", [])
+    if not clouds:
+        return "Clear"
+
+    layers = []
+    for cloud in clouds:
+        cover = cloud.get("cover")
+        base = cloud.get("base")
+        if not cover:
+            continue
+        layers.append(f"{cover} {base:,} ft" if base is not None else cover)
+
+    return ", ".join(layers) if layers else "Clear"
+
+def format_observed(metar):
+    # Deliberately not baked into the cached metar dict in get_metar()
+    # below - the METAR itself is cached for 5 minutes, but "how long
+    # ago" needs to keep counting up on every request within that
+    # window, not freeze at whatever it was when the cache was filled.
+    obs_time = metar.get("obsTime")
+    if obs_time is None:
+        return None
+
+    observed = datetime.fromtimestamp(obs_time, tz=timezone.utc)
+    minutes = int((datetime.now(timezone.utc) - observed).total_seconds() // 60)
+
+    if minutes < 1:
+        return "Just now"
+    if minutes < 60:
+        return f"{minutes} min ago"
+
+    hours = minutes // 60
+    return f"{hours} hr ago" if hours == 1 else f"{hours} hrs ago"
 
 def get_cached_metar(station):
     return cache.get(f"metar:{station}")
@@ -89,6 +130,7 @@ def get_metar(station, org_name=None):
 
         metar["wind_text"] = format_wind(metar)
         metar["altim_text"] = format_altimeter(metar)
+        metar["sky_text"] = format_sky(metar)
 
         cache.set(cache_key, metar, 300)
 

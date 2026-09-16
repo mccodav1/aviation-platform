@@ -42,10 +42,30 @@
         0 20px 40px rgba(17,52,86,.14);
 }
 
-.card img {
+.card-image {
+    position: relative;
+}
+
+.card-image img {
+    display: block;
     width: 100%;
-    height: 160px;
+    height: 220px;
     object-fit: cover;
+}
+
+.card-photo-credit {
+    position: absolute;
+    right: 0.6rem;
+    bottom: 0.6rem;
+
+    padding: 0.15rem 0.5rem;
+
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 4px;
+
+    color: #fff;
+    font-size: 0.7rem;
+    line-height: 1.4;
 }
 
 .card-body {

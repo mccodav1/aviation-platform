@@ -8,11 +8,7 @@
 
 {% block content %}
 
-{% with banner=organization.enabled_hero_images.first %}
-<section class="about-hero">
-    {% if banner %}
-        <img src="{{ banner.image.url }}" alt="" class="about-hero-image">
-    {% endif %}
+<section class="about-hero" {% if organization.about_background_image %}style="background-image: url('{{ organization.about_background_image.url }}')"{% endif %}>
     <div class="about-hero-overlay"></div>
     <div class="container">
         <h1>About {{ organization.name }}</h1>
@@ -30,7 +26,6 @@
         </ul>
     </div>
 </section>
-{% endwith %}
 
 <section class="about-page">
     <div class="container">
@@ -84,6 +79,29 @@
                 Petaluma, Harris Ranch, and Santa Maria.
             </p>
         </div>
+
+        {% if organization.enabled_officers %}
+            <div class="about-officers">
+                <h2 class="about-section-title">Board &amp; Officers</h2>
+
+                <div class="about-officers-grid">
+                    {% for officer in organization.enabled_officers %}
+                        <div class="about-officer">
+                            {% if officer.photo %}
+                                <img src="{{ officer.photo.url }}" alt="{{ officer.name }}" class="about-officer-photo">
+                            {% else %}
+                                <div class="about-officer-photo about-officer-photo-placeholder">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                            {% endif %}
+
+                            <div class="about-officer-role">{{ officer.role }}</div>
+                            <div class="about-officer-name">{{ officer.name }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
     </div>
 </section>
 

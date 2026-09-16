@@ -1,7 +1,12 @@
 {% load core_extras %}
 <a href="{{ card.link|resolve_link }}" class="card {% if card.image %}has-image{% endif %}">
     {% if card.image %}
-        <img src="{{ card.image.url }}" alt="{{ card.title }}">
+        <div class="card-image">
+            <img src="{{ card.image.url }}" alt="{{ card.title }}">
+            {% if card.photo_credit %}
+                <span class="card-photo-credit">{{ card.photo_credit }}</span>
+            {% endif %}
+        </div>
     {% endif %}
 
     <div class="card-body">

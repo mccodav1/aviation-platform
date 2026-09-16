@@ -23,6 +23,13 @@ SOURCE_DIRS = {
             "hero/distant.jpg": "hero/distant.jpg",
             "hero/lonepine.png": "hero/lonepine.png",
             "logos/salinaslogolong.png": "logos/salinaslogolong.png",
+            "cards/fly-with-us.png": "cards/fly-with-us.png",
+            "cards/monthly-meetings.jpeg": "cards/monthly-meetings.jpeg",
+            "cards/scholarship.png": "cards/scholarship.png",
+            "cards/young-eagles.png": "cards/young-eagles.png",
+            "welcome/valleyskyline.jpeg": "welcome/valleyskyline.jpeg",
+            "about/monterey-coast.jpg": "about/monterey-coast.jpg",
+            "about/autogen.png": "about/autogen.png",
         },
     },
     "base_documents": {

@@ -66,6 +66,15 @@ class Organization(models.Model):
         blank=True,
         help_text=LINK_HELP_TEXT,
     )
+    welcome_background_image = models.ImageField(upload_to="welcome/", blank=True)
+    welcome_background_credit = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Small caption shown on the background image, e.g. \"Photo: Jasper Gray\" or a placeholder reminder."
+    )
+
+    # About
+    about_background_image = models.ImageField(upload_to="about/", blank=True)
 
     # Join CTA
     join_url = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
@@ -113,6 +122,14 @@ class Organization(models.Model):
     @property
     def enabled_cards(self):
         return self.cards.filter(is_enabled=True)
+
+    @property
+    def enabled_highlights(self):
+        return self.highlights.filter(is_enabled=True)
+
+    @property
+    def enabled_officers(self):
+        return self.officers.filter(is_enabled=True)
 
     @property
     def enabled_info_panels(self):
@@ -188,6 +205,11 @@ class Card(models.Model):
     subtitle = models.CharField(max_length=200, blank=True)
     body = models.TextField(blank=True)
     image = models.ImageField(upload_to="cards/", blank=True)
+    photo_credit = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Small caption shown on the image, e.g. \"Photo: Jasper Gray\" or a placeholder reminder."
+    )
     icon = models.CharField(max_length=50, blank=True)
     link_text = models.CharField(max_length=200, blank=True)
     link = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
@@ -205,6 +227,44 @@ class Card(models.Model):
         error = link_error(self.link)
         if error:
             raise ValidationError({"link": error})
+
+class Highlight(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="highlights"
+    )
+    icon = models.CharField(max_length=50)
+    title = models.CharField(max_length=200)
+    description = models.CharField(max_length=200)
+    order = models.PositiveIntegerField(default=100)
+    is_enabled = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return self.title
+
+class Officer(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="officers"
+    )
+    name = models.CharField(max_length=200)
+    role = models.CharField(max_length=200)
+    photo = models.ImageField(upload_to="officers/", blank=True)
+    order = models.PositiveIntegerField(default=100)
+    is_enabled = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.name} ({self.role})"
 
 class InfoPanel(models.Model):
     TYPE_STATIC = "static"

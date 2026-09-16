@@ -23,9 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 weatherPanel.innerHTML = `
                     <div class="info-panel weather-panel">
-                        <i class="bi bi-cloud-sun info-panel-icon"></i>
-
-                        <h3>Weather</h3>
+                        <div class="weather-panel-header">
+                            <i class="bi bi-cloud-sun weather-panel-icon"></i>
+                            <h3>Weather</h3>
+                        </div>
 
                         <p>Weather currently unavailable.</p>
                     </div>

@@ -2,23 +2,24 @@
    About Hero
    ========================== */
 
+/* A CSS background rather than an <img> - object-fit only offers
+   fixed keywords (cover/contain/etc), with no way to dial in a size
+   between them. background-size accepts a percentage, so the crop/zoom
+   can actually be tuned (see home.css's .welcome-cta for the same
+   technique). background-color is the fallback for whatever the
+   percentage doesn't cover. */
 .about-hero {
     position: relative;
     overflow: hidden;
 
     padding: 7rem 0 3.5rem;
 
+    background-color: var(--color-secondary);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center top;
+
     color: #fff;
-}
-
-.about-hero-image {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
 }
 
 .about-hero-overlay {
@@ -200,6 +201,63 @@
     margin-bottom: 1.5rem;
 
     color: #64748b;
+}
+
+/* ==========================
+   Board & Officers
+   ========================== */
+
+.about-officers {
+    margin-top: 3rem;
+}
+
+.about-officers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 200px));
+    gap: 2rem;
+}
+
+.about-officer {
+    text-align: center;
+}
+
+.about-officer-photo {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 0.9rem;
+
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.about-officer-photo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--color-secondary);
+    box-shadow: 0 10px 24px rgb(17 52 86 / 18%);
+}
+
+.about-officer-photo-placeholder i {
+    font-size: 2.5rem;
+    color: #fff;
+}
+
+.about-officer-role {
+    margin-bottom: 0.2rem;
+
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.about-officer-name {
+    color: var(--color-secondary);
+    font-size: 1.05rem;
+    font-weight: 700;
 }
 
 /* ==========================

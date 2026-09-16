@@ -24,10 +24,21 @@
 .info-panel {
     display: flex;
     flex-direction: column;
+    /* Centers the icon/title/text as a block within the panel's third
+       of the row, rather than leaving it flush against the divider
+       with all the leftover space trailing off to one side - the text
+       itself stays left-aligned (unaffected by align-items), just the
+       block as a whole sits centered. The weather panel opts back out
+       (see below), since its own content is meant to stay left-flush. */
+    align-items: center;
 
     padding: 1.75rem 2rem;
 
     border-left: 1px solid rgb(255 255 255 / 12%);
+}
+
+.weather-panel {
+    align-items: stretch;
 }
 
 /* The weather panel is a grid item wrapped in its own #weather-panel
@@ -114,9 +125,35 @@
    Weather Panel
    ========================== */
 
+.weather-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    margin-bottom: 0.5rem;
+}
+
+.weather-panel-icon {
+    flex-shrink: 0;
+
+    font-size: 1.5rem;
+    color: var(--color-primary);
+}
+
+.weather-panel-header h3 {
+    margin: 0;
+}
+
+/* A dedicated badge rather than coloring the icon - VFR/MVFR/IFR/LIFR
+   is the kind of thing a pilot glances for specifically, so it reads
+   clearer as its own labeled element than as an icon tint that also
+   has to be decoded. Sits in normal flow right after the title - the
+   panel is now sized to its own content (see .stat-band-inner) rather
+   than stretched across a fixed grid column, so there's no leftover
+   space to center the badge into; absolute-centering it here just
+   overlapped the title instead. */
 .flight-category {
     display: inline-block;
-
     padding: 0.15rem 0.5rem;
 
     border-radius: 4px;
@@ -144,16 +181,13 @@
     background: #9c27b0;
 }
 
-.weather-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.weather-temp {
+    margin: 0 0 0.75rem;
 
-    margin-bottom: 0.5rem;
-}
-
-.weather-panel-header .info-panel-icon {
-    margin-bottom: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
 }
 
 .weather-grid {

@@ -1,7 +1,8 @@
 <div class="info-panel weather-panel">
-
     <div class="weather-panel-header">
-        <i class="bi bi-cloud-sun info-panel-icon"></i>
+        <i class="bi bi-cloud-sun weather-panel-icon"></i>
+
+        <h3>{{ organization.airport_icao }} Weather</h3>
 
         {% if metar %}
             <span class="flight-category flight-category-{{ metar.fltCat|lower }}">
@@ -10,9 +11,11 @@
         {% endif %}
     </div>
 
-    <h3>{{ organization.airport_icao }} METAR</h3>
-
     {% if metar %}
+        {% if metar.temp is not None %}
+            <div class="weather-temp">{{ metar.temp|floatformat:0 }}°C</div>
+        {% endif %}
+
         <div class="weather-grid">
             <div class="weather-stat">
                 <span class="weather-stat-label">Wind</span>
@@ -26,34 +29,27 @@
                 </div>
             {% endif %}
 
-            {% if metar.ceiling %}
-                <div class="weather-stat">
-                    <span class="weather-stat-label">Ceiling</span>
-                    <span class="weather-stat-value">{{ metar.ceiling }} ft</span>
-                </div>
-            {% elif metar.cover %}
-                <div class="weather-stat">
-                    <span class="weather-stat-label">Clouds</span>
-                    <span class="weather-stat-value">{{ metar.cover }}</span>
-                </div>
-            {% endif %}
+            <div class="weather-stat">
+                <span class="weather-stat-label">Clouds</span>
+                <span class="weather-stat-value">{{ metar.sky_text }}</span>
+            </div>
 
             <div class="weather-stat">
                 <span class="weather-stat-label">Visibility</span>
                 <span class="weather-stat-value">{{ metar.visib }} SM</span>
             </div>
 
-            {% if metar.temp is not None %}
-                <div class="weather-stat">
-                    <span class="weather-stat-label">Temperature</span>
-                    <span class="weather-stat-value">{{ metar.temp|floatformat:0 }}°C</span>
-                </div>
-            {% endif %}
-
             {% if metar.dewp is not None %}
                 <div class="weather-stat">
                     <span class="weather-stat-label">Dewpoint</span>
                     <span class="weather-stat-value">{{ metar.dewp|floatformat:0 }}°C</span>
+                </div>
+            {% endif %}
+
+            {% if observed_text %}
+                <div class="weather-stat">
+                    <span class="weather-stat-label">Observed</span>
+                    <span class="weather-stat-value">{{ observed_text }}</span>
                 </div>
             {% endif %}
         </div>
@@ -69,5 +65,4 @@
     {% else %}
         <p>Weather currently unavailable.</p>
     {% endif %}
-
 </div>

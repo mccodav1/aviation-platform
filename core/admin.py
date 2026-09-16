@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from core.models import HeroImage, Organization, NavigationItem, Card, InfoPanel, Resource, ResourceCategory
+from core.models import HeroImage, Organization, NavigationItem, Card, Highlight, Officer, InfoPanel, Resource, ResourceCategory
 
 
 # Register your models here.
@@ -19,6 +19,14 @@ class NavigationItemAdmin(admin.ModelAdmin):
 @admin.register(Card)
 class CardAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(Highlight)
+class HighlightAdmin(admin.ModelAdmin):
+    list_display = ('title', 'order', 'is_enabled')
+
+@admin.register(Officer)
+class OfficerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'role', 'order', 'is_enabled')
 
 @admin.register(InfoPanel)
 class InfoPanelAdmin(admin.ModelAdmin):

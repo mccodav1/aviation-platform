@@ -34,8 +34,8 @@
                 {{ organization.name }}
             </div>
 
-            <h1>Aviation</h1>
-            <h1><span class="accent">Starts Here.</span></h1>
+            <h1>Fly</h1>
+            <h1><span class="accent">Salinas.</span></h1>
 
             {% if organization.hero_description %}
                 <p>{{ organization.hero_description }}</p>
@@ -64,37 +64,9 @@
 
 <section class="highlights">
     <div class="container-wide highlights-grid">
-        <div class="highlight">
-            <i class="bi bi-people"></i>
-            <div class="highlight-text">
-                <strong>Pilots &amp; enthusiasts</strong>
-                <span>All are welcome</span>
-            </div>
-        </div>
-
-        <div class="highlight">
-            <i class="bi bi-mortarboard"></i>
-            <div class="highlight-text">
-                <strong>Support education</strong>
-                <span>Scholarships &amp; Young Eagles</span>
-            </div>
-        </div>
-
-        <div class="highlight">
-            <i class="bi bi-airplane-engines"></i>
-            <div class="highlight-text">
-                <strong>Local events</strong>
-                <span>Fly-outs, speakers, and more</span>
-            </div>
-        </div>
-
-        <div class="highlight">
-            <i class="bi bi-people-fill"></i>
-            <div class="highlight-text">
-                <strong>Stronger together</strong>
-                <span>Building our aviation community</span>
-            </div>
-        </div>
+        {% for highlight in organization.enabled_highlights %}
+            {% include "app/components/highlight.html" %}
+        {% endfor %}
     </div>
 </section>
 
@@ -103,11 +75,10 @@
 
         <div class="section-heading">
             <div class="eyebrow">
-                <span class="eyebrow-bar"></span>
                 Get Involved
             </div>
-            <h2>Programs &amp; Activities</h2>
-            <p>From fly-outs to scholarships, we support aviation in the Salinas Valley.</p>
+            <h2>Events &amp; Activities</h2>
+            <p>There’s always another way to get involved with aviation in our community.</p>
         </div>
 
         <div class="card-grid">
@@ -121,7 +92,11 @@
 <section class="stat-band">
     <div class="stat-band-inner">
 
-        {% for panel in organization.enabled_info_panels %}
+        {# Weather is a fixed widget (not an admin-editable InfoPanel), so #}
+        {# it's slotted in right after the first panel rather than always #}
+        {# trailing the loop - that's what puts it in the middle of the   #}
+        {# current two-panel layout. #}
+        {% for panel in organization.enabled_info_panels|slice:":1" %}
             {% include "app/components/info_panel.html" %}
         {% endfor %}
 
@@ -130,19 +105,23 @@
             data-url="{% url 'core:weather_panel' %}"
         >
             <div class="info-panel weather-panel">
-                <i class="bi bi-cloud-sun info-panel-icon"></i>
-
-                <h3>{{ organization.airport_icao }} Weather</h3>
+                <div class="weather-panel-header">
+                    <i class="bi bi-cloud-sun weather-panel-icon"></i>
+                    <h3>{{ organization.airport_icao }} Weather</h3>
+                </div>
 
                 <p>Loading weather...</p>
             </div>
         </div>
+
+        {% for panel in organization.enabled_info_panels|slice:"1:" %}
+            {% include "app/components/info_panel.html" %}
+        {% endfor %}
     </div>
 </section>
 
 {% if organization.welcome_title or organization.welcome_description %}
-{% with bg_image=organization.enabled_hero_images.first %}
-<section class="welcome-cta" {% if bg_image %}style="background-image: url('{{ bg_image.image.url }}')"{% endif %}>
+<section class="welcome-cta" {% if organization.welcome_background_image %}style="background-image: url('{{ organization.welcome_background_image.url }}')"{% endif %}>
     <div class="welcome-cta-overlay"></div>
 
     <div class="container-wide welcome-cta-inner">
@@ -167,8 +146,11 @@
             </a>
         {% endif %}
     </div>
+
+    {% if organization.welcome_background_credit %}
+        <span class="welcome-cta-credit">{{ organization.welcome_background_credit }}</span>
+    {% endif %}
 </section>
-{% endwith %}
 {% endif %}
 
 {% endblock %}
