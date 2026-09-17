@@ -1,0 +1,34 @@
+<div class="calendar">
+    <div class="calendar-header">
+        <a href="{% url 'core:calendar_panel' %}?month={{ calendar.prev_month }}" class="calendar-nav" aria-label="Previous month">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        <h3>{{ calendar.month_label }}</h3>
+        <a href="{% url 'core:calendar_panel' %}?month={{ calendar.next_month }}" class="calendar-nav" aria-label="Next month">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+
+    <div class="calendar-weekdays">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+    </div>
+
+    <div class="calendar-grid">
+        {% for week in calendar.weeks %}
+            {% for day in week %}
+                <div class="calendar-day{% if not day.in_month %} calendar-day-outside{% endif %}{% if day.is_today %} calendar-day-today{% endif %}">
+                    <span class="calendar-day-number">{{ day.date|date:"j" }}</span>
+                    {% for event in day.events %}
+                        <a
+                            href="{% url 'core:meeting_detail' event.pk %}"
+                            class="calendar-event calendar-event-{{ event.event_type }}"
+                            title="{{ event.title }} - {{ event.starts_at|date:"g:i A" }}"
+                        >
+                            {{ event.title }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>

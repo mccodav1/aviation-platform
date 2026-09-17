@@ -21,7 +21,8 @@
       "join_url": "core:join",
       "join_button_text": "Join Today",
       "facebook_url": "https://www.facebook.com/SalinasPilots/",
-      "instagram_url": ""
+      "instagram_url": "",
+      "email": "info@salinaspilots.org"
     }
   },
   {
@@ -99,6 +100,17 @@
       "url": "core:aircraft",
       "order": 400,
       "is_enabled": false
+    }
+  },
+  {
+    "model": "core.navigationitem",
+    "pk": "32d32fe4-16ea-4ea2-91d7-214715561f28",
+    "fields": {
+      "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+      "title": "events",
+      "url": "core:events",
+      "order": 350,
+      "is_enabled": true
     }
   },
   {

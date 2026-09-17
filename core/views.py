@@ -1,19 +1,72 @@
+import logging
+from datetime import date
 from pathlib import Path
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.views import redirect_to_login
+from django.core.mail import send_mail
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
 from django.utils.html import format_html
 from django.views.decorators.http import require_POST
 
-from .forms import ResourceForm
+from meetings.services import get_month_calendar, get_next_meeting
+
+from .forms import ContactForm, ResourceForm
 from .models import Resource, ResourceCategory
 from .services.weather import format_observed, get_metar
 
+logger = logging.getLogger(__name__)
+
+
+def _requested_year_month(request):
+    today = timezone.localdate()
+    month_param = request.GET.get("month")
+    if month_param:
+        try:
+            # Unpacked here, inside the try - a generator expression is
+            # lazy, so returning it unevaluated (as this used to do) let
+            # a malformed value (e.g. "?month=banana") slip past this
+            # except clause and blow up wherever the caller unpacked it
+            # instead.
+            year, month = (int(part) for part in month_param.split("-"))
+            # int() alone accepts an out-of-range month (e.g. "13") or an
+            # out-of-range year - date() is what actually validates both,
+            # so constructing one here (and discarding it) is what makes
+            # a value like "?month=9999-13" fall back too, instead of
+            # crashing further down in get_month_calendar.
+            date(year, month, 1)
+            return year, month
+        except (ValueError, OverflowError):
+            # ValueError: not "int-int", or a year/month date() rejects
+            # (e.g. month 13). OverflowError: a year so large it can't
+            # even be tested against date()'s own range internally.
+            pass
+    return today.year, today.month
+
 
 def home(request):
-    return render(request,"app/home.html")
+    year, month = _requested_year_month(request)
+    return render(
+        request,
+        "app/home.html",
+        {"calendar": get_month_calendar(request.organization, year, month)},
+    )
+
+
+def calendar_panel(request):
+    # Backs the calendar's prev/next month navigation (see
+    # static/js/home.js) - a fetch() swap of just this fragment, same
+    # pattern as weather_panel, so switching months doesn't reload the
+    # whole home page.
+    year, month = _requested_year_month(request)
+    return render(
+        request,
+        "app/components/calendar.html",
+        {"calendar": get_month_calendar(request.organization, year, month)},
+    )
 
 def weather_panel(request):
     organization = request.organization
@@ -169,7 +222,52 @@ def terms(request):
     return under_construction(request, "Terms of Use")
 
 def contact(request):
-    return under_construction(request,"Contact")
+    organization = request.organization
+    if not organization:
+        raise Http404
+
+    if request.method == "POST":
+        form = ContactForm(request.POST, organization=organization)
+        if form.is_valid():
+            contact_message = form.save()
+            _notify_contact_message(contact_message)
+            return redirect(f"{reverse('core:contact')}?sent=1")
+    else:
+        form = ContactForm(organization=organization)
+
+    return render(
+        request,
+        "app/contact.html",
+        {
+            "form": form,
+            "next_meeting": get_next_meeting(organization),
+            "sent": request.GET.get("sent") == "1",
+        },
+    )
+
+
+def _notify_contact_message(contact_message):
+    # Best-effort - the message is already saved and visible in the admin
+    # (see ContactMessage) regardless of whether this succeeds, so a
+    # missing/misconfigured mail server (nothing is set up yet - see
+    # EMAIL_BACKEND in settings) never loses a submission, just the
+    # instant notification.
+    organization = contact_message.organization
+    if not organization.email:
+        return
+
+    try:
+        send_mail(
+            subject=f"New contact message from {contact_message.name}",
+            message=(
+                f"{contact_message.message}\n\n"
+                f"— {contact_message.name} <{contact_message.email}>"
+            ),
+            from_email=None,
+            recipient_list=[organization.email],
+        )
+    except Exception:
+        logger.warning("Failed to send contact-message notification email", exc_info=True)
 
 def join(request):
     return under_construction(request,"Join")

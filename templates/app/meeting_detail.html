@@ -64,12 +64,14 @@
                         {% if meeting.is_cancelled %}Un-cancel{% else %}Cancel{% endif %} Meeting
                     </button>
                 </form>
-                <a href="{% url 'core:meeting_agenda_manage' meeting.pk %}" class="meeting-action-link">
-                    {% if meeting.agenda %}Replace{% else %}Add{% endif %} Agenda
-                </a>
-                <a href="{% url 'core:meeting_minutes_manage' meeting.pk %}" class="meeting-action-link">
-                    {% if meeting.minutes %}Replace{% else %}Add{% endif %} Minutes
-                </a>
+                {% if meeting.event_type == "meeting" %}
+                    <a href="{% url 'core:meeting_agenda_manage' meeting.pk %}" class="meeting-action-link">
+                        {% if meeting.agenda %}Replace{% else %}Add{% endif %} Agenda
+                    </a>
+                    <a href="{% url 'core:meeting_minutes_manage' meeting.pk %}" class="meeting-action-link">
+                        {% if meeting.minutes %}Replace{% else %}Add{% endif %} Minutes
+                    </a>
+                {% endif %}
             </div>
         {% endif %}
     </div>

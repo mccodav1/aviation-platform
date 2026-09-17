@@ -1,0 +1,122 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
+<link rel="stylesheet" href="{% static 'css/cards.css' %}">
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<link rel="stylesheet" href="{% static 'css/contact.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% include "app/components/page_hero.html" with title="Contact Us" lede="Questions about membership, meetings, or flying with us? We'd love to hear from you." %}
+
+<section class="page-body">
+    <div class="container">
+
+        <div class="card-grid contact-methods">
+            {% if organization.email %}
+                <a href="mailto:{{ organization.email }}" class="card">
+                    <div class="card-body">
+                        <div class="card-title-row">
+                            <span class="card-icon"><i class="bi bi-envelope"></i></span>
+                            <h3>Email Us</h3>
+                        </div>
+                        <p>{{ organization.email }}</p>
+                        <div class="card-link">Send an email <span class="arrow">&rarr;</span></div>
+                    </div>
+                </a>
+            {% endif %}
+
+            {% if organization.facebook_url %}
+                <a href="{{ organization.facebook_url }}" class="card" target="_blank" rel="noopener">
+                    <div class="card-body">
+                        <div class="card-title-row">
+                            <span class="card-icon"><i class="bi bi-facebook"></i></span>
+                            <h3>Facebook</h3>
+                        </div>
+                        <p>Follow along and message us on Facebook.</p>
+                        <div class="card-link">Visit our page <span class="arrow">&rarr;</span></div>
+                    </div>
+                </a>
+            {% endif %}
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title-row">
+                        <span class="card-icon"><i class="bi bi-geo-alt"></i></span>
+                        <h3>Find Us</h3>
+                    </div>
+                    <p>
+                        Salinas Municipal Airport ({{ organization.airport_icao }})<br>
+                        80 Mortensen Avenue, Salinas, CA 93905
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-block">
+            <h2>Come to a Meeting</h2>
+            <p>
+                The easiest way to meet the club is in person. We hold meetings
+                monthly at the airport terminal - stop by, ask questions, and say
+                hello.
+            </p>
+            <div class="contact-cta-row">
+                {% if next_meeting %}
+                    <a href="{% url 'core:meeting_detail' next_meeting.pk %}" class="page-cta">
+                        <i class="bi bi-calendar-week"></i>
+                        Next Meeting: {{ next_meeting.starts_at|date:"F j, Y" }}
+                    </a>
+                {% else %}
+                    <a href="{% url 'core:meetings' %}" class="page-cta">
+                        <i class="bi bi-calendar-week"></i>
+                        See Upcoming Meetings
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-card contact-form-card">
+            <h2>Send a Quick Message</h2>
+            <p class="form-subtitle">Prefer to write it out? Send us a note and we'll get back to you.</p>
+
+            {% if sent %}
+                <div class="form-success">
+                    <i class="bi bi-check-circle"></i>
+                    Thanks for reaching out - we'll get back to you soon.
+                </div>
+            {% endif %}
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <div class="contact-cta-row">
+                    <button type="submit" class="form-submit">Send Message</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

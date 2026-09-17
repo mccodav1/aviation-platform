@@ -1,6 +1,26 @@
 from django import forms
 
-from .models import Resource, ResourceCategory
+from .models import ContactMessage, Resource, ResourceCategory
+
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage
+        fields = ["name", "email", "message"]
+        widgets = {
+            "message": forms.Textarea(attrs={"rows": 5}),
+        }
+
+    def __init__(self, *args, organization=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._organization = organization
+
+    def save(self, commit=True):
+        contact_message = super().save(commit=False)
+        contact_message.organization = self._organization
+        if commit:
+            contact_message.save()
+        return contact_message
 
 
 class ResourceForm(forms.ModelForm):

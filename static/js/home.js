@@ -56,4 +56,40 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
+    // ==========================
+    // Events Calendar
+    // ==========================
+
+    // A single delegated listener rather than binding to each prev/next
+    // link directly - the links themselves get replaced along with the
+    // rest of the calendar on every month switch, so a direct binding
+    // would only ever work for the first month shown.
+    const calendarWidget = document.getElementById("calendar-widget");
+
+    if (calendarWidget) {
+        calendarWidget.addEventListener("click", (event) => {
+            const link = event.target.closest(".calendar-nav");
+            if (!link) {
+                return;
+            }
+
+            event.preventDefault();
+
+            fetch(link.href)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Calendar request failed");
+                    }
+
+                    return response.text();
+                })
+                .then(html => {
+                    calendarWidget.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error("Failed to load calendar:", error);
+                });
+        });
+    }
+
 });

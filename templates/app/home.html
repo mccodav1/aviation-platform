@@ -91,6 +91,28 @@
     </div>
 </section>
 
+<section class="events-calendar" id="events-calendar">
+    <div class="container-wide">
+
+        <div class="section-heading">
+            <div class="eyebrow">
+                Stay Up To Date
+            </div>
+            <h2>Upcoming Events</h2>
+            <p>Meetings, fly-outs, and everything else on the calendar.</p>
+        </div>
+
+        <div id="calendar-widget">
+            {% include "app/components/calendar.html" %}
+        </div>
+
+        <div class="events-calendar-footer">
+            <a href="{% url 'core:events' %}" class="page-link">View All Events &rarr;</a>
+        </div>
+
+    </div>
+</section>
+
 <section class="stat-band">
     <div class="stat-band-inner">
 

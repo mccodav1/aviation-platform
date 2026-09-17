@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from core.models import HeroImage, Organization, NavigationItem, Card, Highlight, Officer, InfoPanel, Resource, ResourceCategory
+from core.models import HeroImage, Organization, NavigationItem, Card, Highlight, Officer, InfoPanel, Resource, ResourceCategory, ContactMessage
 
 
 # Register your models here.
@@ -44,3 +44,9 @@ class ResourceAdmin(admin.ModelAdmin):
     # still editable before saving. Resource.save() is the fallback for
     # anything created outside the admin (a shell/data migration, say).
     prepopulated_fields = {'slug': ('title',)}
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'created_at')
+    readonly_fields = ('name', 'email', 'message', 'created_at')
+    ordering = ('-created_at',)

@@ -1,0 +1,62 @@
+/* ==========================
+   Contact Page
+   ========================== */
+
+.contact-methods {
+    margin-bottom: 2.5rem;
+}
+
+/* .card is normally a home-page grid item sized by its own column - on
+   this page it's centered text/icon content, so it reads better without
+   the hover lift the home page cards use for "this leads somewhere new"
+   emphasis; a plain link/div here is closer to an info tile. */
+.contact-methods .card:hover {
+    transform: none;
+}
+
+/* Matches .page-block's own width (42rem) instead of the narrower
+   default .form-card (480px) - as the last section on a full page,
+   next to that wider block above it, the default read as oddly
+   cramped rather than intentionally focused. */
+.contact-form-card {
+    width: min(42rem, 100%);
+    margin: 0 auto;
+}
+
+/* forms.css only styles .form-card h1 (see meeting_form.html) - this
+   page already has one <h1> from page_hero.html, so the form heading
+   here is an <h2> to avoid a second one, which left it without the
+   margin-bottom .form-subtitle's -1rem top margin is calibrated
+   against, and the two overlapped. Same treatment, just matched to
+   this heading level instead of changing the shared h1 rule. */
+/* .page-cta and .form-submit are shared with other pages (Scholarship,
+   Add Event, ...) where they sit left-aligned in a left-aligned block -
+   centered here instead, scoped to this wrapper rather than the shared
+   classes themselves so those other pages are unaffected. */
+.contact-cta-row {
+    text-align: center;
+}
+
+.contact-form-card h2 {
+    margin: 0 0 1.5rem;
+
+    color: var(--color-secondary);
+    font-size: 1.75rem;
+}
+
+.form-success {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+
+    background: rgb(22 163 74 / 8%);
+    border: 1px solid rgb(22 163 74 / 30%);
+    border-radius: 6px;
+
+    color: #15803d;
+    font-size: 0.9rem;
+    font-weight: 600;
+}

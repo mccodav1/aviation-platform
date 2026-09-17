@@ -52,5 +52,6 @@ urlpatterns = [
     path("events", event_list, name="events"),
     path("events/feed.ics", events_ics_feed, name="events_ics_feed"),
     path("weather", weather_panel, name="weather_panel"),
+    path("calendar", calendar_panel, name="calendar_panel"),
     path("", home, name="home"),
 ]

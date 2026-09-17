@@ -90,6 +90,12 @@ class Organization(models.Model):
     facebook_url = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
     instagram_url = models.CharField(max_length=200, blank=True, help_text=LINK_HELP_TEXT)
 
+    # Contact
+    email = models.EmailField(
+        blank=True,
+        help_text="Public contact address shown on the Contact page.",
+    )
+
     def __str__(self):
         return self.name
 
@@ -456,3 +462,28 @@ class Resource(models.Model):
                 suffix += 1
             self.slug = candidate
         super().save(*args, **kwargs)
+
+
+class ContactMessage(models.Model):
+    """A message submitted through the Contact page's quick-message
+    form. Always saved here regardless of whether email notification
+    (see core/views.py) actually succeeds, so a submission is never
+    lost to an unconfigured or temporarily-down mail server - officers
+    can review everything in the admin either way."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="contact_messages",
+    )
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name} - {self.created_at:%Y-%m-%d}"
