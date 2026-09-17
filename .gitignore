@@ -102,3 +102,7 @@ private_media/
 # collectstatic output - a build artifact regenerated from static/ on
 # each deploy, not source and not runtime state.
 staticfiles/
+
+# Claude Code's local project settings/state - tooling config, not
+# app source.
+.claude/
