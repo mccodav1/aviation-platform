@@ -9,7 +9,84 @@
     "starts_at": "2026-11-26T02:44:14Z",
     "location": "123 Easy Street, Salinas, CA",
     "description": "",
-    "is_cancelled": false
+    "is_cancelled": false,
+    "agenda": "",
+    "minutes": ""
+  }
+},
+{
+  "model": "meetings.event",
+  "pk": 4,
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "event_type": "meeting",
+    "title": "September Meeting",
+    "starts_at": "2026-09-08T01:42:41Z",
+    "location": "Raging Cajun",
+    "description": "September meeting stuff",
+    "is_cancelled": false,
+    "agenda": "",
+    "minutes": ""
+  }
+},
+{
+  "model": "meetings.event",
+  "pk": 5,
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "event_type": "meeting",
+    "title": "October Meeting",
+    "starts_at": "2026-10-13T18:00:00Z",
+    "location": "Avocado Place",
+    "description": "October meeting details here",
+    "is_cancelled": false,
+    "agenda": "",
+    "minutes": ""
+  }
+},
+{
+  "model": "meetings.event",
+  "pk": 7,
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "event_type": "meeting",
+    "title": "December Meeting",
+    "starts_at": "2026-12-24T18:00:00Z",
+    "location": "SNS Airport Lounge",
+    "description": "Come talk about December",
+    "is_cancelled": false,
+    "agenda": "agendas/test.txt",
+    "minutes": ""
+  }
+},
+{
+  "model": "meetings.event",
+  "pk": 11,
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "event_type": "meeting",
+    "title": "New Meeting",
+    "starts_at": "2026-09-19T06:53:00Z",
+    "location": "Here",
+    "description": "here's a description. here's a description. here's a description. here's a description. here's a description. here's a description.",
+    "is_cancelled": false,
+    "agenda": "",
+    "minutes": ""
+  }
+},
+{
+  "model": "meetings.event",
+  "pk": 12,
+  "fields": {
+    "organization": "90f5ee77-6ad3-4692-996b-3430ae1885e9",
+    "event_type": "meeting",
+    "title": "070707",
+    "starts_at": "2027-07-07T14:07:00Z",
+    "location": "070707",
+    "description": "here's a description. here's a description. here's a description. here's a description. here's a description.",
+    "is_cancelled": true,
+    "agenda": "",
+    "minutes": ""
   }
 }
 ]
