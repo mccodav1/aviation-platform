@@ -1,0 +1,74 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/meetings.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="meetings-page">
+    <div class="container">
+        <h1>Events</h1>
+
+        <div class="meetings-toolbar">
+            <a href="{% url 'core:events_ics_feed' %}" class="meeting-action-link meeting-subscribe-link">
+                <i class="bi bi-calendar-week"></i> Subscribe to all events
+            </a>
+
+            {% if perms.meetings.add_event %}
+                <a class="join-button" href="{% url 'core:meeting_create' %}">+ Add Event</a>
+            {% endif %}
+        </div>
+
+        {% if upcoming_events %}
+            <ul class="meeting-list">
+                {% for event in upcoming_events %}
+                    <li class="meeting-card{% if event.event_type == 'meeting' %} meeting-card-linked{% endif %}">
+                        <div class="meeting-date">
+                            <span class="meeting-date-month">{{ event.starts_at|date:"M" }}</span>
+                            <span class="meeting-date-day">{{ event.starts_at|date:"j" }}</span>
+                        </div>
+
+                        <div class="meeting-details">
+                            <h3>
+                                {% if event.event_type == "meeting" %}
+                                    <a href="{% url 'core:meeting_detail' event.pk %}" class="meeting-card-link">
+                                        {{ event.title }}
+                                    </a>
+                                {% else %}
+                                    {{ event.title }}
+                                {% endif %}
+                                <span class="meeting-badge meeting-badge-type">{{ event.get_event_type_display }}</span>
+                            </h3>
+
+                            <p class="meeting-meta">
+                                <i class="bi bi-clock"></i> {{ event.starts_at|date:"l, F j, Y" }} at {{ event.starts_at|date:"g:i A" }}
+                            </p>
+
+                            {% if event.location %}
+                                <p class="meeting-meta">
+                                    <i class="bi bi-geo-alt"></i> {{ event.location }}
+                                </p>
+                            {% endif %}
+
+                            {% if event.description %}
+                                <p class="meeting-meta">{{ event.description }}</p>
+                            {% endif %}
+
+                            {% if event.event_type == "meeting" %}
+                                <p class="meeting-meta meeting-view-details">
+                                    View Details <span class="arrow">&rarr;</span>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="meetings-empty">No events currently scheduled. Check back soon.</p>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

@@ -274,6 +274,15 @@
     background: #64748b;
 }
 
+/* Labels an event's type (Fly-Out, Airshow, ...) on the all-events
+   calendar, where entries of different types are mixed together -
+   meetings.html doesn't need this since every entry there already is
+   one. Navy rather than red/gray so it doesn't read as a status like
+   the cancelled/past badges above. */
+.meeting-badge-type {
+    background: var(--color-secondary);
+}
+
 .meeting-detail {
     max-width: 45rem;
 }

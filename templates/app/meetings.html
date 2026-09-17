@@ -16,7 +16,7 @@
                 <i class="bi bi-calendar-week"></i> Subscribe to all meetings
             </a>
 
-            {% if perms.meetings.add_meeting %}
+            {% if perms.meetings.add_event %}
                 <a class="join-button" href="{% url 'core:meeting_create' %}">+ Add Meeting</a>
             {% endif %}
         </div>
@@ -54,7 +54,7 @@
                             </p>
                         </div>
 
-                        {% if perms.meetings.change_meeting %}
+                        {% if perms.meetings.change_event %}
                             <div class="meeting-actions">
                                 <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}">
                                     {% csrf_token %}
@@ -108,7 +108,7 @@
                             </p>
                         </div>
 
-                        {% if perms.meetings.change_meeting %}
+                        {% if perms.meetings.change_event %}
                             <div class="meeting-actions">
                                 {% if meeting.is_cancelled and not meeting.is_past %}
                                     <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}">

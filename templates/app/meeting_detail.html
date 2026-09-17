@@ -55,7 +55,7 @@
             </div>
         </div>
 
-        {% if perms.meetings.change_meeting %}
+        {% if perms.meetings.change_event %}
             <div class="meeting-detail-actions">
                 <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}">
                     {% csrf_token %}

@@ -177,14 +177,6 @@ def join(request):
 def youngeagles(request):
     return render(request, "app/youngeagles.html")
 
-def events(request):
-    return under_construction(
-        request,
-        "Events",
-        "We're working on a full calendar of fly-outs, socials, and club "
-        "events. Check back soon.",
-    )
-
 # Create your views here.
 # def home(request):
 #     return render(request, "home.html")

@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.utils import timezone
 
 from core.models import Organization
-from meetings.models import Meeting
+from meetings.models import Event
 
-class MeetingStatusFilter(admin.SimpleListFilter):
-    title = "meeting status"
+class EventStatusFilter(admin.SimpleListFilter):
+    title = "event status"
     parameter_name = "status"
     def lookups(self, request, model_admin):
         return (
@@ -21,17 +21,19 @@ class MeetingStatusFilter(admin.SimpleListFilter):
         return queryset
 
 # Register your models here.
-@admin.register(Meeting)
-class MeetingAdmin(admin.ModelAdmin):
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
     list_display = (
         "title",
+        "event_type",
         "starts_at",
         "location",
         "is_cancelled",
     )
 
     list_filter = (
-        MeetingStatusFilter,
+        "event_type",
+        EventStatusFilter,
         "is_cancelled",
     )
 
@@ -41,8 +43,8 @@ class MeetingAdmin(admin.ModelAdmin):
 
     def get_changeform_initial_data(self, request):
         # Single-org deployment for now (see architecture note in
-        # core.middleware.organization) - default the org so adding a
-        # meeting doesn't require picking it from a dropdown every time.
+        # core.middleware.organization) - default the org so adding an
+        # event doesn't require picking it from a dropdown every time.
         initial = super().get_changeform_initial_data(request)
         organization = Organization.objects.first()
         if organization:

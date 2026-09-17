@@ -1,28 +1,28 @@
 from django import forms
 
-from .models import Meeting
+from .models import Event
 from .widgets import PrivateClearableFileInput
 
 
-class MeetingForm(forms.ModelForm):
+class EventForm(forms.ModelForm):
     class Meta:
-        model = Meeting
-        fields = ["title", "starts_at", "location", "description", "is_cancelled"]
+        model = Event
+        fields = ["event_type", "title", "starts_at", "location", "description", "is_cancelled"]
         widgets = {
             "starts_at": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "description": forms.Textarea(attrs={"rows": 4}),
         }
 
 
-class MeetingAgendaForm(forms.ModelForm):
+class EventAgendaForm(forms.ModelForm):
     class Meta:
-        model = Meeting
+        model = Event
         fields = ["agenda"]
         widgets = {"agenda": PrivateClearableFileInput}
 
 
-class MeetingMinutesForm(forms.ModelForm):
+class EventMinutesForm(forms.ModelForm):
     class Meta:
-        model = Meeting
+        model = Event
         fields = ["minutes"]
         widgets = {"minutes": PrivateClearableFileInput}

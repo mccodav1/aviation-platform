@@ -6,6 +6,8 @@ from django.urls import path
 # these routes are wired in unconditionally rather than guarded by
 # whether the app is installed.
 from meetings.views import (
+    event_list,
+    events_ics_feed,
     meeting_agenda_download,
     meeting_agenda_manage,
     meeting_create,
@@ -47,7 +49,8 @@ urlpatterns = [
     path("meetings/<int:pk>/minutes", meeting_minutes_manage, name="meeting_minutes_manage"),
     path("meetings/<int:pk>/minutes/download", meeting_minutes_download, name="meeting_minutes_download"),
     path("youngeagles", youngeagles, name="youngeagles"),
-    path("events", events, name="events"),
+    path("events", event_list, name="events"),
+    path("events/feed.ics", events_ics_feed, name="events_ics_feed"),
     path("weather", weather_panel, name="weather_panel"),
     path("", home, name="home"),
 ]
