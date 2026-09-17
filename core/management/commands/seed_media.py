@@ -19,6 +19,8 @@ SOURCE_DIRS = {
     "base_images": {
         "dest_root": lambda: Path(settings.MEDIA_ROOT),
         "assets": {
+            "hero/coastline-sunset-2.png": "hero/coastline-sunset-2.png",
+            "hero/coastline-sunset.png": "hero/coastline-sunset.png",
             "hero/coastline.jpg": "hero/coastline.jpg",
             "hero/distant.jpg": "hero/distant.jpg",
             "hero/lonepine.png": "hero/lonepine.png",

@@ -23,7 +23,7 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body>
+<body class="{% block body_class %}{% endblock %}">
 
 <header class="navbar">
     <div class="nav-inner">
@@ -47,8 +47,13 @@
                     {% csrf_token %}
                     <button type="submit" class="join-button">Log Out</button>
                 </form>
-            {% elif organization.join_url %}
-                <a class="join-button" href="{{ organization.join_url|resolve_link }}">{{ organization.join_button_text }}</a>
+            {% else %}
+                <div class="nav-buttons">
+                    <a class="login-button" href="{% url 'login' %}">Login</a>
+                    {% if organization.join_url %}
+                        <a class="join-button" href="{{ organization.join_url|resolve_link }}">{{ organization.join_button_text }}</a>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
 

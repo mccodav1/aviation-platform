@@ -38,7 +38,12 @@
 }
 
 .weather-panel {
-    align-items: stretch;
+    /* Matches the other panels' centered treatment (see .info-panel
+       above) - stretch had the header/temp/grid/link fill the full
+       grid column width, which left the weather-grid's own compact
+       2-column content sitting flush left with a wide gap of empty
+       column trailing off to its right. */
+    align-items: center;
 }
 
 /* The weather panel is a grid item wrapped in its own #weather-panel
@@ -195,12 +200,29 @@
     grid-template-columns: 1fr 1fr;
     gap: 0.6rem 1rem;
 
+    /* align-items: center (see .weather-panel above) shrink-wraps
+       this to its own content instead of stretching full column width
+       - the stat labels/values alone are narrow enough that the whole
+       panel read as cramped. Fixing a wider floor keeps it centered
+       but gives it real presence again, and min() keeps it from
+       overflowing a narrow single-column mobile layout. */
+    width: min(100%, 24rem);
+    /* Each stat cell is otherwise left-aligned inside its own column
+       track, so short values (e.g. "Clear", "10+ SM") sit flush left
+       within their half rather than centered under a full-width
+       header/temp above - that's the asymmetry, not the grid's own
+       position. justify-items centers each cell within its track;
+       .weather-stat below centers its own label/value within the
+       now-shrunk cell. */
+    justify-items: center;
+
     margin: 0 0 0.9rem;
 }
 
 .weather-stat {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 0.15rem;
 }
 

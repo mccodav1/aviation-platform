@@ -22,6 +22,20 @@ html, body {
     font-family: var(--font-current), sans-serif;
 }
 
+html {
+    /* Reserves the vertical scrollbar's width on every page, whether
+       or not that page actually has enough content to scroll -
+       .navbar is position: fixed with right: 0 (see navbar.css), so
+       it's anchored to the viewport's own right edge. Without this, a
+       short page (no scrollbar) has a wider viewport than a tall one
+       (scrollbar present), and the fixed navbar visibly shifts
+       sideways between them. scrollbar-gutter is the modern way to
+       say this; overflow-y: scroll is the fallback for browsers that
+       don't support it yet. */
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
+
 body {
     display: flex;
     flex-direction: column;

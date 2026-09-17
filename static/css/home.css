@@ -31,9 +31,10 @@
        grayed out. Confining it to a gradient, and keeping the peak
        well under full-flat opacity, is what actually reads as "this
        photo happens to be a bit hazy here" instead of a filter
-       sitting on top of it. */
-    /* Warm/orange rather than plain white - reads as a low sun rather
-       than a flat lightening effect. */
+       sitting on top of it. A navy darken (tried next) read as
+       dreary across the whole photo rather than a lift in one corner
+       of it - warm/orange keeps the same idea but reads as a low sun
+       instead. */
     background: linear-gradient(
         100deg,
         rgb(255 176 110 / 32%) 0%,
@@ -113,7 +114,20 @@
        weight difference, that sets "Starts Here." apart. */
     font-weight: 900;
 
+    /* The soft blur shadows below read fine against a mid-to-dark
+       photo, but on a bright sky they barely peek out from under
+       900-weight strokes this thick - a blurred dark halo just gets
+       lost against a light background. The four tight, near-0-blur
+       offsets act as a hard outline instead, which holds contrast
+       regardless of how bright the photo underneath is; the soft
+       pair stays layered behind them for depth. .accent overrides
+       this back to none - a dark outline on already-dark navy text
+       just muddies it instead of adding contrast. */
     text-shadow:
+        -1.5px -1.5px 0 rgb(0 0 0 / 55%),
+         1.5px -1.5px 0 rgb(0 0 0 / 55%),
+        -1.5px  1.5px 0 rgb(0 0 0 / 55%),
+         1.5px  1.5px 0 rgb(0 0 0 / 55%),
         0 2px 4px rgb(0 0 0 / 80%),
         0 8px 20px rgb(0 0 0 / 60%);
 }
@@ -135,9 +149,11 @@
        edge up too, dragging the headline along with it. transform
        moves the rendered box after layout/centering is already
        resolved, so it shifts the description (and, with the matching
-       transform below, the buttons) down without moving anything
-       above. */
-    transform: translateY(3.5rem);
+       vertical transform below, the buttons) down without moving
+       anything above. The horizontal nudge is this element's alone
+       (not shared with the buttons) - it exists only to clear a bright
+       reflection in the photo that sat right under the text. */
+    transform: translate(2rem, 3.5rem);
 
     /* Outfit rather than the sitewide Manrope (--font-current) - just
        for this paragraph, it's rounder and softer than body copy needs
@@ -146,17 +162,23 @@
     font-family: "Outfit", sans-serif;
     font-size: 1.45rem;
     font-weight: 400;
-    letter-spacing: 0.015em;
+    letter-spacing: 0.04em;
     line-height: 1.55;
 
     color: #fff;
 
-    /* A single, tight shadow rather than the old pair - the previous
-       second shadow's 6px blur was soft enough to read as a smudge
-       behind Outfit's rounder, thinner strokes rather than as
-       contrast. This is just enough to lift the text off the photo
-       without blurring the letterforms themselves. */
-    text-shadow: 0 1px 3px rgb(0 0 0 / 65%);
+    /* A solid backdrop (tried after this) guaranteed contrast but read
+       as a box sitting on top of the photo rather than text on it. A
+       text-stroke (tried after that) read as worse still. A blur-only
+       shadow (tried after that, 0 1px 4px) was invisible against this
+       photo - with no real offset, it's just a soft glow that blends
+       into the photo's own texture. A bigger offset (1px 2px 2px,
+       tried after that) fixed visibility but was displaced enough to
+       bleed into round letters' counters (o, a) and muddy them. This
+       is a tighter version of the same idea - still real displacement,
+       not just blur, but small enough to stay behind the stroke
+       instead of showing up inside the letterform's own holes. */
+    text-shadow: 1px 1px 1px rgb(0 0 0 / 70%);
 }
 
 .accent {

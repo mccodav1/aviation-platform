@@ -224,12 +224,18 @@
 
 .about-officers {
     margin-top: 3rem;
+    text-align: center;
 }
 
 .about-officers-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 200px));
     gap: 2rem;
+    /* auto-fit collapses unused tracks rather than stretching the ones
+       in use, so with fewer officers than the row fits, the grid's
+       default justify-content: start packs them against the left edge
+       instead of centering the group as a whole. */
+    justify-content: center;
 }
 
 .about-officer {

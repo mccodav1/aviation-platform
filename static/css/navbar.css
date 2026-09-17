@@ -4,7 +4,9 @@
 
 .navbar {
     position: fixed;
-    inset: 0 0 auto;
+    top: 0;
+    left: 0;
+    right: 0;
 
     height: 84px;
 
@@ -12,6 +14,29 @@
     border-bottom: 1px solid #e6ebef;
 
     z-index: 1000;
+}
+
+/* Only the home page's navbar bleeds directly over a hero photo (see
+   .hero's negative margin in home.css) - everywhere else it sits above
+   plain page content, where a transparent bar would just read as
+   missing rather than "overlaying a photo". --nav-fade (set on <body>
+   by home.js, in lockstep with scroll position rather than on a timer)
+   ramps the background from fully transparent at the top of the hero
+   to fully solid after a bit of scrolling, matching the white/bordered
+   state every other page uses by default once it reaches 1.
+
+   The border stays 1px solid at every fade value, just at a fading
+   alpha, rather than toggling none <-> 1px - box-sizing: border-box
+   (see base.css) folds the border into the fixed 84px height either
+   way, so a width change there shifted the content box by 1px and
+   made .logo (height: 95% of it) visibly shrink. */
+.page-home {
+    --nav-fade: 0;
+}
+
+.page-home .navbar {
+    background: rgb(255 255 255 / var(--nav-fade));
+    border-bottom: 1px solid rgb(230 235 239 / var(--nav-fade));
 }
 
 .nav-inner {
@@ -119,6 +144,57 @@
 
 .navbar title {
     font-size: 1.25rem;
+}
+
+/* ==========================
+   Login Button
+   ========================== */
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.login-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: .75rem 1.5rem;
+
+    background: transparent;
+    color: var(--color-secondary);
+
+    border: 2px solid var(--color-secondary);
+    border-radius: 8px;
+
+    font-size: .9rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    text-decoration: none;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .15s ease;
+}
+
+.login-button:hover {
+    background: var(--color-secondary);
+    color: #fff;
+
+    transform: translateY(-1px);
+}
+
+.login-button:active {
+    transform: translateY(0);
+}
+
+.login-button:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 3px;
 }
 
 /* ==========================
