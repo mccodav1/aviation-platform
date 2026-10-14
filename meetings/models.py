@@ -74,7 +74,8 @@ class Event(models.Model):
 
     def __str__(self):
         # starts_at is stored as an aware UTC instant - format it in the
-        # org's local timezone (see TIME_ZONE in settings) rather than
-        # raw-formatting the UTC value directly, which could show the
-        # wrong calendar date for an event near local midnight.
+        # active timezone (the visitor's browser zone, see
+        # core/middleware/timezone.py) rather than raw-formatting the UTC
+        # value directly, which could show the wrong calendar date for an
+        # event near local midnight.
         return f"{self.title} - {timezone.localtime(self.starts_at):%Y-%m-%d}"

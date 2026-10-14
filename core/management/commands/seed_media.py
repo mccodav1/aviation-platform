@@ -35,7 +35,7 @@ SOURCE_DIRS = {
         },
     },
     "base_documents": {
-        "dest_root": lambda: Path(settings.BASE_DIR) / "private_media",
+        "dest_root": lambda: Path(settings.PRIVATE_MEDIA_ROOT),
         "assets": {
             "scholarship-application.pdf": "resources/scholarship-application.pdf",
             "Cessna_172M.pdf": "resources/Cessna_172M.pdf",

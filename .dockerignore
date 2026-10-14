@@ -1,0 +1,14 @@
+.git
+.gitignore
+.idea
+.claude
+.venv
+.env
+__pycache__/
+*.pyc
+
+# Local runtime state and build output - never baked into the image.
+db.sqlite3*
+media/
+private_media/
+staticfiles/
