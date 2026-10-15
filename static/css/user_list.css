@@ -2,8 +2,10 @@
    Users Page (officers)
    ========================== */
 
+/* Fills the page's wide container rather than .page-block's usual
+   reading width - the table needs the room. */
 .user-list-block {
-    max-width: 64rem;
+    max-width: none;
 }
 
 .user-list-summary {
@@ -74,6 +76,16 @@
 
 .user-name {
     font-weight: 700;
+}
+
+/* The two free-text columns may wrap, so a long name or email doesn't
+   force the whole table wider than the screen; everything else stays on
+   one line. */
+.user-table td.user-name,
+.user-table td.user-email {
+    min-width: 9rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .user-row-inactive td {

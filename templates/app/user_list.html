@@ -14,7 +14,8 @@
 {% include "app/components/page_hero.html" with title="Users" lede="Every account on the site. Deactivate, reactivate or unlock accounts here; anything else is in the admin." %}
 
 <section class="page-body">
-    <div class="container">
+    {# The widest container - this table has a lot of columns. #}
+    <div class="container-wide">
 
         <div class="page-block user-list-block">
             <div class="user-list-summary">
@@ -49,7 +50,7 @@
                         {% for account in users %}
                             <tr class="{% if not account.is_active %}user-row-inactive{% endif %}">
                                 <td class="user-name">{{ account.get_full_name|default:"-" }}</td>
-                                <td><a href="mailto:{{ account.email }}">{{ account.email }}</a></td>
+                                <td class="user-email"><a href="mailto:{{ account.email }}">{{ account.email }}</a></td>
                                 <td class="user-roles">
                                     {% if perms.core.assign_roles and not account.is_superuser and account.pk != user.pk and not account.unapproved_application %}
                                         <form method="post" action="{% url 'core:user_set_role' account.pk %}" class="user-role-form"
