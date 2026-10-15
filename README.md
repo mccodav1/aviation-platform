@@ -49,8 +49,13 @@ Makefile turns `DJANGO_DEBUG` on for these targets, so no `.env` is needed.
 cp .env.example .env     # then fill in the MANDATORY section
 make up                  # build the image and start db, web, nginx
 make compose-seed        # one-time content load (bootstrap_site)
-make compose-superuser   # create an admin login - run in a real terminal
 ```
+
+On start, `web` runs `migrate` and then `ensure_superuser`, which creates
+the admin account from `DJANGO_SUPERUSER_USERNAME` /
+`DJANGO_SUPERUSER_PASSWORD` if it doesn't exist yet. An existing account
+is left alone, so changing the password in `.env` later has no effect -
+change it in the admin instead.
 
 The site is then at http://localhost/, and the admin at http://localhost/admin/.
 
@@ -61,12 +66,13 @@ changing seed data run `make up` again before seeding. It refuses to run
 once content exists, so it can't overwrite edits made through the site
 (`bootstrap_site --force` overrides that).
 
-`createsuperuser` prompts interactively, so it fails without a TTY. To
-create the user without prompts:
+For any additional admin accounts, `make compose-superuser` runs
+`createsuperuser`. It prompts interactively, so it fails without a TTY.
+To create the user without prompts:
 
 ```
 docker compose exec -e DJANGO_SUPERUSER_PASSWORD='...' web \
-    python manage.py createsuperuser --noinput --username admin --email you@example.com
+    python manage.py createsuperuser --noinput --username another-admin --email you@example.com
 ```
 
 ### Everyday commands

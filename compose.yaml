@@ -35,6 +35,8 @@ services:
       DATA_DIR: /data
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in .env (see .env.example)}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:?Set DJANGO_ALLOWED_HOSTS in .env (see .env.example)}
+      DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:?Set DJANGO_SUPERUSER_USERNAME in .env (see .env.example)}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:?Set DJANGO_SUPERUSER_PASSWORD in .env (see .env.example)}
     volumes:
       - media:/data/media
       - private_media:/data/private_media
