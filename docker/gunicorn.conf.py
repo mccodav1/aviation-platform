@@ -10,3 +10,8 @@ errorlog = "-"
 # Requests always arrive via nginx, so log the real client address it
 # forwards rather than nginx's own container IP.
 access_log_format = '%({x-forwarded-for}i)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+
+# No runtime control socket (the `gunicornc` tool) - compose handles
+# restarts. Its default location is under $HOME, and the app user has
+# no home directory, so leaving it on just logs a permission error.
+control_socket_disable = True
