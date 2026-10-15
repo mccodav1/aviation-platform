@@ -1,0 +1,54 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}Messages | {{ organization.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
+<link rel="stylesheet" href="{% static 'css/contact_messages.css' %}">
+<link rel="stylesheet" href="{% static 'css/confirm_dialog.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% include "app/components/page_hero.html" with title="Messages" lede="Messages sent through the Contact page. Marking one seen or unseen applies for every officer." %}
+
+<section class="page-body">
+    <div class="container">
+
+        <div class="page-block message-section">
+            <h2>New{% if unseen_messages %} ({{ unseen_messages|length }}){% endif %}</h2>
+
+            {% if unseen_messages %}
+                <ul class="message-list">
+                    {% for contact_message in unseen_messages %}
+                        {% include "app/components/contact_message.html" %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No new messages.</p>
+            {% endif %}
+        </div>
+
+        {% if seen_messages %}
+            <div class="page-block message-section">
+                <h2>Seen</h2>
+
+                <ul class="message-list">
+                    {% for contact_message in seen_messages %}
+                        {% include "app/components/contact_message.html" %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% include "app/components/confirm_dialog.html" %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/confirm_dialog.js' %}"></script>
+{% endblock %}

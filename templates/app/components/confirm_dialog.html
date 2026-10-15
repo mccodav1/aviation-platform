@@ -1,0 +1,12 @@
+{# Shared confirmation modal - see static/js/confirm_dialog.js. Include #}
+{# once per page, plus that script and css/confirm_dialog.css; any form #}
+{# with a data-confirm attribute then asks here before submitting.      #}
+<dialog class="confirm-dialog" id="confirm-dialog" aria-labelledby="confirm-dialog-title">
+    <h2 class="confirm-dialog-title" id="confirm-dialog-title"></h2>
+    <p class="confirm-dialog-message"></p>
+
+    <div class="confirm-dialog-actions">
+        <button type="button" class="confirm-dialog-button confirm-dialog-cancel" autofocus>Cancel</button>
+        <button type="button" class="confirm-dialog-button confirm-dialog-confirm"></button>
+    </div>
+</dialog>

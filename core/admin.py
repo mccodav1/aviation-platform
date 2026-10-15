@@ -47,6 +47,6 @@ class ResourceAdmin(admin.ModelAdmin):
 
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'created_at')
-    readonly_fields = ('name', 'email', 'message', 'created_at')
+    list_display = ('name', 'email', 'created_at', 'seen_at', 'seen_by')
+    readonly_fields = ('name', 'email', 'message', 'created_at', 'seen_at', 'seen_by')
     ordering = ('-created_at',)

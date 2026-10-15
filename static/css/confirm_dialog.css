@@ -1,0 +1,86 @@
+/* ==========================
+   Confirmation Dialog
+   (see components/confirm_dialog.html)
+   ========================== */
+
+.confirm-dialog {
+    width: min(26rem, calc(100% - 2rem));
+    margin: auto;
+    padding: 1.75rem;
+
+    background: #fff;
+    border: none;
+    border-top: 4px solid var(--color-primary);
+    border-radius: 12px;
+    box-shadow: 0 24px 60px rgb(17 24 39 / 25%);
+
+    color: var(--color-secondary);
+    font-family: inherit;
+}
+
+.confirm-dialog::backdrop {
+    background: rgb(29 38 71 / 55%);
+}
+
+.confirm-dialog-title {
+    margin: 0 0 .75rem;
+
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.confirm-dialog-message {
+    margin: 0 0 1.5rem;
+
+    color: #475569;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.confirm-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+}
+
+.confirm-dialog-button {
+    padding: .65rem 1.25rem;
+
+    border: 2px solid var(--color-secondary);
+    border-radius: 8px;
+
+    font: inherit;
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.confirm-dialog-button:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 3px;
+}
+
+.confirm-dialog-cancel {
+    background: transparent;
+    color: var(--color-secondary);
+}
+
+.confirm-dialog-cancel:hover {
+    background: var(--color-secondary);
+    color: #fff;
+}
+
+.confirm-dialog-confirm {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+
+.confirm-dialog-confirm:hover {
+    background: #b8343a;
+    border-color: #b8343a;
+}

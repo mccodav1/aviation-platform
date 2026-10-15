@@ -147,6 +147,53 @@
 }
 
 /* ==========================
+   Messages (officers)
+   ========================== */
+
+.nav-messages {
+    position: relative;
+    display: inline-flex;
+
+    color: var(--color-secondary);
+    font-size: 1.4rem;
+    text-decoration: none;
+
+    transition: color .2s ease;
+}
+
+.nav-messages:hover,
+.nav-messages.active {
+    color: var(--color-primary);
+}
+
+.nav-messages:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 4px;
+}
+
+.nav-messages-badge {
+    position: absolute;
+    top: -.4rem;
+    right: -.65rem;
+
+    min-width: 1.15rem;
+    height: 1.15rem;
+    padding: 0 .3rem;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--color-primary);
+    border-radius: 999px;
+
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* ==========================
    Login Button
    ========================== */
 

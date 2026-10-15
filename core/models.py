@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -488,6 +489,16 @@ class ContactMessage(models.Model):
     email = models.EmailField()
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    # Shared across officers: once any officer marks a message seen, it
+    # stops counting toward everyone's unseen-messages badge.
+    seen_at = models.DateTimeField(null=True, blank=True)
+    seen_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
 
     class Meta:
         ordering = ["-created_at"]

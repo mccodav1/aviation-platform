@@ -1,0 +1,44 @@
+<li class="message-item{% if contact_message.seen_at %} message-item-seen{% endif %}">
+    <div class="message-item-header">
+        <span class="message-item-from">{{ contact_message.name }}</span>
+        <a class="message-item-email" href="mailto:{{ contact_message.email }}">{{ contact_message.email }}</a>
+        <span class="message-item-date">{{ contact_message.created_at|date:"M j, Y g:i A" }}</span>
+    </div>
+
+    <p class="message-item-body">{{ contact_message.message|linebreaksbr }}</p>
+
+    <div class="message-item-footer">
+        {% if contact_message.seen_at %}
+            <span class="message-item-seen-by">
+                Seen{% if contact_message.seen_by %} by {{ contact_message.seen_by.get_full_name|default:contact_message.seen_by.username }}{% endif %}
+                {{ contact_message.seen_at|date:"M j, Y g:i A" }}
+            </span>
+        {% endif %}
+
+        <div class="message-item-actions">
+            {% if perms.core.change_contactmessage %}
+                {% if contact_message.seen_at %}
+                    <form method="post" action="{% url 'core:contact_message_mark_unseen' contact_message.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="message-action-button message-action-seen">Mark unseen</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'core:contact_message_mark_seen' contact_message.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="message-action-button message-action-seen">Mark seen</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+
+            {% if perms.core.delete_contactmessage %}
+                <form method="post" action="{% url 'core:contact_message_delete' contact_message.pk %}"
+                      data-confirm="Delete this message from {{ contact_message.name }}? This can't be undone."
+                      data-confirm-title="Delete message"
+                      data-confirm-button="Delete">
+                    {% csrf_token %}
+                    <button type="submit" class="message-action-button message-action-delete">Delete</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</li>
