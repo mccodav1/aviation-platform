@@ -15,7 +15,7 @@ from django.views.decorators.http import require_POST
 from meetings.services import get_month_calendar, get_next_meeting
 
 from .forms import ContactForm, JoinRequestForm, ResourceForm
-from .models import ContactMessage, JoinRequest, Resource, ResourceCategory
+from .models import ContactMessage, JoinRequest, Resource, ResourceCategory, User
 from .services.weather import format_observed, get_metar
 
 logger = logging.getLogger(__name__)
@@ -394,6 +394,24 @@ def join_request_deny(request, pk):
 def join_request_delete(request, pk):
     _review_item(request, JoinRequest, pk).delete_with_account()
     return redirect("core:join_requests")
+
+
+@login_required
+@permission_required("core.view_user", raise_exception=True)
+def user_list(request):
+    # Read-only for now - changes to an account are made in /admin.
+    users = list(User.objects.prefetch_related("groups").select_related("join_request"))
+    role_order = {"Superadmin": 0, "Officer": 1, "Staff": 2, "Member": 3}
+    users.sort(key=lambda user: (role_order[user.role], user.display_name.lower()))
+    return render(
+        request,
+        "app/user_list.html",
+        {
+            "users": users,
+            "active_count": sum(user.is_active for user in users),
+            "pending_count": sum(user.account_status == "Pending approval" for user in users),
+        },
+    )
 
 
 def join(request):

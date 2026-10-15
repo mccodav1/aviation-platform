@@ -1,0 +1,58 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}Users | {{ organization.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
+<link rel="stylesheet" href="{% static 'css/user_list.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% include "app/components/page_hero.html" with title="Users" lede="Every account on the site. To change an account, use the admin." %}
+
+<section class="page-body">
+    <div class="container">
+
+        <div class="page-block user-list-block">
+            <div class="user-list-summary">
+                <span><strong>{{ users|length }}</strong> account{{ users|length|pluralize }}</span>
+                <span><strong>{{ active_count }}</strong> active</span>
+                {% if pending_count %}
+                    <a href="{% url 'core:join_requests' %}"><strong>{{ pending_count }}</strong> pending approval</a>
+                {% endif %}
+            </div>
+
+            <div class="user-table-wrap">
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Joined</th>
+                            <th scope="col">Last login</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for account in users %}
+                            <tr class="{% if not account.is_active %}user-row-inactive{% endif %}">
+                                <td class="user-name">{{ account.get_full_name|default:"-" }}</td>
+                                <td><a href="mailto:{{ account.email }}">{{ account.email }}</a></td>
+                                <td><span class="user-role user-role-{{ account.role|lower }}">{{ account.role }}</span></td>
+                                <td><span class="user-status user-status-{{ account.account_status|slugify }}">{{ account.account_status }}</span></td>
+                                <td>{{ account.date_joined|date:"M j, Y" }}</td>
+                                <td>{% if account.last_login %}{{ account.last_login|date:"M j, Y g:i A" }}{% else %}<span class="user-never">Never</span>{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

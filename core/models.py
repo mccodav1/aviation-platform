@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 from core.links import link_error
+from core.permissions import OFFICER_GROUP_NAME
 from core.storage import private_storage
 
 
@@ -71,6 +72,33 @@ class User(AbstractUser):
     @property
     def display_name(self):
         return self.get_full_name() or self.email
+
+    @property
+    def role(self):
+        """The account tier, as officers think of it. Reads self.groups,
+        so prefetch_related("groups") when listing many users."""
+        if self.is_superuser:
+            return "Superadmin"
+        if any(group.name == OFFICER_GROUP_NAME for group in self.groups.all()):
+            return "Officer"
+        if self.is_staff:
+            # Admin access but not in the officers group - unusual, so
+            # it's called out rather than lumped in with officers.
+            return "Staff"
+        return "Member"
+
+    @property
+    def account_status(self):
+        """Active, or why not: an applicant waiting on (or denied by)
+        the review on /applications, or an account switched off."""
+        if self.is_active:
+            return "Active"
+        join_request = getattr(self, "join_request", None)
+        if join_request and join_request.is_pending:
+            return "Pending approval"
+        if join_request and join_request.is_denied:
+            return "Denied"
+        return "Inactive"
 
 LINK_HELP_TEXT = (
     'Internal page: its URL name, e.g. "core:events". '

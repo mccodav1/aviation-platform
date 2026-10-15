@@ -45,8 +45,15 @@
                 {% endfor %}
             </nav>
 
-            {% if perms.core.view_joinrequest or perms.core.view_contactmessage %}
+            {% if perms.core.view_joinrequest or perms.core.view_contactmessage or perms.core.view_user %}
                 <div class="nav-review-links">
+                    {% if perms.core.view_user %}
+                        <a class="nav-messages{% if request.resolver_match.url_name == 'user_list' %} active{% endif %}" href="{% url 'core:user_list' %}"
+                           aria-label="Users" title="Users">
+                            <i class="bi bi-people"></i>
+                        </a>
+                    {% endif %}
+
                     {% if perms.core.view_joinrequest %}
                         <a class="nav-messages{% if request.resolver_match.url_name == 'join_requests' %} active{% endif %}" href="{% url 'core:join_requests' %}"
                            aria-label="Applications{% if unseen_join_request_count %} ({{ unseen_join_request_count }} new){% endif %}"

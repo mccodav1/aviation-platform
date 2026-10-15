@@ -44,6 +44,7 @@ from .views import (
     resources,
     scholarship,
     terms,
+    user_list,
     weather_panel,
     youngeagles,
 )
@@ -68,6 +69,7 @@ urlpatterns = [
     path("messages/<uuid:pk>/unseen", contact_message_mark_unseen, name="contact_message_mark_unseen"),
     path("messages/<uuid:pk>/delete", contact_message_delete, name="contact_message_delete"),
     path("join", join, name="join"),
+    path("users", user_list, name="user_list"),
     path("applications", join_requests, name="join_requests"),
     path("applications/<uuid:pk>/seen", join_request_mark_seen, name="join_request_mark_seen"),
     path("applications/<uuid:pk>/unseen", join_request_mark_unseen, name="join_request_mark_unseen"),

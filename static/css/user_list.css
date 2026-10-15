@@ -1,0 +1,144 @@
+/* ==========================
+   Users Page (officers)
+   ========================== */
+
+.user-list-block {
+    max-width: 64rem;
+}
+
+.user-list-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+
+    margin-bottom: 1.25rem;
+
+    color: #64748b;
+}
+
+.user-list-summary strong {
+    color: var(--color-secondary);
+}
+
+.user-list-summary a {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.user-list-summary a strong {
+    color: inherit;
+}
+
+/* Scrolls sideways on a narrow screen instead of squashing columns. */
+.user-table-wrap {
+    overflow-x: auto;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    font-size: 0.9rem;
+}
+
+.user-table th {
+    padding: 0.6rem 0.75rem;
+
+    border-bottom: 2px solid rgb(17 52 86 / 12%);
+
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.user-table td {
+    padding: 0.7rem 0.75rem;
+
+    border-bottom: 1px solid rgb(17 52 86 / 8%);
+
+    color: var(--color-secondary);
+    white-space: nowrap;
+}
+
+.user-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.user-table a {
+    color: var(--color-secondary);
+}
+
+.user-name {
+    font-weight: 700;
+}
+
+.user-row-inactive td {
+    color: #94a3b8;
+}
+
+.user-row-inactive a {
+    color: #94a3b8;
+}
+
+.user-never {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.user-role,
+.user-status {
+    display: inline-block;
+
+    padding: 0.1rem 0.5rem;
+
+    border-radius: 4px;
+
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.user-role-superadmin {
+    background: var(--color-secondary);
+    color: #fff;
+}
+
+.user-role-officer {
+    background: rgb(29 38 71 / 12%);
+    color: var(--color-secondary);
+}
+
+.user-role-staff {
+    background: rgb(218 65 68 / 12%);
+    color: #b8343a;
+}
+
+.user-role-member {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.user-status-active {
+    background: rgb(22 163 74 / 12%);
+    color: #15803d;
+}
+
+.user-status-pending-approval {
+    background: rgb(234 179 8 / 15%);
+    color: #a16207;
+}
+
+.user-status-denied {
+    background: rgb(218 65 68 / 12%);
+    color: #b8343a;
+}
+
+.user-status-inactive {
+    background: #f1f5f9;
+    color: #64748b;
+}
