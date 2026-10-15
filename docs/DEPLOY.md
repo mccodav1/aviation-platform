@@ -123,8 +123,17 @@ docker run --rm -v aviation-platform_media:/m -v aviation-platform_private_media
   `core.User` (`AUTH_USER_MODEL`). Applying on the Join page creates an
   inactive account with the applicant's chosen password; approving the
   application on `/applications` activates it.
-- **Officer permissions come from the "Club Officers" group.** Its
-  permissions are listed in `core/permissions.py` and synced after every
-  `migrate` (so on container start too) - add new ones there, not in a
-  data migration. Give an account officer powers by setting `is_staff`
-  and adding it to that group in `/admin`.
+- **Roles are groups.** "Club Officers" run the club (meetings,
+  resources, contact messages, applications); "Site Admins" run the
+  website (site content, and account support like unlocking accounts and
+  resetting passwords) but can't see applications or messages. One
+  account can be in both; superusers ("Superadmin") can do everything.
+  Each group's permissions are listed in `core/permissions.py` and synced
+  after every `migrate` (so on container start too) - add new ones there,
+  not in a data migration. Give an account a role by setting `is_staff`
+  and adding it to the group in `/admin`.
+- **Site Admins can't escalate.** The admin hides superuser status and
+  individual permissions from non-superusers, limits the groups they can
+  assign to the two role groups, and won't let them edit a superuser's
+  account (see `UserAdmin` in `core/admin.py`). Keep that if the user
+  admin changes.

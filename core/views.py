@@ -401,8 +401,8 @@ def join_request_delete(request, pk):
 def user_list(request):
     # Read-only for now - changes to an account are made in /admin.
     users = list(User.objects.prefetch_related("groups").select_related("join_request"))
-    role_order = {"Superadmin": 0, "Officer": 1, "Staff": 2, "Member": 3}
-    users.sort(key=lambda user: (role_order[user.role], user.display_name.lower()))
+    role_order = {"Superadmin": 0, "Officer": 1, "Site admin": 2, "Staff": 3, "Member": 4}
+    users.sort(key=lambda user: (min(role_order[role] for role in user.roles), user.display_name.lower()))
     return render(
         request,
         "app/user_list.html",

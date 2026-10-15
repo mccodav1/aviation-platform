@@ -41,7 +41,7 @@
                             <tr class="{% if not account.is_active %}user-row-inactive{% endif %}">
                                 <td class="user-name">{{ account.get_full_name|default:"-" }}</td>
                                 <td><a href="mailto:{{ account.email }}">{{ account.email }}</a></td>
-                                <td><span class="user-role user-role-{{ account.role|lower }}">{{ account.role }}</span></td>
+                                <td class="user-roles">{% for role in account.roles %}<span class="user-role user-role-{{ role|slugify }}">{{ role }}</span>{% endfor %}</td>
                                 <td><span class="user-status user-status-{{ account.account_status|slugify }}">{{ account.account_status }}</span></td>
                                 <td>{{ account.date_joined|date:"M j, Y" }}</td>
                                 <td>{% if account.last_login %}{{ account.last_login|date:"M j, Y g:i A" }}{% else %}<span class="user-never">Never</span>{% endif %}</td>

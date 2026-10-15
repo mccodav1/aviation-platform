@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 from core.links import link_error
-from core.permissions import OFFICER_GROUP_NAME
+from core.permissions import OFFICER_GROUP_NAME, SITE_ADMIN_GROUP_NAME
 from core.storage import private_storage
 
 
@@ -74,18 +74,25 @@ class User(AbstractUser):
         return self.get_full_name() or self.email
 
     @property
-    def role(self):
-        """The account tier, as officers think of it. Reads self.groups,
-        so prefetch_related("groups") when listing many users."""
+    def roles(self):
+        """The account's roles, as officers think of them - one account
+        can be both an Officer and a Site admin. Reads self.groups, so
+        prefetch_related("groups") when listing many users."""
         if self.is_superuser:
-            return "Superadmin"
-        if any(group.name == OFFICER_GROUP_NAME for group in self.groups.all()):
-            return "Officer"
+            return ["Superadmin"]
+        group_names = {group.name for group in self.groups.all()}
+        roles = [
+            label
+            for group_name, label in ((OFFICER_GROUP_NAME, "Officer"), (SITE_ADMIN_GROUP_NAME, "Site admin"))
+            if group_name in group_names
+        ]
+        if roles:
+            return roles
         if self.is_staff:
-            # Admin access but not in the officers group - unusual, so
-            # it's called out rather than lumped in with officers.
-            return "Staff"
-        return "Member"
+            # Admin access but in neither role group - unusual, so it's
+            # called out rather than lumped in with officers.
+            return ["Staff"]
+        return ["Member"]
 
     @property
     def account_status(self):
