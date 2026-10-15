@@ -1,6 +1,7 @@
 import uuid
 
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -9,6 +10,67 @@ from django.utils.text import slugify
 
 from core.links import link_error
 from core.storage import private_storage
+
+
+class UserManager(BaseUserManager):
+    """Manager for User, which logs in by email and has no username."""
+
+    use_in_migrations = True
+
+    def get_by_natural_key(self, email):
+        # Login lookups ignore case - Pat@Example.com and pat@example.com
+        # are the same account.
+        return self.get(email__iexact=email)
+
+    def _create_user(self, email, password, **extra_fields):
+        if not email:
+            raise ValueError("An email address is required.")
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", False)
+        extra_fields.setdefault("is_superuser", False)
+        return self._create_user(email, password, **extra_fields)
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        if not extra_fields["is_staff"] or not extra_fields["is_superuser"]:
+            raise ValueError("A superuser must have is_staff and is_superuser set.")
+        return self._create_user(email, password, **extra_fields)
+
+
+class User(AbstractUser):
+    """Site account. Logs in by email address - there is no username.
+    Membership applicants get one created (inactive) when they apply;
+    an officer approving the application activates it (see JoinRequest)."""
+
+    username = None
+    email = models.EmailField("email address", unique=True)
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
+
+    class Meta:
+        ordering = ["email"]
+
+    def __str__(self):
+        return self.email
+
+    def save(self, *args, **kwargs):
+        # Stored lowercase, so the unique constraint can't be dodged by
+        # case and every lookup matches.
+        self.email = self.email.strip().lower()
+        super().save(*args, **kwargs)
+
+    @property
+    def display_name(self):
+        return self.get_full_name() or self.email
 
 LINK_HELP_TEXT = (
     'Internal page: its URL name, e.g. "core:events". '
@@ -530,10 +592,11 @@ class ContactMessage(SeenTracking):
 
 
 class JoinRequest(SeenTracking):
-    """A membership application submitted through the Join page. Officers
-    review these on /applications and approve or deny them; on approval
-    they set up the applicant's account by hand in /admin - nothing here
-    creates a User."""
+    """A membership application submitted through the Join page.
+    Applying also creates the applicant's account (see JoinRequestForm),
+    inactive until an officer approves the application on /applications.
+    Denied applications keep their inactive account, so a mistaken
+    denial can still be approved."""
 
     STATUS_PENDING = "pending"
     STATUS_APPROVED = "approved"
@@ -560,7 +623,17 @@ class JoinRequest(SeenTracking):
         on_delete=models.CASCADE,
         related_name="join_requests",
     )
-    name = models.CharField(max_length=200)
+    # The account this application created. Kept nullable so the
+    # application survives if the account is later deleted in /admin.
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="join_request",
+    )
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
     email = models.EmailField()
     phone = models.CharField(max_length=40, blank=True)
     pilot_status = models.CharField(max_length=20, choices=PILOT_STATUS_CHOICES)
@@ -583,18 +656,49 @@ class JoinRequest(SeenTracking):
         return f"{self.name} - {self.created_at:%Y-%m-%d}"
 
     @property
+    def name(self):
+        return f"{self.first_name} {self.last_name}".strip()
+
+    @property
     def is_pending(self):
         return self.status == self.STATUS_PENDING
 
-    def decide(self, status, user):
-        # Deciding implies the application has been looked at, so it
-        # also clears it from the unseen badge.
+    @property
+    def is_decided(self):
+        return not self.is_pending
+
+    @property
+    def is_approved(self):
+        return self.status == self.STATUS_APPROVED
+
+    @property
+    def is_denied(self):
+        return self.status == self.STATUS_DENIED
+
+    def decide(self, status, officer):
+        """Approve or deny. Approving activates the applicant's account
+        (later this is also where the welcome packet gets sent); denying
+        leaves it inactive. Deciding implies the application has been
+        looked at, so it also clears it from the unseen badge."""
         self.status = status
         self.decided_at = timezone.now()
-        self.decided_by = user
+        self.decided_by = officer
         update_fields = ["status", "decided_at", "decided_by"]
         if self.seen_at is None:
             self.seen_at = self.decided_at
-            self.seen_by = user
+            self.seen_by = officer
             update_fields += ["seen_at", "seen_by"]
         self.save(update_fields=update_fields)
+
+        if self.user and self.user.is_active != self.is_approved:
+            self.user.is_active = self.is_approved
+            self.user.save(update_fields=["is_active"])
+
+    def delete_with_account(self):
+        # A never-approved (inactive) account goes with its application,
+        # freeing the email to apply again. An approved member's account
+        # is never removed this way.
+        user = self.user
+        self.delete()
+        if user and not user.is_active:
+            user.delete()

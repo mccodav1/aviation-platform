@@ -1,8 +1,9 @@
 {# Mark seen / Mark unseen / Delete buttons for an officer review item  #}
 {# (see SeenTracking in core/models.py). Include with: item, seen_url,  #}
 {# unseen_url, delete_url (URL names), can_change, can_delete, and      #}
-{# delete_title/delete_prompt (the confirm dialog's heading/question).  #}
-{% if can_change %}
+{# delete_title/delete_prompt (the confirm dialog's heading/question). #}
+{# Optional hide_seen leaves out the seen/unseen button.                #}
+{% if can_change and not hide_seen %}
     {% if item.seen_at %}
         <form method="post" action="{% url unseen_url item.pk %}">
             {% csrf_token %}

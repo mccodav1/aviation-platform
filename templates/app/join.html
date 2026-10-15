@@ -106,7 +106,7 @@
                     <span class="join-step-number">1</span>
                     <div>
                         <h3>Tell us about yourself</h3>
-                        <p>Fill out the short application below. It only takes a couple of minutes.</p>
+                        <p>Fill out the short application below and choose a password for your member login. It only takes a couple of minutes.</p>
                     </div>
                 </li>
                 <li class="join-step">
@@ -120,14 +120,14 @@
                     <span class="join-step-number">3</span>
                     <div>
                         <h3>Welcome aboard</h3>
-                        <p>Once you're approved, we'll send you a welcome letter with everything you need to get started.</p>
+                        <p>Once you're approved, your member login is switched on and we'll send you a welcome letter with everything you need to get started.</p>
                     </div>
                 </li>
                 <li class="join-step">
                     <span class="join-step-number">4</span>
                     <div>
                         <h3>You're in</h3>
-                        <p>We'll set up your member login, so you can see members-only resources and stay in the loop.</p>
+                        <p>Log in with the email and password you chose to see members-only resources and stay in the loop.</p>
                     </div>
                 </li>
             </ol>
@@ -143,7 +143,7 @@
             {% if sent %}
                 <div class="form-success">
                     <i class="bi bi-check-circle"></i>
-                    Thanks for applying! An officer will review your application and be in touch soon.
+                    Thanks for applying! An officer will review your application soon. Once it's approved, you can log in with the email and password you just chose.
                 </div>
             {% endif %}
 
@@ -162,6 +162,9 @@
                     <div class="form-field">
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {{ field }}
+                        {% if field.help_text %}
+                            <div class="form-field-help">{{ field.help_text }}</div>
+                        {% endif %}
                         {% for error in field.errors %}
                             <div class="form-errors">{{ error }}</div>
                         {% endfor %}

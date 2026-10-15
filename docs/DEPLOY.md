@@ -27,7 +27,7 @@ git clone git@github.com:mccodav1/aviation-platform.git
 cd aviation-platform
 cp .env.example .env
 # Fill in the MANDATORY section: secret key, the server's public IP in
-# DJANGO_ALLOWED_HOSTS, the admin username/password, and a Postgres
+# DJANGO_ALLOWED_HOSTS, the admin email/password, and a Postgres
 # password.
 
 make up                  # docker compose up -d --build (creates the admin account)
@@ -119,6 +119,10 @@ docker run --rm -v aviation-platform_media:/m -v aviation-platform_private_media
   `timezone.localtime()`), never raw formatting of the stored value.
 - **One deployment per organization.** The `Organization` table is a
   single-row site configuration, not multi-tenancy.
+- **Accounts log in by email, not a username.** The user model is
+  `core.User` (`AUTH_USER_MODEL`). Applying on the Join page creates an
+  inactive account with the applicant's chosen password; approving the
+  application on `/applications` activates it.
 - **Officer permissions come from the "Club Officers" group.** Its
   permissions are listed in `core/permissions.py` and synced after every
   `migrate` (so on container start too) - add new ones there, not in a

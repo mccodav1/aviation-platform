@@ -52,7 +52,7 @@ make compose-seed        # one-time content load (bootstrap_site)
 ```
 
 On start, `web` runs `migrate` and then `ensure_superuser`, which creates
-the admin account from `DJANGO_SUPERUSER_USERNAME` /
+the admin account from `DJANGO_SUPERUSER_EMAIL` /
 `DJANGO_SUPERUSER_PASSWORD` if it doesn't exist yet. An existing account
 is left alone, so changing the password in `.env` later has no effect -
 change it in the admin instead.
@@ -72,7 +72,7 @@ To create the user without prompts:
 
 ```
 docker compose exec -e DJANGO_SUPERUSER_PASSWORD='...' web \
-    python manage.py createsuperuser --noinput --username another-admin --email you@example.com
+    python manage.py createsuperuser --noinput --email another-admin@example.com
 ```
 
 ### Everyday commands

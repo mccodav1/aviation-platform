@@ -11,7 +11,7 @@
 
 {% block content %}
 
-{% include "app/components/page_hero.html" with title="Applications" lede="Membership applications from the Join page. Seen status and approve/deny decisions apply for every officer." %}
+{% include "app/components/page_hero.html" with title="Applications" lede="Membership applications from the Join page. Approving one activates the applicant's account. Seen status and decisions apply for every officer." %}
 
 <section class="page-body">
     <div class="container">
@@ -32,10 +32,34 @@
 
         {% if seen_items %}
             <div class="page-block message-section">
-                <h2>Seen</h2>
+                <h2>Seen, awaiting a decision</h2>
 
                 <ul class="message-list">
                     {% for join_request in seen_items %}
+                        {% include "app/components/join_request.html" %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if denied_items %}
+            <div class="page-block message-section">
+                <h2>Denied</h2>
+
+                <ul class="message-list">
+                    {% for join_request in denied_items %}
+                        {% include "app/components/join_request.html" %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if approved_items %}
+            <div class="page-block message-section">
+                <h2>Approved</h2>
+
+                <ul class="message-list">
+                    {% for join_request in approved_items %}
                         {% include "app/components/join_request.html" %}
                     {% endfor %}
                 </ul>
