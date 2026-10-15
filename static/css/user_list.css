@@ -200,12 +200,14 @@
 }
 
 .user-action-unlock,
-.user-action-reactivate {
+.user-action-reactivate,
+.user-action-save {
     color: var(--color-secondary);
 }
 
 .user-action-unlock:hover,
-.user-action-reactivate:hover {
+.user-action-reactivate:hover,
+.user-action-save:hover {
     background: var(--color-secondary);
     color: #fff;
 }

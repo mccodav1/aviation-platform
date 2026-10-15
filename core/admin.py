@@ -140,6 +140,10 @@ class ContactMessageAdmin(admin.ModelAdmin):
     readonly_fields = ('name', 'email', 'message', 'created_at', 'seen_at', 'seen_by')
     ordering = ('-created_at',)
 
+    def has_add_permission(self, request):
+        # Messages only come from the Contact page.
+        return False
+
 @admin.register(JoinRequest)
 class JoinRequestAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email', 'pilot_status', 'status', 'created_at', 'seen_at')
@@ -152,3 +156,17 @@ class JoinRequestAdmin(admin.ModelAdmin):
         'created_at', 'status', 'seen_at', 'seen_by', 'decided_at', 'decided_by',
     )
     ordering = ('-created_at',)
+
+    def has_add_permission(self, request):
+        # Applications only come from the Join page, which also creates
+        # the applicant's account.
+        return False
+
+    # Deleting here works like Delete on /applications: a never-approved
+    # application takes its inactive account with it.
+    def delete_model(self, request, obj):
+        obj.delete_with_account()
+
+    def delete_queryset(self, request, queryset):
+        for join_request in queryset:
+            join_request.delete_with_account()
