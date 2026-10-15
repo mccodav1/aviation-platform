@@ -18,6 +18,20 @@ rebuilds them from `base_images/` and `base_documents/` (tracked seed files)
 and the fixture in `core/fixtures/`. The
 Makefile turns `DJANGO_DEBUG` on for these targets, so no `.env` is needed.
 
+## Tests
+
+```
+make test
+```
+
+About 180 tests, a few seconds. They cover every page rendering, the
+role ladder and permissions, login (including throttling), applying and
+approving members, the Messages / Applications / Users pages, the
+admin's anti-escalation rules, resources, events, meeting files, and the
+seed. Tests live in `core/tests/` and `meetings/tests/`; extend
+`core.tests.base.SiteTestCase`, which sets up a test club, temporary
+upload folders and helpers for each kind of account.
+
 ## Production-style (compose: nginx + gunicorn + Postgres)
 
 ### Files
