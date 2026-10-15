@@ -1,0 +1,190 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}Join | {{ organization.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
+<link rel="stylesheet" href="{% static 'css/cards.css' %}">
+<link rel="stylesheet" href="{% static 'css/join.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="page-hero join-hero">
+    <div class="container">
+        <h1>Join {{ organization.name }}</h1>
+        <p class="page-lede">
+            Whether you've logged thousands of hours or you're still dreaming
+            about your first lesson, there's a place for you here. Come fly,
+            learn, and spend time with people who love aviation as much as you do.
+        </p>
+        <a href="#apply" class="page-cta join-hero-cta">
+            Start your application <i class="bi bi-arrow-down"></i>
+        </a>
+    </div>
+</section>
+
+<section class="page-body">
+    <div class="container">
+
+        <div class="join-section">
+            <h2 class="join-section-title">What membership gets you</h2>
+            <p class="join-section-subtitle">
+                A friendly, local community at {{ organization.airport_icao }} - and plenty of reasons to fly.
+            </p>
+
+            <div class="card-grid join-benefits">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title-row">
+                            <span class="card-icon"><i class="bi bi-airplane"></i></span>
+                            <h3>Fly with friends</h3>
+                        </div>
+                        <p>Monthly Saturday flyouts from the {{ organization.airport_icao }} terminal, plus seasonal trips around the state and beyond.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title-row">
+                            <span class="card-icon"><i class="bi bi-fuel-pump"></i></span>
+                            <h3>A fuel discount</h3>
+                        </div>
+                        <p>Members get a discount on fuel - a little more flying for the same budget.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title-row">
+                            <span class="card-icon"><i class="bi bi-people"></i></span>
+                            <h3>Monthly meetings</h3>
+                        </div>
+                        <p>Get to know the local flying community, swap stories, and help shape what the club does next.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title-row">
+                            <span class="card-icon"><i class="bi bi-stars"></i></span>
+                            <h3>The annual dinner</h3>
+                        </div>
+                        <p>Celebrate the year's flying together at our annual membership dinner.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title-row">
+                            <span class="card-icon"><i class="bi bi-mortarboard"></i></span>
+                            <h3>Give back</h3>
+                        </div>
+                        <p>Support our scholarship for student pilots and mechanics, and help introduce kids to flying through Young Eagles.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title-row">
+                            <span class="card-icon"><i class="bi bi-folder2-open"></i></span>
+                            <h3>Member resources</h3>
+                        </div>
+                        <p>A member login for this site, with members-only documents and resources.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="join-section">
+            <h2 class="join-section-title">How joining works</h2>
+            <p class="join-section-subtitle">Simple and personal - a real person reads every application.</p>
+
+            <ol class="join-steps">
+                <li class="join-step">
+                    <span class="join-step-number">1</span>
+                    <div>
+                        <h3>Tell us about yourself</h3>
+                        <p>Fill out the short application below. It only takes a couple of minutes.</p>
+                    </div>
+                </li>
+                <li class="join-step">
+                    <span class="join-step-number">2</span>
+                    <div>
+                        <h3>An officer reviews it</h3>
+                        <p>One of our club officers will read your application and reach out if they have any questions.</p>
+                    </div>
+                </li>
+                <li class="join-step">
+                    <span class="join-step-number">3</span>
+                    <div>
+                        <h3>Welcome aboard</h3>
+                        <p>Once you're approved, we'll send you a welcome letter with everything you need to get started.</p>
+                    </div>
+                </li>
+                <li class="join-step">
+                    <span class="join-step-number">4</span>
+                    <div>
+                        <h3>You're in</h3>
+                        <p>We'll set up your member login, so you can see members-only resources and stay in the loop.</p>
+                    </div>
+                </li>
+            </ol>
+        </div>
+
+        <div class="form-card join-form-card" id="apply">
+            <h2>Apply to join</h2>
+            <p class="form-subtitle">
+                No experience required - student pilots, seasoned aviators, and
+                aviation fans are all welcome.
+            </p>
+
+            {% if sent %}
+                <div class="form-success">
+                    <i class="bi bi-check-circle"></i>
+                    Thanks for applying! An officer will review your application and be in touch soon.
+                </div>
+            {% endif %}
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" action="#apply">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <div class="join-submit-row">
+                    <button type="submit" class="form-submit">Submit application</button>
+                </div>
+            </form>
+        </div>
+
+        <p class="join-questions">
+            Not quite ready? <a href="{% url 'core:contact' %}">Send us a question</a>
+            {% if next_meeting %}
+                or come say hello at our next meeting on
+                <a href="{% url 'core:meeting_detail' next_meeting.pk %}">{{ next_meeting.starts_at|date:"F j" }}</a>.
+            {% else %}
+                or <a href="{% url 'core:meetings' %}">come to a meeting</a> - visitors are always welcome.
+            {% endif %}
+        </p>
+
+    </div>
+</section>
+
+{% endblock %}

@@ -43,20 +43,3 @@
     color: var(--color-secondary);
     font-size: 1.75rem;
 }
-
-.form-success {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-
-    margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
-
-    background: rgb(22 163 74 / 8%);
-    border: 1px solid rgb(22 163 74 / 30%);
-    border-radius: 6px;
-
-    color: #15803d;
-    font-size: 0.9rem;
-    font-weight: 600;
-}

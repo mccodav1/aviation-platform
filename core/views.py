@@ -14,7 +14,7 @@ from django.views.decorators.http import require_POST
 
 from meetings.services import get_month_calendar, get_next_meeting
 
-from .forms import ContactForm, ResourceForm
+from .forms import ContactForm, JoinRequestForm, ResourceForm
 from .models import ContactMessage, Resource, ResourceCategory
 from .services.weather import format_observed, get_metar
 
@@ -329,7 +329,28 @@ def contact_message_delete(request, pk):
     return redirect("core:contact_messages")
 
 def join(request):
-    return under_construction(request,"Join")
+    organization = request.organization
+    if not organization:
+        raise Http404
+
+    if request.method == "POST":
+        form = JoinRequestForm(request.POST, organization=organization)
+        if form.is_valid():
+            form.save()
+            # Back to the form's own section, where the thank-you shows.
+            return redirect(f"{reverse('core:join')}?sent=1#apply")
+    else:
+        form = JoinRequestForm(organization=organization)
+
+    return render(
+        request,
+        "app/join.html",
+        {
+            "form": form,
+            "next_meeting": get_next_meeting(organization),
+            "sent": request.GET.get("sent") == "1",
+        },
+    )
 
 def youngeagles(request):
     return render(request, "app/youngeagles.html")

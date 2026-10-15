@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from core.models import HeroImage, Organization, NavigationItem, Card, Highlight, Officer, InfoPanel, Resource, ResourceCategory, ContactMessage
+from core.models import HeroImage, Organization, NavigationItem, Card, Highlight, Officer, InfoPanel, Resource, ResourceCategory, ContactMessage, JoinRequest
 
 
 # Register your models here.
@@ -49,4 +49,11 @@ class ResourceAdmin(admin.ModelAdmin):
 class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ('name', 'email', 'created_at', 'seen_at', 'seen_by')
     readonly_fields = ('name', 'email', 'message', 'created_at', 'seen_at', 'seen_by')
+    ordering = ('-created_at',)
+
+@admin.register(JoinRequest)
+class JoinRequestAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'pilot_status', 'created_at')
+    list_filter = ('pilot_status',)
+    readonly_fields = ('name', 'email', 'phone', 'pilot_status', 'message', 'created_at')
     ordering = ('-created_at',)

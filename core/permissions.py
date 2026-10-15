@@ -19,6 +19,7 @@ OFFICER_PERMISSIONS = [
     ("core", "view_contactmessage"),
     ("core", "change_contactmessage"),
     ("core", "delete_contactmessage"),
+    ("core", "view_joinrequest"),
 ]
 
 

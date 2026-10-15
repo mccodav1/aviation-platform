@@ -56,6 +56,7 @@
 }
 
 .form-field input,
+.form-field select,
 .form-field textarea {
     width: 100%;
     padding: 0.65rem 0.85rem;
@@ -68,6 +69,7 @@
 }
 
 .form-field input:focus,
+.form-field select:focus,
 .form-field textarea:focus {
     outline: 2px solid var(--color-primary);
     outline-offset: 1px;
@@ -200,4 +202,22 @@
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
     text-transform: none;
+}
+
+/* Shown above a form after a successful submit (Contact, Join). */
+.form-success {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+
+    background: rgb(22 163 74 / 8%);
+    border: 1px solid rgb(22 163 74 / 30%);
+    border-radius: 6px;
+
+    color: #15803d;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
