@@ -11,7 +11,7 @@ browser -> nginx (:80) -> web (gunicorn + Django) -> db (Postgres)
 
 - **nginx** serves `/media/` straight off the media volume and proxies
   everything else to gunicorn. It never mounts `private_media`.
-- **web** runs `migrate` on every start, then gunicorn. Static files are
+- **web** runs `migrate` and `ensure_superuser` on every start, then gunicorn. Static files are
   collected into the image at build time and served by WhiteNoise.
 - **db** is Postgres 17; its data lives in the `pgdata` volume.
 
@@ -27,10 +27,10 @@ git clone git@github.com:mccodav1/aviation-platform.git
 cd aviation-platform
 cp .env.example .env
 # Fill in the MANDATORY section: secret key, the server's public IP in
-# DJANGO_ALLOWED_HOSTS, and a Postgres password.
+# DJANGO_ALLOWED_HOSTS, the admin username/password, and a Postgres
+# password.
 
-make up                  # docker compose up -d --build
-make compose-superuser   # create the first admin account
+make up                  # docker compose up -d --build (creates the admin account)
 make compose-seed        # optional: load the current site content
 ```
 
