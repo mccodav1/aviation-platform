@@ -50,7 +50,25 @@
                             <tr class="{% if not account.is_active %}user-row-inactive{% endif %}">
                                 <td class="user-name">{{ account.get_full_name|default:"-" }}</td>
                                 <td><a href="mailto:{{ account.email }}">{{ account.email }}</a></td>
-                                <td class="user-roles">{% for role in account.roles %}<span class="user-role user-role-{{ role|slugify }}">{{ role }}</span>{% endfor %}</td>
+                                <td class="user-roles">
+                                    {% if perms.core.assign_roles and not account.is_superuser and account.pk != user.pk and not account.unapproved_application %}
+                                        <form method="post" action="{% url 'core:user_set_role' account.pk %}" class="user-role-form"
+                                              data-confirm="Change {{ account.display_name }}'s role? This changes what they can see and do on the site."
+                                              data-confirm-title="Change role"
+                                              data-confirm-button="Change role"
+                                              data-confirm-tone="positive">
+                                            {% csrf_token %}
+                                            <select name="role" aria-label="Role for {{ account.display_name }}">
+                                                {% for value, label in role_choices %}
+                                                    <option value="{{ value }}"{% if value == account.role_choice %} selected{% endif %}>{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="submit" class="user-action-button user-action-reactivate">Save</button>
+                                        </form>
+                                    {% else %}
+                                        {% for role in account.roles %}<span class="user-role user-role-{{ role|slugify }}">{{ role }}</span>{% endfor %}
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <span class="user-status user-status-{{ account.account_status|slugify }}">{{ account.account_status }}</span>
                                     {% if account.is_locked_out %}

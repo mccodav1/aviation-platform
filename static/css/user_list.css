@@ -222,3 +222,28 @@
     white-space: nowrap;
 }
 
+/* ---- Role picker (officers/superadmins) ---- */
+
+.user-role-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+}
+
+.user-role-form select {
+    padding: 0.3rem 0.4rem;
+
+    border: 1px solid rgb(17 52 86 / 20%);
+    border-radius: 6px;
+
+    color: var(--color-secondary);
+    font: inherit;
+    font-size: 0.8rem;
+}
+
+.user-role-form select:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+}
+

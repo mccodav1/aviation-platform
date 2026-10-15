@@ -1,7 +1,7 @@
 import uuid
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager, Group
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
@@ -59,6 +59,11 @@ class User(AbstractUser):
 
     class Meta:
         ordering = ["email"]
+        permissions = [
+            # Separate from change_user so Site Admins can do account
+            # support without being able to hand out roles.
+            ("assign_roles", "Can change which roles (Officer, Site admin) a user has"),
+        ]
 
     def __str__(self):
         return self.email
@@ -93,6 +98,45 @@ class User(AbstractUser):
             # called out rather than lumped in with officers.
             return ["Staff"]
         return ["Member"]
+
+    @property
+    def role_choice(self):
+        """Which of ROLE_CHOICES this account currently has (see
+        set_role)."""
+        names = {group.name for group in self.groups.all()}
+        officer, site_admin = OFFICER_GROUP_NAME in names, SITE_ADMIN_GROUP_NAME in names
+        if officer and site_admin:
+            return "officer_site_admin"
+        if officer:
+            return "officer"
+        if site_admin:
+            return "site_admin"
+        return "member"
+
+    ROLE_CHOICES = [
+        ("member", "Member"),
+        ("officer", "Officer"),
+        ("site_admin", "Site admin"),
+        ("officer_site_admin", "Officer + Site admin"),
+    ]
+
+    def set_role(self, role):
+        """Puts the account in exactly the role groups `role` names (one
+        of ROLE_CHOICES), leaving any other groups alone. Staff status
+        follows: on with a role, so the admin works for them; off
+        without one."""
+        wanted = {
+            "member": set(),
+            "officer": {OFFICER_GROUP_NAME},
+            "site_admin": {SITE_ADMIN_GROUP_NAME},
+            "officer_site_admin": {OFFICER_GROUP_NAME, SITE_ADMIN_GROUP_NAME},
+        }[role]
+        role_groups = Group.objects.filter(name__in=[OFFICER_GROUP_NAME, SITE_ADMIN_GROUP_NAME])
+        self.groups.remove(*[group for group in role_groups if group.name not in wanted])
+        self.groups.add(*[group for group in role_groups if group.name in wanted])
+        if not self.is_superuser and self.is_staff != bool(wanted):
+            self.is_staff = bool(wanted)
+            self.save(update_fields=["is_staff"])
 
     @property
     def unapproved_application(self):

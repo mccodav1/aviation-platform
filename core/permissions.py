@@ -11,9 +11,10 @@ def _crud(app_label, *models):
 
 
 # What both roles can do: run meetings/events and resources, keep the
-# site's content up to date, and handle account support (unlocking accounts, resetting passwords, editing
-# names/emails, creating accounts, assigning the two role groups). No
-# delete_user for either - deactivate instead; deleting is superuser-only.
+# site's content up to date, and handle account support (unlocking
+# accounts, resetting passwords, editing names/emails, creating
+# accounts). No delete_user for either - deactivate instead; deleting is
+# superuser-only.
 # The admin keeps both away from superuser status and superuser
 # accounts (see UserAdmin).
 SHARED_PERMISSIONS = [
@@ -29,8 +30,10 @@ SHARED_PERMISSIONS = [
 
 # Officers additionally handle membership applications (reviewing,
 # approving/denying, deleting) and contact messages - both hold people's
-# personal details and are meant for the club's officers only.
+# personal details and are meant for the club's officers only - and
+# decide who holds a role.
 OFFICER_PERMISSIONS = SHARED_PERMISSIONS + [
+    ("core", "assign_roles"),
     ("core", "view_joinrequest"),
     ("core", "change_joinrequest"),
     ("core", "delete_joinrequest"),
@@ -40,7 +43,7 @@ OFFICER_PERMISSIONS = SHARED_PERMISSIONS + [
 ]
 
 # Site admins run the website alongside the officers - everything shared,
-# but no applications or contact messages.
+# but no applications, contact messages, or changing roles.
 SITE_ADMIN_PERMISSIONS = SHARED_PERMISSIONS
 
 # Each group's permissions, as (app_label, codename). Synced after every
