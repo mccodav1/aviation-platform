@@ -328,7 +328,23 @@ def contact_message_delete(request, pk):
 @login_required
 @permission_required("core.view_joinrequest", raise_exception=True)
 def join_requests(request):
-    return _review_list(request, "join_requests", "app/join_requests.html", "decided_by")
+    # Not _review_list's plain new/seen split: pending applications are
+    # split new/seen, and decided ones get their own Denied and Approved
+    # sections (denied are kept so a mistake can still be approved).
+    if not request.organization:
+        raise Http404
+    items = list(request.organization.join_requests.select_related("seen_by", "decided_by"))
+    pending = [item for item in items if item.is_pending]
+    return render(
+        request,
+        "app/join_requests.html",
+        {
+            "unseen_items": [item for item in pending if item.seen_at is None],
+            "seen_items": [item for item in pending if item.seen_at is not None],
+            "denied_items": [item for item in items if item.is_denied],
+            "approved_items": [item for item in items if item.is_approved],
+        },
+    )
 
 
 @login_required
@@ -347,35 +363,36 @@ def join_request_mark_unseen(request, pk):
     return redirect("core:join_requests")
 
 
-def _decide_join_request(request, pk, status):
+# Approve works on a pending or a denied application (a mistaken denial
+# can be reversed); Deny only on a pending one. Anything else is a no-op,
+# so a stale page can't overturn another officer's decision - e.g. a
+# Deny clicked after someone else approved.
+
+@login_required
+@permission_required("core.change_joinrequest", raise_exception=True)
+@require_POST
+def join_request_approve(request, pk):
     join_request = _review_item(request, JoinRequest, pk)
-    # Only a pending application can be decided here - so a stale page
-    # can't overturn another officer's decision. Changing a decision
-    # after the fact is an /admin edit.
-    if join_request.is_pending:
-        join_request.decide(status, request.user)
+    if not join_request.is_approved:
+        join_request.decide(JoinRequest.STATUS_APPROVED, request.user)
     return redirect("core:join_requests")
 
 
 @login_required
 @permission_required("core.change_joinrequest", raise_exception=True)
 @require_POST
-def join_request_approve(request, pk):
-    return _decide_join_request(request, pk, JoinRequest.STATUS_APPROVED)
-
-
-@login_required
-@permission_required("core.change_joinrequest", raise_exception=True)
-@require_POST
 def join_request_deny(request, pk):
-    return _decide_join_request(request, pk, JoinRequest.STATUS_DENIED)
+    join_request = _review_item(request, JoinRequest, pk)
+    if join_request.is_pending:
+        join_request.decide(JoinRequest.STATUS_DENIED, request.user)
+    return redirect("core:join_requests")
 
 
 @login_required
 @permission_required("core.delete_joinrequest", raise_exception=True)
 @require_POST
 def join_request_delete(request, pk):
-    _review_item(request, JoinRequest, pk).delete()
+    _review_item(request, JoinRequest, pk).delete_with_account()
     return redirect("core:join_requests")
 
 

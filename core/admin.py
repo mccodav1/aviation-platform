@@ -1,9 +1,45 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
 
-from core.models import HeroImage, Organization, NavigationItem, Card, Highlight, Officer, InfoPanel, Resource, ResourceCategory, ContactMessage, JoinRequest
+from core.models import HeroImage, Organization, NavigationItem, Card, Highlight, Officer, InfoPanel, Resource, ResourceCategory, ContactMessage, JoinRequest, User
 
 
-# Register your models here.
+class UserCreationAdminForm(AdminUserCreationForm):
+    class Meta(AdminUserCreationForm.Meta):
+        model = User
+        fields = ("email",)
+
+
+class UserChangeAdminForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
+        model = User
+        fields = "__all__"
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    # Django's UserAdmin, minus the username - accounts log in by email.
+    form = UserChangeAdminForm
+    add_form = UserCreationAdminForm
+    list_display = ("email", "first_name", "last_name", "is_active", "is_staff")
+    list_filter = ("is_active", "is_staff", "is_superuser", "groups")
+    search_fields = ("email", "first_name", "last_name")
+    ordering = ("email",)
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        ("Personal info", {"fields": ("first_name", "last_name")}),
+        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
+    )
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("email", "usable_password", "password1", "password2"),
+        }),
+    )
+
+
 @admin.register(HeroImage)
 class HeroImageAdmin(admin.ModelAdmin):
     pass
@@ -53,12 +89,13 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 @admin.register(JoinRequest)
 class JoinRequestAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'pilot_status', 'status', 'created_at', 'seen_at')
+    list_display = ('first_name', 'last_name', 'email', 'pilot_status', 'status', 'created_at', 'seen_at')
     list_filter = ('status', 'pilot_status')
-    # status stays editable - it's where a decision gets changed after
-    # the fact (the Applications page only decides pending ones).
+    # All read-only: approve/deny happens on /applications, which also
+    # activates or deactivates the linked account - editing status here
+    # would leave the two out of step.
     readonly_fields = (
-        'name', 'email', 'phone', 'pilot_status', 'message', 'created_at',
-        'seen_at', 'seen_by', 'decided_at', 'decided_by',
+        'user', 'first_name', 'last_name', 'email', 'phone', 'pilot_status', 'message',
+        'created_at', 'status', 'seen_at', 'seen_by', 'decided_at', 'decided_by',
     )
     ordering = ('-created_at',)

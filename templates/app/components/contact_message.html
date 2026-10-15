@@ -10,7 +10,7 @@
     <div class="message-item-footer">
         {% if contact_message.seen_at %}
             <span class="message-item-seen-by">
-                Seen{% if contact_message.seen_by %} by {{ contact_message.seen_by.get_full_name|default:contact_message.seen_by.username }}{% endif %}
+                Seen{% if contact_message.seen_by %} by {{ contact_message.seen_by.display_name }}{% endif %}
                 {{ contact_message.seen_at|date:"M j, Y g:i A" }}
             </span>
         {% endif %}

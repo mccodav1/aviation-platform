@@ -2,11 +2,16 @@ import re
 
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.auth.views import LoginView
 from django.urls import include, path, re_path
 from django.views.static import serve
 
+from core.forms import EmailAuthenticationForm
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Ahead of django.contrib.auth.urls, so /login/ uses the email form.
+    path('login/', LoginView.as_view(authentication_form=EmailAuthenticationForm), name='login'),
     path('', include('django.contrib.auth.urls')),
     path('', include("core.urls")),
 ]

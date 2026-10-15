@@ -105,6 +105,9 @@ MIDDLEWARE = [
     'core.middleware.timezone.BrowserTimezoneMiddleware',
 ]
 
+# Email-login user model (no username) - see core.models.User.
+AUTH_USER_MODEL = "core.User"
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
