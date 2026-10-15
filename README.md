@@ -81,6 +81,7 @@ docker compose exec -e DJANGO_SUPERUSER_PASSWORD='...' web \
 make up      # (re)build and start; also how code changes get deployed
 make logs    # follow logs from all services
 make down    # stop and remove containers - data in the volumes is kept
+make backup  # database + uploads -> backups/<date_time>/ (see docs/DEPLOY.md)
 ```
 
 ### Wiping everything and starting fresh

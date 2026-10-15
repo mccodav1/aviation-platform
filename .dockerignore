@@ -12,3 +12,6 @@ db.sqlite3*
 media/
 private_media/
 staticfiles/
+
+# `make backup` output - real club data, never committed or baked into the image.
+backups/
