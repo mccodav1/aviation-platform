@@ -302,6 +302,23 @@ def contact_message_mark_seen(request, pk):
 
 
 @login_required
+@permission_required("core.change_contactmessage", raise_exception=True)
+@require_POST
+def contact_message_mark_unseen(request, pk):
+    # Separate from mark_seen rather than one toggle view, so a page left
+    # open while another officer acts on the same message can't flip it
+    # back the wrong way.
+    contact_message = get_object_or_404(
+        ContactMessage, pk=pk, organization=request.organization,
+    )
+    if contact_message.seen_at is not None:
+        contact_message.seen_at = None
+        contact_message.seen_by = None
+        contact_message.save(update_fields=["seen_at", "seen_by"])
+    return redirect("core:contact_messages")
+
+
+@login_required
 @permission_required("core.delete_contactmessage", raise_exception=True)
 @require_POST
 def contact_message_delete(request, pk):

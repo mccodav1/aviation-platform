@@ -16,11 +16,18 @@
         {% endif %}
 
         <div class="message-item-actions">
-            {% if not contact_message.seen_at and perms.core.change_contactmessage %}
-                <form method="post" action="{% url 'core:contact_message_mark_seen' contact_message.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" class="message-action-button message-action-seen">Mark seen</button>
-                </form>
+            {% if perms.core.change_contactmessage %}
+                {% if contact_message.seen_at %}
+                    <form method="post" action="{% url 'core:contact_message_mark_unseen' contact_message.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="message-action-button message-action-seen">Mark unseen</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'core:contact_message_mark_seen' contact_message.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="message-action-button message-action-seen">Mark seen</button>
+                    </form>
+                {% endif %}
             {% endif %}
 
             {% if perms.core.delete_contactmessage %}
