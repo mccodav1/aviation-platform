@@ -16,8 +16,6 @@ runserver:
 bootstrap: migrate
 	$(DEV) bootstrap_site
 
-reset: migrations migrate runserver
-
 test:
 	$(DEV) test
 
@@ -44,4 +42,4 @@ compose-seed:
 compose-superuser:
 	docker compose exec web python manage.py createsuperuser
 
-.PHONY: migrate migrations runserver bootstrap reset test up down nuke logs compose-seed compose-superuser
+.PHONY: migrate migrations runserver bootstrap test up down nuke logs compose-seed compose-superuser

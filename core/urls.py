@@ -18,7 +18,25 @@ from meetings.views import (
     meetings_ics_feed,
 )
 
-from .views import *
+from .views import (
+    about,
+    aircraft,
+    calendar_panel,
+    contact,
+    home,
+    join,
+    members,
+    privacy_policy,
+    resource_category_create,
+    resource_create,
+    resource_download,
+    resource_toggle_enabled,
+    resources,
+    scholarship,
+    terms,
+    weather_panel,
+    youngeagles,
+)
 
 app_name = "core"
 
