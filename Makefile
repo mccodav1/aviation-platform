@@ -32,6 +32,12 @@ up:
 down:
 	docker compose down
 
+# Start over from nothing: also deletes the volumes (database, media,
+# private_media) and every image the stack uses. Follow with
+# `make up` and `make compose-seed`.
+nuke:
+	docker compose down -v --rmi all
+
 logs:
 	docker compose logs -f
 
@@ -42,4 +48,4 @@ compose-seed:
 compose-superuser:
 	docker compose exec web python manage.py createsuperuser
 
-.PHONY: migrate migrations runserver seed-media load-demo bootstrap reset test up down logs compose-seed compose-superuser
+.PHONY: migrate migrations runserver seed-media load-demo bootstrap reset test up down nuke logs compose-seed compose-superuser
