@@ -1,5 +1,9 @@
 from django.db import migrations
 
+# Superseded by core/permissions.py, which syncs the group after every
+# migrate. On a fresh database this finds no permissions (they don't
+# exist yet mid-migrate); kept only as migration history.
+
 # Same "Club Officers" group meetings/migrations/0004_club_officers_group.py
 # creates - get_or_create here too since core must not depend on the
 # optional meetings app (this migration has to work whether or not
