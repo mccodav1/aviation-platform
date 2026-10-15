@@ -20,9 +20,7 @@ SOURCE_DIRS = {
         "dest_root": lambda: Path(settings.MEDIA_ROOT),
         "assets": {
             "hero/coastline-sunset-2.png": "hero/coastline-sunset-2.png",
-            "hero/coastline-sunset.png": "hero/coastline-sunset.png",
             "hero/coastline.jpg": "hero/coastline.jpg",
-            "hero/distant.jpg": "hero/distant.jpg",
             "hero/lonepine.png": "hero/lonepine.png",
             "logos/salinaslogolong.png": "logos/salinaslogolong.png",
             "cards/fly-with-us.png": "cards/fly-with-us.png",
@@ -30,7 +28,6 @@ SOURCE_DIRS = {
             "cards/scholarship.png": "cards/scholarship.png",
             "cards/young-eagles.png": "cards/young-eagles.png",
             "welcome/valleyskyline.jpeg": "welcome/valleyskyline.jpeg",
-            "about/monterey-coast.jpg": "about/monterey-coast.jpg",
             "about/autogen.png": "about/autogen.png",
         },
     },
