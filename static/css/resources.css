@@ -89,7 +89,9 @@
 }
 
 .resource-action-button {
+    display: inline-block;
     padding: 0.5rem 0.9rem;
+    text-decoration: none;
 
     background: none;
     border: 2px solid currentColor;

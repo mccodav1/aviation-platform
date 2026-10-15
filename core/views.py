@@ -189,11 +189,46 @@ def resource_category_create(request):
 
 @login_required
 @permission_required("core.change_resource", raise_exception=True)
+def resource_edit(request, slug):
+    organization = request.organization
+    resource = get_object_or_404(Resource, slug=slug, organization=organization)
+
+    if request.method == "POST":
+        old_file_name = resource.file.name
+        form = ResourceForm(request.POST, request.FILES, instance=resource, organization=organization)
+        if form.is_valid():
+            form.save()
+            if "file" in form.changed_data:
+                # Uploading a replacement doesn't remove the old file from
+                # storage by itself.
+                resource.file.storage.delete(old_file_name)
+            return redirect("core:resources")
+    else:
+        form = ResourceForm(instance=resource, organization=organization)
+
+    return render(request, "app/resource_form.html", {"form": form, "resource": resource})
+
+
+@login_required
+@permission_required("core.delete_resource", raise_exception=True)
+@require_POST
+def resource_delete(request, slug):
+    # Permanent, unlike Disable - removes the file from storage too. Any
+    # link to it elsewhere on the site ("resource:<slug>") stops working;
+    # `manage.py check_links` reports those.
+    resource = get_object_or_404(Resource, slug=slug, organization=request.organization)
+    file = resource.file
+    resource.delete()
+    file.storage.delete(file.name)
+    return redirect("core:resources")
+
+
+@login_required
+@permission_required("core.change_resource", raise_exception=True)
 @require_POST
 def resource_toggle_enabled(request, slug):
-    # Reversible, front-end - mirrors meeting_toggle_cancelled. A
-    # permanent delete stays an /admin-only action, same reasoning as
-    # meetings: this view only ever flips is_enabled, never deletes.
+    # Reversible, front-end - mirrors meeting_toggle_cancelled. Hides a
+    # resource without removing it; Delete (resource_delete) removes it.
     resource = get_object_or_404(
         Resource, slug=slug, organization=request.organization,
     )

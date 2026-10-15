@@ -6,7 +6,7 @@
 <section class="form-page">
     <div class="container">
         <div class="form-card">
-            <h1>Add Event</h1>
+            <h1>{% if meeting %}Edit {{ meeting.get_event_type_display }}{% else %}Add Event{% endif %}</h1>
 
             {% if form.non_field_errors %}
                 <div class="form-errors">
@@ -38,6 +38,12 @@
 
                 <button type="submit" class="form-submit">Save Event</button>
             </form>
+
+            {% if meeting %}
+                <p class="form-back-link">
+                    <a href="{% url 'core:meeting_detail' meeting.pk %}">&larr; Back to {{ meeting.title }}</a>
+                </p>
+            {% endif %}
         </div>
     </div>
 </section>

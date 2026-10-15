@@ -1,7 +1,7 @@
 from django import forms
 
-from .models import Event
-from .widgets import PrivateClearableFileInput
+from .models import Event, EventAttachment
+from core.widgets import PrivateClearableFileInput
 
 
 class EventForm(forms.ModelForm):
@@ -26,3 +26,13 @@ class EventMinutesForm(forms.ModelForm):
         model = Event
         fields = ["minutes"]
         widgets = {"minutes": PrivateClearableFileInput}
+
+
+class EventAttachmentForm(forms.ModelForm):
+    class Meta:
+        model = EventAttachment
+        fields = ["title", "file"]
+        labels = {"title": "Name", "file": "File"}
+        help_texts = {"title": 'What it is, e.g. "Treasurer\'s report" or "Fly-out route".'}
+        widgets = {"file": PrivateClearableFileInput}
+
