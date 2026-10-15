@@ -30,3 +30,6 @@ staticfiles/
 
 # `make backup` output - real club data, never committed or baked into the image.
 backups/
+
+# Personal working list of upcoming work - not tracked (see BACKLOG.md itself).
+BACKLOG.md
