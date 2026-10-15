@@ -15,3 +15,6 @@ staticfiles/
 
 # `make backup` output - real club data, never committed or baked into the image.
 backups/
+
+# Personal working notes, not part of the app.
+BACKLOG.md
