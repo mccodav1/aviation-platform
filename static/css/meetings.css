@@ -319,6 +319,49 @@
     margin-top: 1.5rem;
 }
 
+.meeting-detail-actions form {
+    margin: 0;
+}
+
+/* Officers' list of a meeting's extra attachments, each with Remove. */
+.meeting-attachments-manage {
+    margin-top: 1.75rem;
+}
+
+.meeting-attachments-manage h2 {
+    margin: 0 0 .75rem;
+
+    color: var(--color-secondary);
+    font-size: 1.1rem;
+}
+
+.meeting-attachments-manage ul {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    list-style: none;
+}
+
+.meeting-attachments-manage li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    padding: .6rem .9rem;
+
+    background: #fff;
+    border: 1px solid rgb(17 52 86 / 10%);
+    border-radius: 8px;
+
+    color: var(--color-secondary);
+}
+
+.meeting-attachments-manage form {
+    margin: 0;
+}
+
 @media (max-width: 600px) {
     .meeting-card {
         flex-direction: column;

@@ -4,6 +4,7 @@
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
 <link rel="stylesheet" href="{% static 'css/resources.css' %}">
+<link rel="stylesheet" href="{% static 'css/confirm_dialog.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -53,6 +54,7 @@
                             {% endif %}
 
                             {% if can_manage %}
+                                <a href="{% url 'core:resource_edit' resource.slug %}" class="resource-action-button resource-action-enable">Edit</a>
                                 <form method="post" action="{% url 'core:resource_toggle_enabled' resource.slug %}" class="resource-item-toggle">
                                     {% csrf_token %}
                                     <button
@@ -62,6 +64,15 @@
                                         {% if resource.is_enabled %}Disable{% else %}Enable{% endif %}
                                     </button>
                                 </form>
+                                {% if perms.core.delete_resource %}
+                                    <form method="post" action="{% url 'core:resource_delete' resource.slug %}" class="resource-item-toggle"
+                                          data-confirm="Delete &quot;{{ resource.title }}&quot; and its file permanently? Any link to it on the site will stop working. To just hide it, use Disable instead."
+                                          data-confirm-title="Delete resource"
+                                          data-confirm-button="Delete">
+                                        {% csrf_token %}
+                                        <button type="submit" class="resource-action-button resource-action-disable">Delete</button>
+                                    </form>
+                                {% endif %}
                             {% endif %}
                         </li>
                     {% endfor %}
@@ -75,4 +86,10 @@
     </div>
 </section>
 
+{% include "app/components/confirm_dialog.html" %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/confirm_dialog.js' %}"></script>
 {% endblock %}

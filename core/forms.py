@@ -9,6 +9,7 @@ from django.contrib.auth.forms import AuthenticationForm, UsernameField
 from django.db import transaction
 
 from . import throttle
+from .widgets import PrivateClearableFileInput
 
 from .models import ContactMessage, JoinRequest, Resource, ResourceCategory, User
 
@@ -225,6 +226,9 @@ class ResourceForm(forms.ModelForm):
         fields = ["title", "description", "category", "file", "visibility"]
         widgets = {
             "description": forms.TextInput(),
+            # Shows the current file's name when editing, without asking
+            # private storage for a URL (which it refuses on purpose).
+            "file": PrivateClearableFileInput,
         }
 
     def __init__(self, *args, organization=None, **kwargs):

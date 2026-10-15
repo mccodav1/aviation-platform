@@ -3,10 +3,12 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
 from django.contrib.auth.models import Group
+from django.db import models
 
 from core.forms import ThrottledAdminAuthenticationForm
 from core.models import HeroImage, Organization, NavigationItem, Card, Highlight, Officer, InfoPanel, Resource, ResourceCategory, ContactMessage, JoinRequest, User
 from core.permissions import GROUP_PERMISSIONS
+from core.widgets import PrivateClearableFileInput
 
 # /admin/login/ gets the same login throttling as the site (see
 # core/throttle.py) - otherwise it'd be a way around it.
@@ -127,6 +129,10 @@ class ResourceCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
+    # The admin's default file widget asks storage for the file's URL,
+    # which private storage refuses on purpose - the edit page 500'd for
+    # every resource. This widget shows the file name instead.
+    formfield_overrides = {models.FileField: {"widget": PrivateClearableFileInput}}
     list_display = ('title', 'category', 'visibility', 'slug', 'order', 'is_enabled')
     list_filter = ('category', 'visibility', 'is_enabled')
     # Auto-fills the slug field from the title as you type, in-browser -

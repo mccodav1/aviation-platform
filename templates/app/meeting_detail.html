@@ -3,6 +3,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/meetings.css' %}">
+<link rel="stylesheet" href="{% static 'css/confirm_dialog.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -57,6 +58,9 @@
 
         {% if perms.meetings.change_event %}
             <div class="meeting-detail-actions">
+                <a href="{% url 'core:meeting_edit' meeting.pk %}" class="meeting-action-link">
+                    Edit {{ meeting.get_event_type_display }}
+                </a>
                 <form method="post" action="{% url 'core:meeting_toggle_cancelled' meeting.pk %}">
                     {% csrf_token %}
                     <button type="submit"
@@ -72,9 +76,49 @@
                         {% if meeting.minutes %}Replace{% else %}Add{% endif %} Minutes
                     </a>
                 {% endif %}
+                <a href="{% url 'core:meeting_attachment_add' meeting.pk %}" class="meeting-action-link">
+                    Add Attachment
+                </a>
+                {% if perms.meetings.delete_event %}
+                    <form method="post" action="{% url 'core:meeting_delete' meeting.pk %}"
+                          data-confirm="Delete {{ meeting.title }} permanently? Its agenda, minutes and attachments are deleted too. To keep it listed as called off, use Cancel instead."
+                          data-confirm-title="Delete {{ meeting.get_event_type_display|lower }}"
+                          data-confirm-button="Delete">
+                        {% csrf_token %}
+                        <button type="submit" class="meeting-action-button meeting-action-cancel">Delete</button>
+                    </form>
+                {% endif %}
             </div>
+
+            {% with attachments=meeting.attachments.all %}
+                {% if attachments %}
+                    <div class="meeting-attachments-manage">
+                        <h2>Attachments</h2>
+                        <ul>
+                            {% for attachment in attachments %}
+                                <li>
+                                    <span><i class="bi bi-paperclip"></i> {{ attachment.title }}</span>
+                                    <form method="post" action="{% url 'core:meeting_attachment_delete' meeting.pk attachment.pk %}"
+                                          data-confirm="Delete the attachment &quot;{{ attachment.title }}&quot;? This can't be undone."
+                                          data-confirm-title="Delete attachment"
+                                          data-confirm-button="Delete">
+                                        {% csrf_token %}
+                                        <button type="submit" class="meeting-action-button meeting-action-cancel">Remove</button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endwith %}
         {% endif %}
     </div>
 </section>
 
+{% include "app/components/confirm_dialog.html" %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/confirm_dialog.js' %}"></script>
 {% endblock %}
