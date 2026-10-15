@@ -119,6 +119,8 @@ docker run --rm -v aviation-platform_media:/m -v aviation-platform_private_media
   `timezone.localtime()`), never raw formatting of the stored value.
 - **One deployment per organization.** The `Organization` table is a
   single-row site configuration, not multi-tenancy.
-- **Officer permissions come from the "Club Officers" group**, created by
-  migrations. Give an account officer powers by setting `is_staff` and
-  adding it to that group in `/admin`.
+- **Officer permissions come from the "Club Officers" group.** Its
+  permissions are listed in `core/permissions.py` and synced after every
+  `migrate` (so on container start too) - add new ones there, not in a
+  data migration. Give an account officer powers by setting `is_staff`
+  and adding it to that group in `/admin`.

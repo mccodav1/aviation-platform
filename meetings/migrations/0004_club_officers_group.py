@@ -1,5 +1,9 @@
 from django.db import migrations
 
+# Superseded by core/permissions.py, which syncs the group after every
+# migrate. On a fresh database this finds no permissions (they don't
+# exist yet mid-migrate); kept only as migration history.
+
 
 GROUP_NAME = "Club Officers"
 PERMISSION_CODENAMES = ["add_meeting", "change_meeting", "delete_meeting"]
