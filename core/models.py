@@ -78,64 +78,56 @@ class User(AbstractUser):
     def display_name(self):
         return self.get_full_name() or self.email
 
-    @property
-    def roles(self):
-        """The account's roles, as officers think of them - one account
-        can be both an Officer and a Site admin. Reads self.groups, so
-        prefetch_related("groups") when listing many users."""
-        if self.is_superuser:
-            return ["Superadmin"]
-        group_names = {group.name for group in self.groups.all()}
-        roles = [
-            label
-            for group_name, label in ((OFFICER_GROUP_NAME, "Officer"), (SITE_ADMIN_GROUP_NAME, "Site admin"))
-            if group_name in group_names
-        ]
-        if roles:
-            return roles
-        if self.is_staff:
-            # Admin access but in neither role group - unusual, so it's
-            # called out rather than lumped in with officers.
-            return ["Staff"]
-        return ["Member"]
+    # Roles are a ladder - each one can do everything the one below it
+    # can (see core/permissions.py) - so an account has exactly one.
+    # Superadmin (is_superuser) sits above these and is managed in /admin.
+    ROLE_CHOICES = [
+        ("member", "Member"),
+        ("site_admin", "Site admin"),
+        ("officer", "Officer"),
+    ]
+    ROLE_GROUPS = {
+        "member": None,
+        "site_admin": SITE_ADMIN_GROUP_NAME,
+        "officer": OFFICER_GROUP_NAME,
+    }
 
     @property
     def role_choice(self):
-        """Which of ROLE_CHOICES this account currently has (see
-        set_role)."""
+        """Which of ROLE_CHOICES this account has - the highest, if it's
+        somehow in more than one role group. Reads self.groups, so
+        prefetch_related("groups") when listing many users."""
         names = {group.name for group in self.groups.all()}
-        officer, site_admin = OFFICER_GROUP_NAME in names, SITE_ADMIN_GROUP_NAME in names
-        if officer and site_admin:
-            return "officer_site_admin"
-        if officer:
+        if OFFICER_GROUP_NAME in names:
             return "officer"
-        if site_admin:
+        if SITE_ADMIN_GROUP_NAME in names:
             return "site_admin"
         return "member"
 
-    ROLE_CHOICES = [
-        ("member", "Member"),
-        ("officer", "Officer"),
-        ("site_admin", "Site admin"),
-        ("officer_site_admin", "Officer + Site admin"),
-    ]
+    @property
+    def role(self):
+        """The account's role, as officers think of it."""
+        if self.is_superuser:
+            return "Superadmin"
+        choice = self.role_choice
+        if choice == "member" and self.is_staff:
+            # Admin access but no role group - unusual, so it's called
+            # out rather than lumped in with members.
+            return "Staff"
+        return dict(self.ROLE_CHOICES)[choice]
 
     def set_role(self, role):
-        """Puts the account in exactly the role groups `role` names (one
-        of ROLE_CHOICES), leaving any other groups alone. Staff status
-        follows: on with a role, so the admin works for them; off
-        without one."""
-        wanted = {
-            "member": set(),
-            "officer": {OFFICER_GROUP_NAME},
-            "site_admin": {SITE_ADMIN_GROUP_NAME},
-            "officer_site_admin": {OFFICER_GROUP_NAME, SITE_ADMIN_GROUP_NAME},
-        }[role]
-        role_groups = Group.objects.filter(name__in=[OFFICER_GROUP_NAME, SITE_ADMIN_GROUP_NAME])
-        self.groups.remove(*[group for group in role_groups if group.name not in wanted])
-        self.groups.add(*[group for group in role_groups if group.name in wanted])
-        if not self.is_superuser and self.is_staff != bool(wanted):
-            self.is_staff = bool(wanted)
+        """Puts the account in exactly the one role group `role` (one of
+        ROLE_CHOICES) names - or none, for a member - leaving any other
+        groups alone. Staff status follows: on with a role, so the admin
+        works for them; off without one."""
+        wanted = self.ROLE_GROUPS[role]
+        role_groups = Group.objects.filter(name__in=[name for name in self.ROLE_GROUPS.values() if name])
+        self.groups.remove(*[group for group in role_groups if group.name != wanted])
+        self.groups.add(*[group for group in role_groups if group.name == wanted])
+        has_role = wanted is not None
+        if not self.is_superuser and self.is_staff != has_role:
+            self.is_staff = has_role
             self.save(update_fields=["is_staff"])
 
     @property

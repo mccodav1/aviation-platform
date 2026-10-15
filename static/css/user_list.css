@@ -89,12 +89,6 @@
     font-style: italic;
 }
 
-/* Spaced with a margin rather than flex/gap, which would stop the <td>
-   behaving as a table cell. */
-.user-role + .user-role {
-    margin-left: 0.35rem;
-}
-
 .user-role,
 .user-status {
     display: inline-block;

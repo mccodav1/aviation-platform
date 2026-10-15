@@ -43,7 +43,9 @@ OFFICER_PERMISSIONS = SHARED_PERMISSIONS + [
 ]
 
 # Site admins run the website alongside the officers - everything shared,
-# but no applications, contact messages, or changing roles.
+# but no applications, contact messages, or changing roles. So the roles
+# are a ladder: Officer can do everything Site admin can, and more (see
+# User.ROLE_CHOICES) - keep OFFICER_PERMISSIONS a superset of this.
 SITE_ADMIN_PERMISSIONS = SHARED_PERMISSIONS
 
 # Each group's permissions, as (app_label, codename). Synced after every

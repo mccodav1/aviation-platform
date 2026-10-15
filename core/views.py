@@ -409,7 +409,7 @@ def user_list(request):
     for account in users:
         account.is_locked_out = account.email in locked
     role_order = {"Superadmin": 0, "Officer": 1, "Site admin": 2, "Staff": 3, "Member": 4}
-    users.sort(key=lambda user: (min(role_order[role] for role in user.roles), user.display_name.lower()))
+    users.sort(key=lambda user: (role_order[user.role], user.display_name.lower()))
     return render(
         request,
         "app/user_list.html",
