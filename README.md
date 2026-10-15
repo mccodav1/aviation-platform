@@ -9,7 +9,7 @@ codebase as a template for other flying clubs (each on its own deployment).
 
 ```
 uv sync
-make bootstrap   # migrate + seed_media + loaddata (demo content/images)
+make bootstrap   # migrate + bootstrap_site (seed content and images)
 make runserver
 ```
 

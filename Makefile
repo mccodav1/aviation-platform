@@ -12,13 +12,9 @@ runserver:
 	$(DEV) check_links
 	$(DEV) runserver
 
-seed-media:
-	$(DEV) seed_media
-
-load-demo:
-	$(DEV) loaddata core/fixtures/spa_demo.json
-
-bootstrap: migrate seed-media load-demo
+# One-time content seed (see bootstrap_site) - same as compose-seed.
+bootstrap: migrate
+	$(DEV) bootstrap_site
 
 reset: migrations migrate runserver
 
@@ -48,4 +44,4 @@ compose-seed:
 compose-superuser:
 	docker compose exec web python manage.py createsuperuser
 
-.PHONY: migrate migrations runserver seed-media load-demo bootstrap reset test up down nuke logs compose-seed compose-superuser
+.PHONY: migrate migrations runserver bootstrap reset test up down nuke logs compose-seed compose-superuser

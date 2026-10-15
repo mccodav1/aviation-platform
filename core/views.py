@@ -275,17 +275,6 @@ def join(request):
 def youngeagles(request):
     return render(request, "app/youngeagles.html")
 
-# Create your views here.
-# def home(request):
-#     return render(request, "home.html")
-# #
-# # def base_app(request):
-# #     return render(request, "app/base_app.html")
-# #
-# # def dashboard(request):
-# #     return render(request, "app/dashboard.html")
-
-
 def under_construction(request, page_title, page_description=None):
     """Render the generic "under construction" placeholder page.
 
@@ -312,4 +301,4 @@ def under_construction(request, page_title, page_description=None):
             "page_title": page_title,
             "page_description": page_description,
         },
-    )
+    )

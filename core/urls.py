@@ -1,10 +1,8 @@
 from django.urls import path
 
 # meetings is a required, permanent part of this template (see the note
-# on INSTALLED_APPS in config/settings.py), split into its own Django app
-# for code organization only - not something a deployment can drop, so
-# these routes are wired in unconditionally rather than guarded by
-# whether the app is installed.
+# on INSTALLED_APPS in config/settings.py), so its routes are wired in
+# here unconditionally, under the same core: namespace.
 from meetings.views import (
     event_list,
     events_ics_feed,
@@ -54,4 +52,4 @@ urlpatterns = [
     path("weather", weather_panel, name="weather_panel"),
     path("calendar", calendar_panel, name="calendar_panel"),
     path("", home, name="home"),
-]
+]
