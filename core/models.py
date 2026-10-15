@@ -516,6 +516,7 @@ class JoinRequest(models.Model):
         ("enthusiast", "Not a pilot (yet) - just love aviation"),
         ("student", "Student pilot"),
         ("private", "Private pilot"),
+        ("instrument", "Instrument rated"),
         ("commercial", "Commercial / ATP"),
         ("instructor", "Flight instructor (CFI)"),
         ("other", "Other"),
