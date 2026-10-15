@@ -2,8 +2,10 @@ import logging
 from datetime import date
 from pathlib import Path
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.views import redirect_to_login
+from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
@@ -14,8 +16,9 @@ from django.views.decorators.http import require_POST
 
 from meetings.services import get_month_calendar, get_next_meeting
 
+from . import throttle
 from .forms import ContactForm, JoinRequestForm, ResourceForm
-from .models import ContactMessage, JoinRequest, Resource, ResourceCategory
+from .models import ContactMessage, JoinRequest, Resource, ResourceCategory, User
 from .services.weather import format_observed, get_metar
 
 logger = logging.getLogger(__name__)
@@ -394,6 +397,73 @@ def join_request_deny(request, pk):
 def join_request_delete(request, pk):
     _review_item(request, JoinRequest, pk).delete_with_account()
     return redirect("core:join_requests")
+
+
+@login_required
+@permission_required("core.view_user", raise_exception=True)
+def user_list(request):
+    # Account changes beyond deactivate/reactivate/unlock are made in
+    # /admin.
+    users = list(User.objects.prefetch_related("groups").select_related("join_request"))
+    locked = throttle.locked_emails()
+    for account in users:
+        account.is_locked_out = account.email in locked
+    role_order = {"Superadmin": 0, "Officer": 1, "Site admin": 2, "Staff": 3, "Member": 4}
+    users.sort(key=lambda user: (min(role_order[role] for role in user.roles), user.display_name.lower()))
+    return render(
+        request,
+        "app/user_list.html",
+        {
+            "users": users,
+            "active_count": sum(user.is_active for user in users),
+            "pending_count": sum(user.account_status == "Pending approval" for user in users),
+            "locked_count": sum(user.is_locked_out for user in users),
+            "lockout_minutes": settings.LOGIN_LOCKOUT_MINUTES,
+        },
+    )
+
+
+def _manageable_user(request, pk):
+    """The account a Users page action targets - refused if it's a
+    superuser and the officer isn't one (same rule as the admin)."""
+    account = get_object_or_404(User, pk=pk)
+    if account.is_superuser and not request.user.is_superuser:
+        raise PermissionDenied
+    return account
+
+
+@login_required
+@permission_required("core.change_user", raise_exception=True)
+@require_POST
+def user_deactivate(request, pk):
+    # The manual "switch this account off" - open-ended, unlike a
+    # login-throttling lockout. Not your own account, so nobody locks
+    # themselves out by accident.
+    account = _manageable_user(request, pk)
+    if account.pk != request.user.pk and account.is_active:
+        account.is_active = False
+        account.save(update_fields=["is_active"])
+    return redirect("core:user_list")
+
+
+@login_required
+@permission_required("core.change_user", raise_exception=True)
+@require_POST
+def user_reactivate(request, pk):
+    account = _manageable_user(request, pk)
+    # An applicant's account is switched on by approving the application.
+    if not account.is_active and not account.unapproved_application:
+        account.is_active = True
+        account.save(update_fields=["is_active"])
+    return redirect("core:user_list")
+
+
+@login_required
+@permission_required("core.change_user", raise_exception=True)
+@require_POST
+def user_unlock(request, pk):
+    throttle.unlock(_manageable_user(request, pk).email)
+    return redirect("core:user_list")
 
 
 def join(request):

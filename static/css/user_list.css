@@ -1,0 +1,224 @@
+/* ==========================
+   Users Page (officers)
+   ========================== */
+
+.user-list-block {
+    max-width: 64rem;
+}
+
+.user-list-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+
+    margin-bottom: 1.25rem;
+
+    color: #64748b;
+}
+
+.user-list-summary strong {
+    color: var(--color-secondary);
+}
+
+.user-list-summary a {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.user-list-summary a strong {
+    color: inherit;
+}
+
+/* Scrolls sideways on a narrow screen instead of squashing columns. */
+.user-table-wrap {
+    overflow-x: auto;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    font-size: 0.9rem;
+}
+
+.user-table th {
+    padding: 0.6rem 0.75rem;
+
+    border-bottom: 2px solid rgb(17 52 86 / 12%);
+
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.user-table td {
+    padding: 0.7rem 0.75rem;
+
+    border-bottom: 1px solid rgb(17 52 86 / 8%);
+
+    color: var(--color-secondary);
+    white-space: nowrap;
+}
+
+.user-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.user-table a {
+    color: var(--color-secondary);
+}
+
+.user-name {
+    font-weight: 700;
+}
+
+.user-row-inactive td {
+    color: #94a3b8;
+}
+
+.user-row-inactive a {
+    color: #94a3b8;
+}
+
+.user-never {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* Spaced with a margin rather than flex/gap, which would stop the <td>
+   behaving as a table cell. */
+.user-role + .user-role {
+    margin-left: 0.35rem;
+}
+
+.user-role,
+.user-status {
+    display: inline-block;
+
+    padding: 0.1rem 0.5rem;
+
+    border-radius: 4px;
+
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.user-role-superadmin {
+    background: var(--color-secondary);
+    color: #fff;
+}
+
+.user-role-officer {
+    background: rgb(29 38 71 / 12%);
+    color: var(--color-secondary);
+}
+
+.user-role-site-admin {
+    background: rgb(14 116 144 / 12%);
+    color: #0e7490;
+}
+
+.user-role-staff {
+    background: rgb(218 65 68 / 12%);
+    color: #b8343a;
+}
+
+.user-role-member {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.user-status-active {
+    background: rgb(22 163 74 / 12%);
+    color: #15803d;
+}
+
+.user-status-pending-approval {
+    background: rgb(234 179 8 / 15%);
+    color: #a16207;
+}
+
+.user-status-denied {
+    background: rgb(218 65 68 / 12%);
+    color: #b8343a;
+}
+
+.user-status-deactivated {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.user-status-locked-out {
+    margin-left: 0.35rem;
+
+    background: rgb(218 65 68 / 12%);
+    color: #b8343a;
+}
+
+.user-list-locked strong {
+    color: #b8343a;
+}
+
+/* ---- Actions ---- */
+
+.user-actions {
+    text-align: right;
+}
+
+.user-actions form {
+    display: inline-block;
+    margin: 0 0 0 0.35rem;
+}
+
+.user-action-button {
+    padding: 0.3rem 0.65rem;
+
+    background: none;
+    border: 2px solid currentColor;
+    border-radius: 6px;
+
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.user-action-unlock,
+.user-action-reactivate {
+    color: var(--color-secondary);
+}
+
+.user-action-unlock:hover,
+.user-action-reactivate:hover {
+    background: var(--color-secondary);
+    color: #fff;
+}
+
+.user-action-deactivate {
+    color: var(--color-primary);
+}
+
+.user-action-deactivate:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+

@@ -1,8 +1,16 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
+from django.contrib.auth.models import Group
 
+from core.forms import ThrottledAdminAuthenticationForm
 from core.models import HeroImage, Organization, NavigationItem, Card, Highlight, Officer, InfoPanel, Resource, ResourceCategory, ContactMessage, JoinRequest, User
+from core.permissions import GROUP_PERMISSIONS
+
+# /admin/login/ gets the same login throttling as the site (see
+# core/throttle.py) - otherwise it'd be a way around it.
+admin.site.login_form = ThrottledAdminAuthenticationForm
 
 
 class UserCreationAdminForm(AdminUserCreationForm):
@@ -15,6 +23,19 @@ class UserChangeAdminForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = User
         fields = "__all__"
+
+    def clean_is_active(self):
+        # An applicant's account is switched on by approving their
+        # application, not here - activating it directly would let them
+        # in without an officer's decision and leave the application
+        # still showing as pending (or denied).
+        is_active = self.cleaned_data.get("is_active")
+        if is_active and not self.instance.is_active and self.instance.unapproved_application:
+            raise forms.ValidationError(
+                "This account belongs to a membership application that hasn't been "
+                "approved. Approve it on the Applications page instead."
+            )
+        return is_active
 
 
 @admin.register(User)
@@ -38,6 +59,33 @@ class UserAdmin(BaseUserAdmin):
             "fields": ("email", "usable_password", "password1", "password2"),
         }),
     )
+
+    # Officers and Site Admins (change_user, but not superusers) manage
+    # accounts without being able to escalate: no superuser status or individual
+    # permissions, only the role groups, and no editing a superuser's
+    # account (so not their password or active status either).
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if request.user.is_superuser or obj is None:
+            return fieldsets
+        return tuple(
+            (name, {**options, "fields": tuple(
+                field for field in options["fields"]
+                if field not in ("is_superuser", "user_permissions")
+            )})
+            for name, options in fieldsets
+        )
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and obj.is_superuser and not request.user.is_superuser:
+            return False
+        return super().has_change_permission(request, obj)
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "groups" and not request.user.is_superuser:
+            kwargs["queryset"] = Group.objects.filter(name__in=GROUP_PERMISSIONS)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
 @admin.register(HeroImage)

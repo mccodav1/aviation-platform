@@ -6,6 +6,6 @@ class CoreConfig(AppConfig):
     name = 'core'
 
     def ready(self):
-        from .permissions import sync_officer_group
+        from .permissions import sync_role_groups
 
-        post_migrate.connect(sync_officer_group, dispatch_uid="core.sync_officer_group")
+        post_migrate.connect(sync_role_groups, dispatch_uid="core.sync_role_groups")

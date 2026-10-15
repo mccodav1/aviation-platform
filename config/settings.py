@@ -187,6 +187,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LOGIN_URL = 'login'
+
+# Login throttling (see core/throttle.py): this many failed attempts for
+# one email from one IP address locks that pair out for this long.
+LOGIN_FAILURE_LIMIT = 5
+LOGIN_LOCKOUT_MINUTES = 15
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 

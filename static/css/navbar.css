@@ -150,7 +150,7 @@
    Messages (officers)
    ========================== */
 
-/* Officer-only review icons (Applications, Messages) - grouped so they
+/* Officer-only icons (Users, Applications, Messages) - grouped so they
    sit closer together than .nav-actions' wide gap between sections. */
 .nav-review-links {
     display: flex;
