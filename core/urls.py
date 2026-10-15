@@ -52,4 +52,4 @@ urlpatterns = [
     path("weather", weather_panel, name="weather_panel"),
     path("calendar", calendar_panel, name="calendar_panel"),
     path("", home, name="home"),
-]
+]
