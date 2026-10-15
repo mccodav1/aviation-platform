@@ -9,7 +9,6 @@ from core.models import Organization
 # matching files out of base_images/ and base_documents/.
 FIXTURES = [
     "core/fixtures/spa_demo.json",
-    "meetings/fixtures/spa_demo.json",
 ]
 
 

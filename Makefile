@@ -16,7 +16,7 @@ seed-media:
 	$(DEV) seed_media
 
 load-demo:
-	$(DEV) loaddata core/fixtures/spa_demo.json meetings/fixtures/spa_demo.json
+	$(DEV) loaddata core/fixtures/spa_demo.json
 
 bootstrap: migrate seed-media load-demo
 

@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand
 # seed assets; media/ and private_media/ are per-deployment, generated/
 # uploaded output and aren't tracked in git, so they need to be
 # reconstructed on a fresh clone before the fixtures' File/ImageField
-# paths (see core/fixtures, meetings/fixtures) resolve to real files.
+# paths (see core/fixtures) resolve to real files.
 #
 # base_documents/ seeds into private_media/ rather than media/ - every
 # Resource file lives in private storage regardless of its visibility
@@ -38,7 +38,6 @@ SOURCE_DIRS = {
         "dest_root": lambda: Path(settings.PRIVATE_MEDIA_ROOT),
         "assets": {
             "scholarship-application.pdf": "resources/scholarship-application.pdf",
-            "Cessna_172M.pdf": "resources/Cessna_172M.pdf",
         },
     },
 }
