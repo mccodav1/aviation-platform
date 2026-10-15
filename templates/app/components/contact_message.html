@@ -25,7 +25,9 @@
 
             {% if perms.core.delete_contactmessage %}
                 <form method="post" action="{% url 'core:contact_message_delete' contact_message.pk %}"
-                      onsubmit="return confirm('Delete this message from {{ contact_message.name|escapejs }}? This can\'t be undone.');">
+                      data-confirm="Delete this message from {{ contact_message.name }}? This can't be undone."
+                      data-confirm-title="Delete message"
+                      data-confirm-button="Delete">
                     {% csrf_token %}
                     <button type="submit" class="message-action-button message-action-delete">Delete</button>
                 </form>

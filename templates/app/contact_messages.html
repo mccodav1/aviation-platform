@@ -6,6 +6,7 @@
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
 <link rel="stylesheet" href="{% static 'css/contact_messages.css' %}">
+<link rel="stylesheet" href="{% static 'css/confirm_dialog.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -44,4 +45,10 @@
     </div>
 </section>
 
+{% include "app/components/confirm_dialog.html" %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/confirm_dialog.js' %}"></script>
 {% endblock %}
