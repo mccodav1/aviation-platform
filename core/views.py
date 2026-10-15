@@ -98,11 +98,19 @@ def members(request):
 def aircraft(request):
     return under_construction(request,"Aircraft")
 
+# The Resource the Scholarship page's download button points at, by slug
+# rather than title: a slug is set once, when the resource is created, and
+# doesn't change when officers edit the title - so renaming it on the
+# Resources page can't quietly remove the button. (It's the slug the
+# seeded "Scholarship Application" resource gets.)
+SCHOLARSHIP_APPLICATION_SLUG = "scholarship-application"
+
+
 def scholarship(request):
     application = None
     if request.organization:
         application = request.organization.resources.filter(
-            title="Scholarship Application", is_enabled=True,
+            slug=SCHOLARSHIP_APPLICATION_SLUG, is_enabled=True,
         ).first()
 
     return render(request, "app/scholarship.html", {"application": application})
