@@ -45,6 +45,17 @@
                 {% endfor %}
             </nav>
 
+            {% if perms.core.view_contactmessage %}
+                <a class="nav-messages{% if request.resolver_match.url_name == 'contact_messages' %} active{% endif %}" href="{% url 'core:contact_messages' %}"
+                   aria-label="Messages{% if unseen_contact_message_count %} ({{ unseen_contact_message_count }} new){% endif %}"
+                   title="Messages{% if unseen_contact_message_count %} ({{ unseen_contact_message_count }} new){% endif %}">
+                    <i class="bi bi-envelope{% if unseen_contact_message_count %}-fill{% endif %}"></i>
+                    {% if unseen_contact_message_count %}
+                        <span class="nav-messages-badge">{{ unseen_contact_message_count }}</span>
+                    {% endif %}
+                </a>
+            {% endif %}
+
             {% if user.is_authenticated %}
                 <form method="post" action="{% url 'logout' %}" class="nav-logout-form">
                     {% csrf_token %}

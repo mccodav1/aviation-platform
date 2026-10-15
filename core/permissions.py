@@ -17,6 +17,8 @@ OFFICER_PERMISSIONS = [
     ("core", "change_resourcecategory"),
     ("core", "delete_resourcecategory"),
     ("core", "view_contactmessage"),
+    ("core", "change_contactmessage"),
+    ("core", "delete_contactmessage"),
 ]
 
 

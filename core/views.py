@@ -15,7 +15,7 @@ from django.views.decorators.http import require_POST
 from meetings.services import get_month_calendar, get_next_meeting
 
 from .forms import ContactForm, ResourceForm
-from .models import Resource, ResourceCategory
+from .models import ContactMessage, Resource, ResourceCategory
 from .services.weather import format_observed, get_metar
 
 logger = logging.getLogger(__name__)
@@ -268,6 +268,48 @@ def _notify_contact_message(contact_message):
         )
     except Exception:
         logger.warning("Failed to send contact-message notification email", exc_info=True)
+
+@login_required
+@permission_required("core.view_contactmessage", raise_exception=True)
+def contact_messages(request):
+    organization = request.organization
+    if not organization:
+        raise Http404
+
+    all_messages = organization.contact_messages.select_related("seen_by")
+    return render(
+        request,
+        "app/contact_messages.html",
+        {
+            "unseen_messages": [m for m in all_messages if m.seen_at is None],
+            "seen_messages": [m for m in all_messages if m.seen_at is not None],
+        },
+    )
+
+
+@login_required
+@permission_required("core.change_contactmessage", raise_exception=True)
+@require_POST
+def contact_message_mark_seen(request, pk):
+    contact_message = get_object_or_404(
+        ContactMessage, pk=pk, organization=request.organization,
+    )
+    if contact_message.seen_at is None:
+        contact_message.seen_at = timezone.now()
+        contact_message.seen_by = request.user
+        contact_message.save(update_fields=["seen_at", "seen_by"])
+    return redirect("core:contact_messages")
+
+
+@login_required
+@permission_required("core.delete_contactmessage", raise_exception=True)
+@require_POST
+def contact_message_delete(request, pk):
+    contact_message = get_object_or_404(
+        ContactMessage, pk=pk, organization=request.organization,
+    )
+    contact_message.delete()
+    return redirect("core:contact_messages")
 
 def join(request):
     return under_construction(request,"Join")
