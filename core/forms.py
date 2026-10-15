@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import ContactMessage, Resource, ResourceCategory
+from .models import ContactMessage, JoinRequest, Resource, ResourceCategory
 
 
 class ContactForm(forms.ModelForm):
@@ -21,6 +21,35 @@ class ContactForm(forms.ModelForm):
         if commit:
             contact_message.save()
         return contact_message
+
+
+class JoinRequestForm(forms.ModelForm):
+    class Meta:
+        model = JoinRequest
+        fields = ["name", "email", "phone", "pilot_status", "message"]
+        labels = {
+            "name": "Your name",
+            "phone": "Phone (optional)",
+            "pilot_status": "Where are you in aviation?",
+            "message": "Anything you'd like us to know? (optional)",
+        }
+        widgets = {
+            "message": forms.Textarea(attrs={
+                "rows": 4,
+                "placeholder": "What you fly, what you're hoping to get out of the club, how you heard about us...",
+            }),
+        }
+
+    def __init__(self, *args, organization=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._organization = organization
+
+    def save(self, commit=True):
+        join_request = super().save(commit=False)
+        join_request.organization = self._organization
+        if commit:
+            join_request.save()
+        return join_request
 
 
 class ResourceForm(forms.ModelForm):

@@ -505,3 +505,38 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.created_at:%Y-%m-%d}"
+
+
+class JoinRequest(models.Model):
+    """A membership application submitted through the Join page. Officers
+    review these and, on approval, set up the applicant's account by hand
+    in /admin - nothing here creates a User."""
+
+    PILOT_STATUS_CHOICES = [
+        ("enthusiast", "Not a pilot (yet) - just love aviation"),
+        ("student", "Student pilot"),
+        ("private", "Private pilot"),
+        ("instrument", "Instrument rated"),
+        ("commercial", "Commercial / ATP"),
+        ("instructor", "Flight instructor (CFI)"),
+        ("other", "Other"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="join_requests",
+    )
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+    phone = models.CharField(max_length=40, blank=True)
+    pilot_status = models.CharField(max_length=20, choices=PILOT_STATUS_CHOICES)
+    message = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name} - {self.created_at:%Y-%m-%d}"

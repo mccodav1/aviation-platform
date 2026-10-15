@@ -1,0 +1,132 @@
+/* ==========================
+   Join Page
+   ========================== */
+
+.join-hero-cta {
+    margin-top: 1.75rem;
+}
+
+.join-hero-cta:hover {
+    background: #fff;
+    color: var(--color-secondary);
+}
+
+.join-section {
+    max-width: 64rem;
+    margin: 0 auto 3.5rem;
+}
+
+.join-section-title {
+    margin: 0 0 .5rem;
+
+    color: var(--color-secondary);
+    font-size: clamp(1.5rem, 3vw, 1.9rem);
+    text-align: center;
+}
+
+.join-section-subtitle {
+    max-width: 36rem;
+    margin: 0 auto 2rem;
+
+    color: #64748b;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* Info tiles, not links - no hover lift (same as the Contact page). */
+.join-benefits .card:hover {
+    transform: none;
+}
+
+.join-benefits .card p {
+    color: #475569;
+    line-height: 1.55;
+}
+
+/* ---- How joining works ---- */
+
+.join-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+
+    list-style: none;
+}
+
+.join-step {
+    display: flex;
+    flex-direction: column;
+    gap: .9rem;
+
+    padding: 1.5rem;
+
+    background: #fff;
+    border: 1px solid #e6ebef;
+    border-top: 3px solid var(--color-primary);
+    border-radius: 12px;
+}
+
+.join-step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2.25rem;
+    height: 2.25rem;
+
+    background: var(--color-secondary);
+    border-radius: 999px;
+
+    color: #fff;
+    font-weight: 800;
+}
+
+.join-step h3 {
+    margin: 0 0 .35rem;
+
+    color: var(--color-secondary);
+    font-size: 1.1rem;
+}
+
+.join-step p {
+    color: #475569;
+    line-height: 1.55;
+}
+
+/* ---- Application form ---- */
+
+.join-form-card {
+    width: min(42rem, 100%);
+    margin: 0 auto;
+    /* Clears the fixed navbar when jumped to via #apply. */
+    scroll-margin-top: 100px;
+}
+
+/* Same h2 treatment as the Contact page's form (see contact.css). */
+.join-form-card h2 {
+    margin: 0 0 1.5rem;
+
+    color: var(--color-secondary);
+    font-size: 1.75rem;
+}
+
+.join-submit-row {
+    text-align: center;
+}
+
+.join-questions {
+    max-width: 42rem;
+    margin: 2rem auto 0;
+
+    color: #64748b;
+    text-align: center;
+}
+
+.join-questions a {
+    color: var(--color-secondary);
+    font-weight: 700;
+}
+
+.join-questions a:hover {
+    color: var(--color-primary);
+}
