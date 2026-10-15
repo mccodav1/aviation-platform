@@ -150,6 +150,14 @@
    Messages (officers)
    ========================== */
 
+/* Officer-only review icons (Applications, Messages) - grouped so they
+   sit closer together than .nav-actions' wide gap between sections. */
+.nav-review-links {
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+}
+
 .nav-messages {
     position: relative;
     display: inline-flex;

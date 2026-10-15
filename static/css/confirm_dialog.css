@@ -84,3 +84,19 @@
     background: #b8343a;
     border-color: #b8343a;
 }
+
+/* data-confirm-tone="positive" - for confirming something good (e.g.
+   approving an application) rather than something destructive. */
+.confirm-dialog-positive {
+    border-top-color: #15803d;
+}
+
+.confirm-dialog-positive .confirm-dialog-confirm {
+    background: #15803d;
+    border-color: #15803d;
+}
+
+.confirm-dialog-positive .confirm-dialog-confirm:hover {
+    background: #116632;
+    border-color: #116632;
+}
