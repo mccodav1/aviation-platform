@@ -140,6 +140,12 @@
     color: #475569;
 }
 
+.user-role-applicant {
+    background: transparent;
+    border: 1px dashed #94a3b8;
+    color: #64748b;
+}
+
 .user-status-active {
     background: rgb(22 163 74 / 12%);
     color: #15803d;
@@ -200,12 +206,14 @@
 }
 
 .user-action-unlock,
-.user-action-reactivate {
+.user-action-reactivate,
+.user-action-save {
     color: var(--color-secondary);
 }
 
 .user-action-unlock:hover,
-.user-action-reactivate:hover {
+.user-action-reactivate:hover,
+.user-action-save:hover {
     background: var(--color-secondary);
     color: #fff;
 }

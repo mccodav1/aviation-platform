@@ -11,7 +11,7 @@
 
 {% block content %}
 
-{% include "app/components/page_hero.html" with title="Users" lede="Every account on the site. Deactivate, reactivate or unlock accounts here; anything else is in the admin." %}
+{% include "app/components/page_hero.html" with title="Users" lede="Every account on the site. Change roles, deactivate, reactivate or unlock accounts here; names, emails and passwords are changed in the admin." %}
 
 <section class="page-body">
     {# The widest container - this table has a lot of columns. #}
@@ -64,7 +64,7 @@
                                                     <option value="{{ value }}"{% if value == account.role_choice %} selected{% endif %}>{{ label }}</option>
                                                 {% endfor %}
                                             </select>
-                                            <button type="submit" class="user-action-button user-action-reactivate">Save</button>
+                                            <button type="submit" class="user-action-button user-action-save">Save</button>
                                         </form>
                                     {% else %}
                                         <span class="user-role user-role-{{ account.role|slugify }}">{{ account.role }}</span>

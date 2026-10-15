@@ -106,9 +106,13 @@ class User(AbstractUser):
 
     @property
     def role(self):
-        """The account's role, as officers think of it."""
+        """The account's role, as officers think of it. Someone whose
+        membership application hasn't been approved (pending or denied)
+        is an Applicant, not yet a Member."""
         if self.is_superuser:
             return "Superadmin"
+        if self.unapproved_application:
+            return "Applicant"
         choice = self.role_choice
         if choice == "member" and self.is_staff:
             # Admin access but no role group - unusual, so it's called
@@ -654,7 +658,7 @@ class ContactMessage(SeenTracking):
     form. Always saved here regardless of whether email notification
     (see core/views.py) actually succeeds, so a submission is never
     lost to an unconfigured or temporarily-down mail server - officers
-    can review everything in the admin either way."""
+    review them on /messages either way."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     organization = models.ForeignKey(
@@ -778,12 +782,15 @@ class JoinRequest(SeenTracking):
             self.user.save(update_fields=["is_active"])
 
     def delete_with_account(self):
-        # A never-approved (inactive) account goes with its application,
-        # freeing the email to apply again. An approved member's account
-        # is never removed this way.
+        # A never-approved account goes with its application, freeing the
+        # email to apply again. An approved member's account is never
+        # removed this way - including one an officer has since
+        # deactivated, which is why this checks the application's status
+        # rather than whether the account is active.
         user = self.user
+        approved = self.is_approved
         self.delete()
-        if user and not user.is_active:
+        if user and not approved:
             user.delete()
 
 

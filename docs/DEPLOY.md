@@ -103,6 +103,20 @@ docker run --rm -v aviation-platform_media:/m -v aviation-platform_private_media
   -v "$PWD":/out alpine tar czf /out/files-$(date +%F).tgz /m /p
 ```
 
+## Email: not set up yet
+
+The site has no outgoing mail configured (no `EMAIL_*` settings). Things
+waiting on it:
+
+- **Password reset is turned off.** The routes are left out of
+  `config/urls.py`, with instructions there for turning them back on.
+  Until then, reset a forgotten password in `/admin` -> Users.
+- **Contact-message notifications** are attempted (to the
+  organization's email) but fail quietly; officers read messages on
+  `/messages` instead.
+- **Welcome packets** - approving an application only activates the
+  account for now (see `JoinRequest.decide` in `core/models.py`).
+
 ## Invariants to preserve
 
 - **`private_media` is never publicly served.** Its files are reachable

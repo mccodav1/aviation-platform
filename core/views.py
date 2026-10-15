@@ -273,26 +273,10 @@ def _notify_contact_message(contact_message):
         logger.warning("Failed to send contact-message notification email", exc_info=True)
 
 # Officer review pages - Messages (ContactMessage) and Applications
-# (JoinRequest) share the SeenTracking pattern (see core/models.py): a
-# list split into new/seen, plus separate mark-seen / mark-unseen
-# actions rather than one toggle, so a page left open while another
-# officer acts on the same item can't flip it back the wrong way.
-
-def _review_list(request, related_name, template_name, *select_related):
-    if not request.organization:
-        raise Http404
-    items = list(
-        getattr(request.organization, related_name).select_related("seen_by", *select_related)
-    )
-    return render(
-        request,
-        template_name,
-        {
-            "unseen_items": [item for item in items if item.seen_at is None],
-            "seen_items": [item for item in items if item.seen_at is not None],
-        },
-    )
-
+# (JoinRequest) share the SeenTracking pattern (see core/models.py):
+# separate mark-seen / mark-unseen actions rather than one toggle, so a
+# page left open while another officer acts on the same item can't flip
+# it back the wrong way.
 
 def _review_item(request, model, pk):
     return get_object_or_404(model, pk=pk, organization=request.organization)
@@ -301,7 +285,17 @@ def _review_item(request, model, pk):
 @login_required
 @permission_required("core.view_contactmessage", raise_exception=True)
 def contact_messages(request):
-    return _review_list(request, "contact_messages", "app/contact_messages.html")
+    if not request.organization:
+        raise Http404
+    items = list(request.organization.contact_messages.select_related("seen_by"))
+    return render(
+        request,
+        "app/contact_messages.html",
+        {
+            "unseen_items": [item for item in items if item.seen_at is None],
+            "seen_items": [item for item in items if item.seen_at is not None],
+        },
+    )
 
 
 @login_required
@@ -331,9 +325,9 @@ def contact_message_delete(request, pk):
 @login_required
 @permission_required("core.view_joinrequest", raise_exception=True)
 def join_requests(request):
-    # Not _review_list's plain new/seen split: pending applications are
-    # split new/seen, and decided ones get their own Denied and Approved
-    # sections (denied are kept so a mistake can still be approved).
+    # Pending applications are split new/seen, like Messages; decided ones
+    # get their own Denied and Approved sections (denied are kept so a
+    # mistake can still be approved).
     if not request.organization:
         raise Http404
     items = list(request.organization.join_requests.select_related("seen_by", "decided_by"))
@@ -402,13 +396,13 @@ def join_request_delete(request, pk):
 @login_required
 @permission_required("core.view_user", raise_exception=True)
 def user_list(request):
-    # Account changes beyond deactivate/reactivate/unlock are made in
-    # /admin.
+    # Role, deactivate/reactivate and unlock are handled here; any other
+    # account change (name, email, password) is made in /admin.
     users = list(User.objects.prefetch_related("groups").select_related("join_request"))
     locked = throttle.locked_emails()
     for account in users:
         account.is_locked_out = account.email in locked
-    role_order = {"Superadmin": 0, "Officer": 1, "Site admin": 2, "Staff": 3, "Member": 4}
+    role_order = {"Superadmin": 0, "Officer": 1, "Site admin": 2, "Staff": 3, "Member": 4, "Applicant": 5}
     users.sort(key=lambda user: (role_order[user.role], user.display_name.lower()))
     return render(
         request,
