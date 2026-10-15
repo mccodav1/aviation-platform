@@ -409,7 +409,7 @@ def user_list(request):
     for account in users:
         account.is_locked_out = account.email in locked
     role_order = {"Superadmin": 0, "Officer": 1, "Site admin": 2, "Staff": 3, "Member": 4}
-    users.sort(key=lambda user: (min(role_order[role] for role in user.roles), user.display_name.lower()))
+    users.sort(key=lambda user: (role_order[user.role], user.display_name.lower()))
     return render(
         request,
         "app/user_list.html",
@@ -419,6 +419,7 @@ def user_list(request):
             "pending_count": sum(user.account_status == "Pending approval" for user in users),
             "locked_count": sum(user.is_locked_out for user in users),
             "lockout_minutes": settings.LOGIN_LOCKOUT_MINUTES,
+            "role_choices": User.ROLE_CHOICES,
         },
     )
 
@@ -455,6 +456,25 @@ def user_reactivate(request, pk):
     if not account.is_active and not account.unapproved_application:
         account.is_active = True
         account.save(update_fields=["is_active"])
+    return redirect("core:user_list")
+
+
+@login_required
+@permission_required("core.assign_roles", raise_exception=True)
+@require_POST
+def user_set_role(request, pk):
+    account = _manageable_user(request, pk)
+    role = request.POST.get("role")
+    # Not your own role (so nobody demotes themselves by accident), not a
+    # superuser's (they're Superadmin regardless - managed in /admin), and
+    # not an applicant's until their application is approved.
+    if (
+        role in dict(User.ROLE_CHOICES)
+        and account.pk != request.user.pk
+        and not account.is_superuser
+        and not account.unapproved_application
+    ):
+        account.set_role(role)
     return redirect("core:user_list")
 
 

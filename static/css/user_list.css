@@ -2,8 +2,10 @@
    Users Page (officers)
    ========================== */
 
+/* Fills the page's wide container rather than .page-block's usual
+   reading width - the table needs the room. */
 .user-list-block {
-    max-width: 64rem;
+    max-width: none;
 }
 
 .user-list-summary {
@@ -76,6 +78,16 @@
     font-weight: 700;
 }
 
+/* The two free-text columns may wrap, so a long name or email doesn't
+   force the whole table wider than the screen; everything else stays on
+   one line. */
+.user-table td.user-name,
+.user-table td.user-email {
+    min-width: 9rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
 .user-row-inactive td {
     color: #94a3b8;
 }
@@ -87,12 +99,6 @@
 .user-never {
     color: #94a3b8;
     font-style: italic;
-}
-
-/* Spaced with a margin rather than flex/gap, which would stop the <td>
-   behaving as a table cell. */
-.user-role + .user-role {
-    margin-left: 0.35rem;
 }
 
 .user-role,
@@ -220,5 +226,30 @@
     overflow: hidden;
     clip: rect(0 0 0 0);
     white-space: nowrap;
+}
+
+/* ---- Role picker (officers/superadmins) ---- */
+
+.user-role-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+}
+
+.user-role-form select {
+    padding: 0.3rem 0.4rem;
+
+    border: 1px solid rgb(17 52 86 / 20%);
+    border-radius: 6px;
+
+    color: var(--color-secondary);
+    font: inherit;
+    font-size: 0.8rem;
+}
+
+.user-role-form select:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
 }
 

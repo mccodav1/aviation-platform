@@ -61,18 +61,23 @@ class UserAdmin(BaseUserAdmin):
     )
 
     # Officers and Site Admins (change_user, but not superusers) manage
-    # accounts without being able to escalate: no superuser status or individual
-    # permissions, only the role groups, and no editing a superuser's
-    # account (so not their password or active status either).
+    # accounts without being able to escalate: no superuser status or
+    # individual permissions, only the role groups (and only with
+    # assign_roles - officers, not Site Admins), and no editing a
+    # superuser's account (so not their password or active status either).
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
         if request.user.is_superuser or obj is None:
             return fieldsets
+        hidden = {"is_superuser", "user_permissions"}
+        if not request.user.has_perm("core.assign_roles"):
+            # Roles (and the staff flag that goes with them) are for
+            # officers to hand out - Site Admins do account support only.
+            hidden |= {"groups", "is_staff"}
         return tuple(
             (name, {**options, "fields": tuple(
-                field for field in options["fields"]
-                if field not in ("is_superuser", "user_permissions")
+                field for field in options["fields"] if field not in hidden
             )})
             for name, options in fieldsets
         )
