@@ -4,8 +4,13 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
 from django.contrib.auth.models import Group
 
+from core.forms import ThrottledAdminAuthenticationForm
 from core.models import HeroImage, Organization, NavigationItem, Card, Highlight, Officer, InfoPanel, Resource, ResourceCategory, ContactMessage, JoinRequest, User
 from core.permissions import GROUP_PERMISSIONS
+
+# /admin/login/ gets the same login throttling as the site (see
+# core/throttle.py) - otherwise it'd be a way around it.
+admin.site.login_form = ThrottledAdminAuthenticationForm
 
 
 class UserCreationAdminForm(AdminUserCreationForm):
@@ -25,8 +30,7 @@ class UserChangeAdminForm(UserChangeForm):
         # in without an officer's decision and leave the application
         # still showing as pending (or denied).
         is_active = self.cleaned_data.get("is_active")
-        join_request = getattr(self.instance, "join_request", None)
-        if is_active and not self.instance.is_active and join_request and not join_request.is_approved:
+        if is_active and not self.instance.is_active and self.instance.unapproved_application:
             raise forms.ValidationError(
                 "This account belongs to a membership application that hasn't been "
                 "approved. Approve it on the Applications page instead."

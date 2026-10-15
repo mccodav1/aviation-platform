@@ -95,17 +95,29 @@ class User(AbstractUser):
         return ["Member"]
 
     @property
+    def unapproved_application(self):
+        """The account's membership application, if it hasn't been
+        approved - its account is switched on by approving it, not by
+        reactivating it directly."""
+        join_request = getattr(self, "join_request", None)
+        if join_request and not join_request.is_approved:
+            return join_request
+        return None
+
+    @property
     def account_status(self):
         """Active, or why not: an applicant waiting on (or denied by)
-        the review on /applications, or an account switched off."""
+        the review on /applications, or an account an officer manually
+        deactivated. Separate from a login-throttling lockout (see
+        LoginLockout), which is automatic and temporary."""
         if self.is_active:
             return "Active"
-        join_request = getattr(self, "join_request", None)
-        if join_request and join_request.is_pending:
+        application = self.unapproved_application
+        if application and application.is_pending:
             return "Pending approval"
-        if join_request and join_request.is_denied:
+        if application and application.is_denied:
             return "Denied"
-        return "Inactive"
+        return "Deactivated"
 
 LINK_HELP_TEXT = (
     'Internal page: its URL name, e.g. "core:events". '
@@ -737,3 +749,35 @@ class JoinRequest(SeenTracking):
         self.delete()
         if user and not user.is_active:
             user.delete()
+
+
+class LoginLockout(models.Model):
+    """Failed login attempts for one (IP address, email) pair - see
+    core/throttle.py. After LOGIN_FAILURE_LIMIT failures that pair is
+    locked out for LOGIN_LOCKOUT_MINUTES. Keyed on the pair rather than
+    the account, so the real member logging in from elsewhere isn't
+    affected, and nobody can lock a member out just by knowing their
+    email. Separate from User.is_active, which is an officer's manual,
+    open-ended deactivation."""
+
+    email = models.CharField(max_length=254)
+    ip_address = models.GenericIPAddressField()
+    failed_attempts = models.PositiveIntegerField(default=0)
+    last_failure_at = models.DateTimeField()
+    locked_until = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email", "ip_address"],
+                name="unique_login_lockout_per_email_and_ip",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.email} from {self.ip_address}"
+
+    @property
+    def is_locked(self):
+        return self.locked_until is not None and self.locked_until > timezone.now()
+

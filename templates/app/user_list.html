@@ -6,11 +6,12 @@
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
 <link rel="stylesheet" href="{% static 'css/user_list.css' %}">
+<link rel="stylesheet" href="{% static 'css/confirm_dialog.css' %}">
 {% endblock %}
 
 {% block content %}
 
-{% include "app/components/page_hero.html" with title="Users" lede="Every account on the site. To change an account, use the admin." %}
+{% include "app/components/page_hero.html" with title="Users" lede="Every account on the site. Deactivate, reactivate or unlock accounts here; anything else is in the admin." %}
 
 <section class="page-body">
     <div class="container">
@@ -19,6 +20,9 @@
             <div class="user-list-summary">
                 <span><strong>{{ users|length }}</strong> account{{ users|length|pluralize }}</span>
                 <span><strong>{{ active_count }}</strong> active</span>
+                {% if locked_count %}
+                    <span class="user-list-locked"><strong>{{ locked_count }}</strong> locked out</span>
+                {% endif %}
                 {% if pending_count %}
                     {% if perms.core.view_joinrequest %}
                         <a href="{% url 'core:join_requests' %}"><strong>{{ pending_count }}</strong> pending approval</a>
@@ -38,6 +42,7 @@
                             <th scope="col">Status</th>
                             <th scope="col">Joined</th>
                             <th scope="col">Last login</th>
+                            {% if perms.core.change_user %}<th scope="col"><span class="visually-hidden">Actions</span></th>{% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -46,9 +51,44 @@
                                 <td class="user-name">{{ account.get_full_name|default:"-" }}</td>
                                 <td><a href="mailto:{{ account.email }}">{{ account.email }}</a></td>
                                 <td class="user-roles">{% for role in account.roles %}<span class="user-role user-role-{{ role|slugify }}">{{ role }}</span>{% endfor %}</td>
-                                <td><span class="user-status user-status-{{ account.account_status|slugify }}">{{ account.account_status }}</span></td>
+                                <td>
+                                    <span class="user-status user-status-{{ account.account_status|slugify }}">{{ account.account_status }}</span>
+                                    {% if account.is_locked_out %}
+                                        <span class="user-status user-status-locked-out" title="Too many failed logins - locked out for up to {{ lockout_minutes }} minutes from the address(es) involved">Locked out</span>
+                                    {% endif %}
+                                </td>
                                 <td>{{ account.date_joined|date:"M j, Y" }}</td>
                                 <td>{% if account.last_login %}{{ account.last_login|date:"M j, Y g:i A" }}{% else %}<span class="user-never">Never</span>{% endif %}</td>
+                                {% if perms.core.change_user %}
+                                    <td class="user-actions">
+                                        {% if not account.is_superuser or user.is_superuser %}
+                                            {% if account.is_locked_out %}
+                                                <form method="post" action="{% url 'core:user_unlock' account.pk %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="user-action-button user-action-unlock">Unlock</button>
+                                                </form>
+                                            {% endif %}
+                                            {% if account.is_active and account.pk != user.pk %}
+                                                <form method="post" action="{% url 'core:user_deactivate' account.pk %}"
+                                                      data-confirm="Deactivate {{ account.display_name }}? They won't be able to log in until someone reactivates the account."
+                                                      data-confirm-title="Deactivate account"
+                                                      data-confirm-button="Deactivate">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="user-action-button user-action-deactivate">Deactivate</button>
+                                                </form>
+                                            {% elif not account.is_active and not account.unapproved_application %}
+                                                <form method="post" action="{% url 'core:user_reactivate' account.pk %}"
+                                                      data-confirm="Reactivate {{ account.display_name }}? They'll be able to log in again."
+                                                      data-confirm-title="Reactivate account"
+                                                      data-confirm-button="Reactivate"
+                                                      data-confirm-tone="positive">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="user-action-button user-action-reactivate">Reactivate</button>
+                                                </form>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -59,4 +99,10 @@
     </div>
 </section>
 
+{% include "app/components/confirm_dialog.html" %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/confirm_dialog.js' %}"></script>
 {% endblock %}

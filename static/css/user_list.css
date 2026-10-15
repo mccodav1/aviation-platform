@@ -149,7 +149,76 @@
     color: #b8343a;
 }
 
-.user-status-inactive {
+.user-status-deactivated {
     background: #f1f5f9;
     color: #64748b;
 }
+
+.user-status-locked-out {
+    margin-left: 0.35rem;
+
+    background: rgb(218 65 68 / 12%);
+    color: #b8343a;
+}
+
+.user-list-locked strong {
+    color: #b8343a;
+}
+
+/* ---- Actions ---- */
+
+.user-actions {
+    text-align: right;
+}
+
+.user-actions form {
+    display: inline-block;
+    margin: 0 0 0 0.35rem;
+}
+
+.user-action-button {
+    padding: 0.3rem 0.65rem;
+
+    background: none;
+    border: 2px solid currentColor;
+    border-radius: 6px;
+
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.user-action-unlock,
+.user-action-reactivate {
+    color: var(--color-secondary);
+}
+
+.user-action-unlock:hover,
+.user-action-reactivate:hover {
+    background: var(--color-secondary);
+    color: #fff;
+}
+
+.user-action-deactivate {
+    color: var(--color-primary);
+}
+
+.user-action-deactivate:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
