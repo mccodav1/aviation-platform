@@ -1,19 +1,45 @@
+# Local development: SQLite + runserver, with DEBUG on. Set here rather
+# than in .env, so the same .env can drive compose without DEBUG.
+DEV = DJANGO_DEBUG=true uv run manage.py
+
 migrate:
-	uv run manage.py migrate
+	$(DEV) migrate
 
 migrations:
-	uv run manage.py makemigrations
+	$(DEV) makemigrations
 
 runserver:
-	uv run manage.py check_links
-	uv run manage.py runserver
+	$(DEV) check_links
+	$(DEV) runserver
 
-seed-media:
-	uv run manage.py seed_media
+# One-time content seed (see bootstrap_site) - same as compose-seed.
+bootstrap: migrate
+	$(DEV) bootstrap_site
 
-load-demo:
-	uv run manage.py loaddata core/fixtures/spa_demo.json meetings/fixtures/spa_demo.json
+test:
+	$(DEV) test
 
-bootstrap: migrate seed-media load-demo
+# Production-style stack: nginx -> gunicorn -> Postgres (see compose.yaml).
+up:
+	docker compose up -d --build
 
-reset: migrations migrate runserver
+down:
+	docker compose down
+
+# Start over from nothing: also deletes the volumes (database, media,
+# private_media) and every image the stack uses. Follow with
+# `make up` and `make compose-seed`.
+nuke:
+	docker compose down -v --rmi all
+
+logs:
+	docker compose logs -f
+
+# One-time content seed for a fresh deployment (see bootstrap_site).
+compose-seed:
+	docker compose exec web python manage.py bootstrap_site
+
+compose-superuser:
+	docker compose exec web python manage.py createsuperuser
+
+.PHONY: migrate migrations runserver bootstrap test up down nuke logs compose-seed compose-superuser

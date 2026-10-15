@@ -95,7 +95,7 @@
                     {% for officer in organization.enabled_officers %}
                         <div class="about-officer">
                             {% if officer.photo %}
-                                <img src="{{ officer.photo.url }}" alt="{{ officer.name }}" class="about-officer-photo">
+                                <img src="{{ officer.photo.url }}" alt="{{ officer.name|default:officer.role }}" class="about-officer-photo">
                             {% else %}
                                 <div class="about-officer-photo about-officer-photo-placeholder">
                                     <i class="bi bi-person-fill"></i>
@@ -103,7 +103,9 @@
                             {% endif %}
 
                             <div class="about-officer-role">{{ officer.role }}</div>
-                            <div class="about-officer-name">{{ officer.name }}</div>
+                            {% if officer.name %}
+                                <div class="about-officer-name">{{ officer.name }}</div>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>

@@ -66,12 +66,12 @@ def get_month_calendar(organization, year, month):
     with each day's events already attached - the template just walks
     the structure, it doesn't query or do date math itself.
 
-    starts_at is stored as an aware UTC instant (see the org's own
-    TIME_ZONE-vs-UTC note on Event.__str__) - month boundaries and each
-    event's day bucket are both computed in local time, so an event
-    just before/after local midnight lands on the calendar day a
-    person here would actually expect, not whatever day it happened to
-    be in UTC.
+    starts_at is stored as an aware UTC instant (see the note on
+    Event.__str__) - month boundaries and each event's day bucket are
+    both computed in the active (visitor's browser) timezone, so an
+    event just before/after local midnight lands on the calendar day
+    that visitor would actually expect, not whatever day it happened
+    to be in UTC.
     """
     month_start = date(year, month, 1)
     next_month_start = (month_start.replace(day=28) + timedelta(days=4)).replace(day=1)

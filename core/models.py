@@ -260,17 +260,23 @@ class Officer(models.Model):
         on_delete=models.CASCADE,
         related_name="officers"
     )
-    name = models.CharField(max_length=200)
     role = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, blank=True)
     photo = models.ImageField(upload_to="officers/", blank=True)
     order = models.PositiveIntegerField(default=100)
     is_enabled = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["order"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["organization", "role"],
+                name="unique_officer_role_per_organization",
+            ),
+        ]
 
     def __str__(self):
-        return f"{self.name} ({self.role})"
+        return f"{self.role} ({self.name})" if self.name else self.role
 
 class InfoPanel(models.Model):
     TYPE_STATIC = "static"
@@ -351,6 +357,7 @@ class ResourceCategory(models.Model):
 
     class Meta:
         ordering = ["order", "title"]
+        verbose_name_plural = "resource categories"
         constraints = [
             models.UniqueConstraint(
                 fields=["organization", "title"],

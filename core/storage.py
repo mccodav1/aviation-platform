@@ -14,15 +14,8 @@ class PrivateFileSystemStorage(FileSystemStorage):
     only reliable way to guarantee nothing ever hands out a public link
     for these files is to override url() to refuse outright.
 
-    This is a copy of meetings.storage.PrivateFileSystemStorage rather
-    than an import from it: core is the generic, foundational app and
-    must not depend on meetings, or any other feature app layered on top
-    of it (see the note on INSTALLED_APPS in config/settings.py and the
-    comment atop core/urls.py) - meetings depends on core, not the other
-    way around, regardless of meetings itself being a required part of
-    this template rather than optional. Both classes share the same
-    private_media/ directory, so it's one private-files bucket regardless
-    of which app's model put a file there.
+    meetings/storage.py reuses this class, so Resource files and meeting
+    agendas/minutes share one private_media/ directory.
     """
 
     def url(self, name):
@@ -34,7 +27,7 @@ class PrivateFileSystemStorage(FileSystemStorage):
 
 # A callable (not a Storage instance) so Django's migrations store a
 # reference to private_storage itself rather than inlining the resolved
-# BASE_DIR path at makemigrations time - a plain instance would otherwise
+# PRIVATE_MEDIA_ROOT path at makemigrations time - a plain instance would otherwise
 # bake *this machine's* absolute path into the migration file.
 def private_storage():
-    return PrivateFileSystemStorage(location=str(settings.BASE_DIR / "private_media"))
+    return PrivateFileSystemStorage(location=str(settings.PRIVATE_MEDIA_ROOT))

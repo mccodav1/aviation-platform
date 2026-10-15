@@ -1,0 +1,61 @@
+name: aviation-platform
+
+# Keep container logs from filling a small instance's disk.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-aviation}
+      POSTGRES_USER: ${POSTGRES_USER:-aviation}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (see .env.example)}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    logging: *logging
+
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Fixed by this compose setup rather than by .env, so the same .env
+      # still runs plain `make runserver` against SQLite outside compose.
+      POSTGRES_HOST: db
+      DATA_DIR: /data
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in .env (see .env.example)}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:?Set DJANGO_ALLOWED_HOSTS in .env (see .env.example)}
+    volumes:
+      - media:/data/media
+      - private_media:/data/private_media
+    depends_on:
+      db:
+        condition: service_healthy
+    logging: *logging
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - media:/srv/media:ro
+    depends_on:
+      - web
+    logging: *logging
+
+volumes:
+  pgdata:
+  media:
+  private_media:

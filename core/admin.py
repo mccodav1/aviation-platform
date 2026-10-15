@@ -26,7 +26,7 @@ class HighlightAdmin(admin.ModelAdmin):
 
 @admin.register(Officer)
 class OfficerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'role', 'order', 'is_enabled')
+    list_display = ('role', 'name', 'order', 'is_enabled')
 
 @admin.register(InfoPanel)
 class InfoPanelAdmin(admin.ModelAdmin):

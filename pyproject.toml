@@ -1,13 +1,16 @@
 [project]
 name = "aviation-platform"
 version = "0.1.0"
-description = "Add your description here"
+description = "Django site for the Salinas Pilots Association"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "django>=6.1.0",
+    "gunicorn>=26.2.0",
     "icalendar>=7.3.0",
     "pillow>=12.3.0",
+    "psycopg[binary]>=3.3.6",
+    "python-dotenv>=1.2.4",
     "requests>=2.34.2",
     "whitenoise>=6.12.0",
 ]
