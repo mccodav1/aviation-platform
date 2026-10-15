@@ -9,8 +9,18 @@ x-logging: &logging
 
 services:
   db:
+    # Minor updates (17.x) arrive on rebuild and are safe. Changing the
+    # MAJOR version (17 -> 18) is not a one-line change: Postgres can't read
+    # an older major version's data files - see "Upgrading Postgres" in
+    # docs/DEPLOY.md before touching this tag.
     image: postgres:17-alpine
     restart: unless-stopped
+    # Docker's default 10s before force-killing a stopping container can
+    # cut off a clean Postgres shutdown; give it a minute.
+    stop_grace_period: 1m
+    # Docker's default 64MB /dev/shm is too small for some Postgres
+    # operations (parallel queries, large sorts) - the usual recommendation.
+    shm_size: 256mb
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-aviation}
       POSTGRES_USER: ${POSTGRES_USER:-aviation}

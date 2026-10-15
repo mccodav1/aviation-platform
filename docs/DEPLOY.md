@@ -117,6 +117,42 @@ nightly, add a cron job on the server (`crontab -e`), e.g. 3am:
 
 Old backups aren't deleted automatically; prune them now and then.
 
+## Upgrading Postgres
+
+**Minor versions** (17.1 -> 17.2) need nothing special: they arrive with
+the next `make up`.
+
+**Major versions** (17 -> 18) are a migration, not a one-line change.
+Postgres can't read an older major version's data files, so bumping only
+the `image:` tag leaves the database refusing to start. Postgres 18's
+image also expects its volume mounted at `/var/lib/postgresql` rather
+than `/var/lib/postgresql/data` - with the old mount it stops with
+`Error: in 18+, these Docker images are configured to store database
+data in a format which is compatible with "pg_ctlcluster"...`.
+
+The move is backup -> empty database on the new version -> restore.
+Using a *new* volume keeps the old one untouched as a fallback:
+
+1. `make backup` - note the folder it prints.
+2. `make down`
+3. In `compose.yaml`, under `db:`
+   - change the image tag, e.g. `postgres:18-alpine`;
+   - change the volume line to a new volume name and, for 18+, the new
+     mount path: `- pgdata18:/var/lib/postgresql`;
+   - add `pgdata18:` to the `volumes:` list at the bottom.
+4. `make up` - starts on the new version with an empty database (`web`
+   creates the tables and the `.env` admin account on start).
+5. `make restore BACKUP=backups/<the folder from step 1>`
+6. Check the site. To roll back instead, put the old image tag and
+   volume line back and `make up`.
+7. Once you're happy, delete the old volume:
+   `docker volume rm aviation-platform_pgdata`, and remove `pgdata:` from
+   the `volumes:` list.
+
+(Rehearsed 17 -> 18 on 2026-10-15: data, accounts and uploads all came
+through.) Read the release notes for the new major version first, and
+check the image's page on Docker Hub for any further changes.
+
 ## Email: not set up yet
 
 The site has no outgoing mail configured (no `EMAIL_*` settings). Things
