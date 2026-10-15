@@ -20,7 +20,11 @@
                 <span><strong>{{ users|length }}</strong> account{{ users|length|pluralize }}</span>
                 <span><strong>{{ active_count }}</strong> active</span>
                 {% if pending_count %}
-                    <a href="{% url 'core:join_requests' %}"><strong>{{ pending_count }}</strong> pending approval</a>
+                    {% if perms.core.view_joinrequest %}
+                        <a href="{% url 'core:join_requests' %}"><strong>{{ pending_count }}</strong> pending approval</a>
+                    {% else %}
+                        <span><strong>{{ pending_count }}</strong> pending approval</span>
+                    {% endif %}
                 {% endif %}
             </div>
 

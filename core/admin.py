@@ -56,8 +56,8 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
-    # Site Admins (change_user, but not superusers) manage accounts
-    # without being able to escalate: no superuser status or individual
+    # Officers and Site Admins (change_user, but not superusers) manage
+    # accounts without being able to escalate: no superuser status or individual
     # permissions, only the role groups, and no editing a superuser's
     # account (so not their password or active status either).
 

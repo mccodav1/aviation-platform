@@ -1,45 +1,47 @@
 OFFICER_GROUP_NAME = "Club Officers"
 SITE_ADMIN_GROUP_NAME = "Site Admins"
 
-# Officers run the club: meetings, resources, contact messages, and
-# membership applications.
-OFFICER_PERMISSIONS = [
-    ("meetings", "add_event"),
-    ("meetings", "change_event"),
-    ("meetings", "delete_event"),
-    ("core", "add_resource"),
-    ("core", "change_resource"),
-    ("core", "delete_resource"),
-    ("core", "add_resourcecategory"),
-    ("core", "change_resourcecategory"),
-    ("core", "delete_resourcecategory"),
-    ("core", "view_contactmessage"),
-    ("core", "change_contactmessage"),
-    ("core", "delete_contactmessage"),
-    ("core", "view_user"),
-    ("core", "view_joinrequest"),
-    ("core", "change_joinrequest"),
-    ("core", "delete_joinrequest"),
-]
 
-# Site admins run the website: its content, and account support
-# (unlocking accounts, resetting passwords, assigning these two groups).
-# Deliberately not applications or contact messages - those hold
-# applicants' personal details, and deciding who joins is officer work.
-# No delete_user either: deactivate instead. The admin keeps them away
-# from superuser status and superuser accounts (see UserAdmin).
-SITE_ADMIN_PERMISSIONS = [
+def _crud(app_label, *models):
+    return [
+        (app_label, f"{action}_{model}")
+        for model in models
+        for action in ("view", "add", "change", "delete")
+    ]
+
+
+# What both roles can do: run meetings/events and resources, keep the
+# site's content up to date, and handle account support (unlocking accounts, resetting passwords, editing
+# names/emails, creating accounts, assigning the two role groups). No
+# delete_user for either - deactivate instead; deleting is superuser-only.
+# The admin keeps both away from superuser status and superuser
+# accounts (see UserAdmin).
+SHARED_PERMISSIONS = [
+    *_crud("meetings", "event"),
+    *_crud("core", "resource", "resourcecategory"),
+    ("core", "view_organization"),
+    ("core", "change_organization"),
+    *_crud("core", "heroimage", "navigationitem", "card", "highlight", "infopanel", "officer"),
     ("core", "view_user"),
     ("core", "add_user"),
     ("core", "change_user"),
-    ("core", "view_organization"),
-    ("core", "change_organization"),
-    *[
-        ("core", f"{action}_{model}")
-        for model in ("heroimage", "navigationitem", "card", "highlight", "infopanel", "officer")
-        for action in ("view", "add", "change", "delete")
-    ],
 ]
+
+# Officers additionally handle membership applications (reviewing,
+# approving/denying, deleting) and contact messages - both hold people's
+# personal details and are meant for the club's officers only.
+OFFICER_PERMISSIONS = SHARED_PERMISSIONS + [
+    ("core", "view_joinrequest"),
+    ("core", "change_joinrequest"),
+    ("core", "delete_joinrequest"),
+    ("core", "view_contactmessage"),
+    ("core", "change_contactmessage"),
+    ("core", "delete_contactmessage"),
+]
+
+# Site admins run the website alongside the officers - everything shared,
+# but no applications or contact messages.
+SITE_ADMIN_PERMISSIONS = SHARED_PERMISSIONS
 
 # Each group's permissions, as (app_label, codename). Synced after every
 # `migrate` (see CoreConfig.ready) rather than by a data migration: Django
