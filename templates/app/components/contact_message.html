@@ -16,29 +16,7 @@
         {% endif %}
 
         <div class="message-item-actions">
-            {% if perms.core.change_contactmessage %}
-                {% if contact_message.seen_at %}
-                    <form method="post" action="{% url 'core:contact_message_mark_unseen' contact_message.pk %}">
-                        {% csrf_token %}
-                        <button type="submit" class="message-action-button message-action-seen">Mark unseen</button>
-                    </form>
-                {% else %}
-                    <form method="post" action="{% url 'core:contact_message_mark_seen' contact_message.pk %}">
-                        {% csrf_token %}
-                        <button type="submit" class="message-action-button message-action-seen">Mark seen</button>
-                    </form>
-                {% endif %}
-            {% endif %}
-
-            {% if perms.core.delete_contactmessage %}
-                <form method="post" action="{% url 'core:contact_message_delete' contact_message.pk %}"
-                      data-confirm="Delete this message from {{ contact_message.name }}? This can't be undone."
-                      data-confirm-title="Delete message"
-                      data-confirm-button="Delete">
-                    {% csrf_token %}
-                    <button type="submit" class="message-action-button message-action-delete">Delete</button>
-                </form>
-            {% endif %}
+            {% include "app/components/review_actions.html" with item=contact_message seen_url="core:contact_message_mark_seen" unseen_url="core:contact_message_mark_unseen" delete_url="core:contact_message_delete" can_change=perms.core.change_contactmessage can_delete=perms.core.delete_contactmessage delete_title="Delete message" delete_prompt="Delete this message from "|add:contact_message.name|add:"? This can't be undone." %}
         </div>
     </div>
 </li>

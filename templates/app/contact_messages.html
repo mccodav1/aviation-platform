@@ -5,7 +5,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
-<link rel="stylesheet" href="{% static 'css/contact_messages.css' %}">
+<link rel="stylesheet" href="{% static 'css/review.css' %}">
 <link rel="stylesheet" href="{% static 'css/confirm_dialog.css' %}">
 {% endblock %}
 
@@ -17,11 +17,11 @@
     <div class="container">
 
         <div class="page-block message-section">
-            <h2>New{% if unseen_messages %} ({{ unseen_messages|length }}){% endif %}</h2>
+            <h2>New{% if unseen_items %} ({{ unseen_items|length }}){% endif %}</h2>
 
-            {% if unseen_messages %}
+            {% if unseen_items %}
                 <ul class="message-list">
-                    {% for contact_message in unseen_messages %}
+                    {% for contact_message in unseen_items %}
                         {% include "app/components/contact_message.html" %}
                     {% endfor %}
                 </ul>
@@ -30,12 +30,12 @@
             {% endif %}
         </div>
 
-        {% if seen_messages %}
+        {% if seen_items %}
             <div class="page-block message-section">
                 <h2>Seen</h2>
 
                 <ul class="message-list">
-                    {% for contact_message in seen_messages %}
+                    {% for contact_message in seen_items %}
                         {% include "app/components/contact_message.html" %}
                     {% endfor %}
                 </ul>

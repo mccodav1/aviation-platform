@@ -5,15 +5,23 @@ def organization(request):
     }
 
 
-def unseen_contact_messages(request):
-    # Drives the navbar's messages badge - only queried for users who can
-    # read the messages at all, so ordinary visitors never pay for it.
-    if not request.organization or not request.user.has_perm("core.view_contactmessage"):
+def unseen_review_counts(request):
+    # Drives the navbar's Messages/Applications badges - each count is
+    # only queried for users who can read those items at all, so
+    # ordinary visitors never pay for it.
+    organization = request.organization
+    if not organization:
         return {}
-    return {
-        "unseen_contact_message_count": request.organization.contact_messages.filter(
+
+    counts = {}
+    if request.user.has_perm("core.view_contactmessage"):
+        counts["unseen_contact_message_count"] = organization.contact_messages.filter(
             seen_at__isnull=True,
-        ).count(),
-    }
+        ).count()
+    if request.user.has_perm("core.view_joinrequest"):
+        counts["unseen_join_request_count"] = organization.join_requests.filter(
+            seen_at__isnull=True,
+        ).count()
+    return counts
 
 

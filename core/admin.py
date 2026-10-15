@@ -53,7 +53,12 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 @admin.register(JoinRequest)
 class JoinRequestAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'pilot_status', 'created_at')
-    list_filter = ('pilot_status',)
-    readonly_fields = ('name', 'email', 'phone', 'pilot_status', 'message', 'created_at')
+    list_display = ('name', 'email', 'pilot_status', 'status', 'created_at', 'seen_at')
+    list_filter = ('status', 'pilot_status')
+    # status stays editable - it's where a decision gets changed after
+    # the fact (the Applications page only decides pending ones).
+    readonly_fields = (
+        'name', 'email', 'phone', 'pilot_status', 'message', 'created_at',
+        'seen_at', 'seen_by', 'decided_at', 'decided_by',
+    )
     ordering = ('-created_at',)

@@ -45,15 +45,30 @@
                 {% endfor %}
             </nav>
 
-            {% if perms.core.view_contactmessage %}
-                <a class="nav-messages{% if request.resolver_match.url_name == 'contact_messages' %} active{% endif %}" href="{% url 'core:contact_messages' %}"
-                   aria-label="Messages{% if unseen_contact_message_count %} ({{ unseen_contact_message_count }} new){% endif %}"
-                   title="Messages{% if unseen_contact_message_count %} ({{ unseen_contact_message_count }} new){% endif %}">
-                    <i class="bi bi-envelope{% if unseen_contact_message_count %}-fill{% endif %}"></i>
-                    {% if unseen_contact_message_count %}
-                        <span class="nav-messages-badge">{{ unseen_contact_message_count }}</span>
+            {% if perms.core.view_joinrequest or perms.core.view_contactmessage %}
+                <div class="nav-review-links">
+                    {% if perms.core.view_joinrequest %}
+                        <a class="nav-messages{% if request.resolver_match.url_name == 'join_requests' %} active{% endif %}" href="{% url 'core:join_requests' %}"
+                           aria-label="Applications{% if unseen_join_request_count %} ({{ unseen_join_request_count }} new){% endif %}"
+                           title="Applications{% if unseen_join_request_count %} ({{ unseen_join_request_count }} new){% endif %}">
+                            <i class="bi bi-person-plus{% if unseen_join_request_count %}-fill{% endif %}"></i>
+                            {% if unseen_join_request_count %}
+                                <span class="nav-messages-badge">{{ unseen_join_request_count }}</span>
+                            {% endif %}
+                        </a>
                     {% endif %}
-                </a>
+
+                    {% if perms.core.view_contactmessage %}
+                        <a class="nav-messages{% if request.resolver_match.url_name == 'contact_messages' %} active{% endif %}" href="{% url 'core:contact_messages' %}"
+                           aria-label="Messages{% if unseen_contact_message_count %} ({{ unseen_contact_message_count }} new){% endif %}"
+                           title="Messages{% if unseen_contact_message_count %} ({{ unseen_contact_message_count }} new){% endif %}">
+                            <i class="bi bi-envelope{% if unseen_contact_message_count %}-fill{% endif %}"></i>
+                            {% if unseen_contact_message_count %}
+                                <span class="nav-messages-badge">{{ unseen_contact_message_count }}</span>
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                </div>
             {% endif %}
 
             {% if user.is_authenticated %}

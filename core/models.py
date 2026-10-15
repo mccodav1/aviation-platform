@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.text import slugify
 
 from core.links import link_error
@@ -472,7 +473,38 @@ class Resource(models.Model):
         super().save(*args, **kwargs)
 
 
-class ContactMessage(models.Model):
+class SeenTracking(models.Model):
+    """Shared "seen" status for things officers review (contact messages,
+    join applications). Shared across officers: once any officer marks
+    an item seen, it stops counting toward everyone's navbar badge."""
+
+    seen_at = models.DateTimeField(null=True, blank=True)
+    seen_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+
+    class Meta:
+        abstract = True
+
+    def mark_seen(self, user):
+        # A no-op if already seen, so it keeps whoever saw it first.
+        if self.seen_at is None:
+            self.seen_at = timezone.now()
+            self.seen_by = user
+            self.save(update_fields=["seen_at", "seen_by"])
+
+    def mark_unseen(self):
+        if self.seen_at is not None:
+            self.seen_at = None
+            self.seen_by = None
+            self.save(update_fields=["seen_at", "seen_by"])
+
+
+class ContactMessage(SeenTracking):
     """A message submitted through the Contact page's quick-message
     form. Always saved here regardless of whether email notification
     (see core/views.py) actually succeeds, so a submission is never
@@ -489,16 +521,6 @@ class ContactMessage(models.Model):
     email = models.EmailField()
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    # Shared across officers: once any officer marks a message seen, it
-    # stops counting toward everyone's unseen-messages badge.
-    seen_at = models.DateTimeField(null=True, blank=True)
-    seen_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="+",
-    )
 
     class Meta:
         ordering = ["-created_at"]
@@ -507,10 +529,20 @@ class ContactMessage(models.Model):
         return f"{self.name} - {self.created_at:%Y-%m-%d}"
 
 
-class JoinRequest(models.Model):
+class JoinRequest(SeenTracking):
     """A membership application submitted through the Join page. Officers
-    review these and, on approval, set up the applicant's account by hand
-    in /admin - nothing here creates a User."""
+    review these on /applications and approve or deny them; on approval
+    they set up the applicant's account by hand in /admin - nothing here
+    creates a User."""
+
+    STATUS_PENDING = "pending"
+    STATUS_APPROVED = "approved"
+    STATUS_DENIED = "denied"
+    STATUS_CHOICES = [
+        (STATUS_PENDING, "Pending"),
+        (STATUS_APPROVED, "Approved"),
+        (STATUS_DENIED, "Denied"),
+    ]
 
     PILOT_STATUS_CHOICES = [
         ("enthusiast", "Not a pilot (yet) - just love aviation"),
@@ -534,9 +566,35 @@ class JoinRequest(models.Model):
     pilot_status = models.CharField(max_length=20, choices=PILOT_STATUS_CHOICES)
     message = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    decided_at = models.DateTimeField(null=True, blank=True)
+    decided_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
 
     class Meta:
         ordering = ["-created_at"]
 
     def __str__(self):
         return f"{self.name} - {self.created_at:%Y-%m-%d}"
+
+    @property
+    def is_pending(self):
+        return self.status == self.STATUS_PENDING
+
+    def decide(self, status, user):
+        # Deciding implies the application has been looked at, so it
+        # also clears it from the unseen badge.
+        self.status = status
+        self.decided_at = timezone.now()
+        self.decided_by = user
+        update_fields = ["status", "decided_at", "decided_by"]
+        if self.seen_at is None:
+            self.seen_at = self.decided_at
+            self.seen_by = user
+            update_fields += ["seen_at", "seen_by"]
+        self.save(update_fields=update_fields)

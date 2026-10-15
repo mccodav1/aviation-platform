@@ -1,0 +1,54 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}Applications | {{ organization.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
+<link rel="stylesheet" href="{% static 'css/review.css' %}">
+<link rel="stylesheet" href="{% static 'css/confirm_dialog.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% include "app/components/page_hero.html" with title="Applications" lede="Membership applications from the Join page. Seen status and approve/deny decisions apply for every officer." %}
+
+<section class="page-body">
+    <div class="container">
+
+        <div class="page-block message-section">
+            <h2>New{% if unseen_items %} ({{ unseen_items|length }}){% endif %}</h2>
+
+            {% if unseen_items %}
+                <ul class="message-list">
+                    {% for join_request in unseen_items %}
+                        {% include "app/components/join_request.html" %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No new applications.</p>
+            {% endif %}
+        </div>
+
+        {% if seen_items %}
+            <div class="page-block message-section">
+                <h2>Seen</h2>
+
+                <ul class="message-list">
+                    {% for join_request in seen_items %}
+                        {% include "app/components/join_request.html" %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% include "app/components/confirm_dialog.html" %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/confirm_dialog.js' %}"></script>
+{% endblock %}

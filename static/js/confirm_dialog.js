@@ -3,6 +3,8 @@
 //   data-confirm="Question shown in the dialog"
 //   data-confirm-title="Dialog heading"      (optional, default "Are you sure?")
 //   data-confirm-button="Confirm button text" (optional, default "Confirm")
+//   data-confirm-tone="positive"             (optional - green confirm
+//                                             button instead of red)
 // Without JS the form just submits unconfirmed.
 (function () {
     const dialog = document.getElementById("confirm-dialog");
@@ -25,6 +27,7 @@
             title.textContent = form.dataset.confirmTitle || "Are you sure?";
             message.textContent = form.dataset.confirm;
             confirmButton.textContent = form.dataset.confirmButton || "Confirm";
+            dialog.classList.toggle("confirm-dialog-positive", form.dataset.confirmTone === "positive");
             dialog.showModal();
         });
     });

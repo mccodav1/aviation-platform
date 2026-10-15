@@ -15,7 +15,7 @@ from django.views.decorators.http import require_POST
 from meetings.services import get_month_calendar, get_next_meeting
 
 from .forms import ContactForm, JoinRequestForm, ResourceForm
-from .models import ContactMessage, Resource, ResourceCategory
+from .models import ContactMessage, JoinRequest, Resource, ResourceCategory
 from .services.weather import format_observed, get_metar
 
 logger = logging.getLogger(__name__)
@@ -269,35 +269,43 @@ def _notify_contact_message(contact_message):
     except Exception:
         logger.warning("Failed to send contact-message notification email", exc_info=True)
 
+# Officer review pages - Messages (ContactMessage) and Applications
+# (JoinRequest) share the SeenTracking pattern (see core/models.py): a
+# list split into new/seen, plus separate mark-seen / mark-unseen
+# actions rather than one toggle, so a page left open while another
+# officer acts on the same item can't flip it back the wrong way.
+
+def _review_list(request, related_name, template_name, *select_related):
+    if not request.organization:
+        raise Http404
+    items = list(
+        getattr(request.organization, related_name).select_related("seen_by", *select_related)
+    )
+    return render(
+        request,
+        template_name,
+        {
+            "unseen_items": [item for item in items if item.seen_at is None],
+            "seen_items": [item for item in items if item.seen_at is not None],
+        },
+    )
+
+
+def _review_item(request, model, pk):
+    return get_object_or_404(model, pk=pk, organization=request.organization)
+
+
 @login_required
 @permission_required("core.view_contactmessage", raise_exception=True)
 def contact_messages(request):
-    organization = request.organization
-    if not organization:
-        raise Http404
-
-    all_messages = organization.contact_messages.select_related("seen_by")
-    return render(
-        request,
-        "app/contact_messages.html",
-        {
-            "unseen_messages": [m for m in all_messages if m.seen_at is None],
-            "seen_messages": [m for m in all_messages if m.seen_at is not None],
-        },
-    )
+    return _review_list(request, "contact_messages", "app/contact_messages.html")
 
 
 @login_required
 @permission_required("core.change_contactmessage", raise_exception=True)
 @require_POST
 def contact_message_mark_seen(request, pk):
-    contact_message = get_object_or_404(
-        ContactMessage, pk=pk, organization=request.organization,
-    )
-    if contact_message.seen_at is None:
-        contact_message.seen_at = timezone.now()
-        contact_message.seen_by = request.user
-        contact_message.save(update_fields=["seen_at", "seen_by"])
+    _review_item(request, ContactMessage, pk).mark_seen(request.user)
     return redirect("core:contact_messages")
 
 
@@ -305,16 +313,7 @@ def contact_message_mark_seen(request, pk):
 @permission_required("core.change_contactmessage", raise_exception=True)
 @require_POST
 def contact_message_mark_unseen(request, pk):
-    # Separate from mark_seen rather than one toggle view, so a page left
-    # open while another officer acts on the same message can't flip it
-    # back the wrong way.
-    contact_message = get_object_or_404(
-        ContactMessage, pk=pk, organization=request.organization,
-    )
-    if contact_message.seen_at is not None:
-        contact_message.seen_at = None
-        contact_message.seen_by = None
-        contact_message.save(update_fields=["seen_at", "seen_by"])
+    _review_item(request, ContactMessage, pk).mark_unseen()
     return redirect("core:contact_messages")
 
 
@@ -322,11 +321,63 @@ def contact_message_mark_unseen(request, pk):
 @permission_required("core.delete_contactmessage", raise_exception=True)
 @require_POST
 def contact_message_delete(request, pk):
-    contact_message = get_object_or_404(
-        ContactMessage, pk=pk, organization=request.organization,
-    )
-    contact_message.delete()
+    _review_item(request, ContactMessage, pk).delete()
     return redirect("core:contact_messages")
+
+
+@login_required
+@permission_required("core.view_joinrequest", raise_exception=True)
+def join_requests(request):
+    return _review_list(request, "join_requests", "app/join_requests.html", "decided_by")
+
+
+@login_required
+@permission_required("core.change_joinrequest", raise_exception=True)
+@require_POST
+def join_request_mark_seen(request, pk):
+    _review_item(request, JoinRequest, pk).mark_seen(request.user)
+    return redirect("core:join_requests")
+
+
+@login_required
+@permission_required("core.change_joinrequest", raise_exception=True)
+@require_POST
+def join_request_mark_unseen(request, pk):
+    _review_item(request, JoinRequest, pk).mark_unseen()
+    return redirect("core:join_requests")
+
+
+def _decide_join_request(request, pk, status):
+    join_request = _review_item(request, JoinRequest, pk)
+    # Only a pending application can be decided here - so a stale page
+    # can't overturn another officer's decision. Changing a decision
+    # after the fact is an /admin edit.
+    if join_request.is_pending:
+        join_request.decide(status, request.user)
+    return redirect("core:join_requests")
+
+
+@login_required
+@permission_required("core.change_joinrequest", raise_exception=True)
+@require_POST
+def join_request_approve(request, pk):
+    return _decide_join_request(request, pk, JoinRequest.STATUS_APPROVED)
+
+
+@login_required
+@permission_required("core.change_joinrequest", raise_exception=True)
+@require_POST
+def join_request_deny(request, pk):
+    return _decide_join_request(request, pk, JoinRequest.STATUS_DENIED)
+
+
+@login_required
+@permission_required("core.delete_joinrequest", raise_exception=True)
+@require_POST
+def join_request_delete(request, pk):
+    _review_item(request, JoinRequest, pk).delete()
+    return redirect("core:join_requests")
+
 
 def join(request):
     organization = request.organization

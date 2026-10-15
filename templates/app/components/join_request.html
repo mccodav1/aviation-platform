@@ -1,0 +1,56 @@
+<li class="message-item{% if join_request.seen_at %} message-item-seen{% endif %}">
+    <div class="message-item-header">
+        <span class="message-item-from">{{ join_request.name }}</span>
+        <span class="message-status message-status-{{ join_request.status }}">{{ join_request.get_status_display }}</span>
+        <span class="message-item-date">{{ join_request.created_at|date:"M j, Y g:i A" }}</span>
+    </div>
+
+    <dl class="application-details">
+        <dt>Email</dt>
+        <dd><a href="mailto:{{ join_request.email }}">{{ join_request.email }}</a></dd>
+        {% if join_request.phone %}
+            <dt>Phone</dt>
+            <dd><a href="tel:{{ join_request.phone }}">{{ join_request.phone }}</a></dd>
+        {% endif %}
+        <dt>Aviation</dt>
+        <dd>{{ join_request.get_pilot_status_display }}</dd>
+    </dl>
+
+    {% if join_request.message %}
+        <p class="message-item-body">{{ join_request.message|linebreaksbr }}</p>
+    {% endif %}
+
+    <div class="message-item-footer">
+        <span class="message-item-seen-by">
+            {% if not join_request.is_pending %}
+                {{ join_request.get_status_display }}{% if join_request.decided_by %} by {{ join_request.decided_by.get_full_name|default:join_request.decided_by.username }}{% endif %}
+                {{ join_request.decided_at|date:"M j, Y g:i A" }}
+            {% elif join_request.seen_at %}
+                Seen{% if join_request.seen_by %} by {{ join_request.seen_by.get_full_name|default:join_request.seen_by.username }}{% endif %}
+                {{ join_request.seen_at|date:"M j, Y g:i A" }}
+            {% endif %}
+        </span>
+
+        <div class="message-item-actions">
+            {% if join_request.is_pending and perms.core.change_joinrequest %}
+                <form method="post" action="{% url 'core:join_request_approve' join_request.pk %}"
+                      data-confirm="Approve {{ join_request.name }}'s application? You'll still need to send their welcome letter and set up their login in the admin."
+                      data-confirm-title="Approve application"
+                      data-confirm-button="Approve"
+                      data-confirm-tone="positive">
+                    {% csrf_token %}
+                    <button type="submit" class="message-action-button message-action-approve">Approve</button>
+                </form>
+                <form method="post" action="{% url 'core:join_request_deny' join_request.pk %}"
+                      data-confirm="Deny {{ join_request.name }}'s application?"
+                      data-confirm-title="Deny application"
+                      data-confirm-button="Deny">
+                    {% csrf_token %}
+                    <button type="submit" class="message-action-button message-action-delete">Deny</button>
+                </form>
+            {% endif %}
+
+            {% include "app/components/review_actions.html" with item=join_request seen_url="core:join_request_mark_seen" unseen_url="core:join_request_mark_unseen" delete_url="core:join_request_delete" can_change=perms.core.change_joinrequest can_delete=perms.core.delete_joinrequest delete_title="Delete application" delete_prompt="Delete "|add:join_request.name|add:"'s application? This can't be undone." %}
+        </div>
+    </div>
+</li>
