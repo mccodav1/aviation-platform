@@ -27,3 +27,6 @@ staticfiles/
 # Claude Code's local project settings/state - tooling config, not
 # app source.
 .claude/
+
+# `make backup` output - real club data, never committed or baked into the image.
+backups/

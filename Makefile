@@ -1,3 +1,8 @@
+# bash with pipefail, so a failing command inside a pipe (e.g. pg_dump in
+# `make backup`) fails the target instead of leaving a silently empty file.
+SHELL := /bin/bash
+.SHELLFLAGS := -o pipefail -c
+
 # Local development: SQLite + runserver, with DEBUG on. Set here rather
 # than in .env, so the same .env can drive compose without DEBUG.
 DEV = DJANGO_DEBUG=true uv run manage.py
@@ -42,4 +47,33 @@ compose-seed:
 compose-superuser:
 	docker compose exec web python manage.py createsuperuser
 
-.PHONY: migrate migrations runserver bootstrap test up down nuke logs compose-seed compose-superuser
+# Backups: the database plus both upload volumes (media, private_media),
+# into backups/<date_time>/ - db.sql.gz and files.tgz. Everything else is
+# rebuilt from the repo. Copy backups/ off the server too; a backup on
+# the same disk doesn't survive losing the server.
+BACKUP_DIR := backups/$(shell date +%Y-%m-%d_%H%M%S)
+
+backup:
+	@mkdir -p $(BACKUP_DIR)
+	docker compose exec -T db sh -c 'pg_dump --clean --if-exists -U "$$POSTGRES_USER" "$$POSTGRES_DB"' | gzip > $(BACKUP_DIR)/db.sql.gz
+	docker compose exec -T web tar czf - -C /data media private_media > $(BACKUP_DIR)/files.tgz
+	@echo "Backed up to $(BACKUP_DIR)"
+
+# Replaces the current database and uploads with a backup:
+#   make restore BACKUP=backups/2026-10-15_030000
+# Asks for confirmation (or pass CONFIRM=yes). Stops the site while it
+# restores, then starts it again (which runs any newer migrations).
+restore:
+	@test -n "$(BACKUP)" || { echo "Usage: make restore BACKUP=backups/<date_time>"; exit 1; }
+	@test -f "$(BACKUP)/db.sql.gz" -a -f "$(BACKUP)/files.tgz" || { echo "$(BACKUP) needs db.sql.gz and files.tgz"; exit 1; }
+	@if [ "$(CONFIRM)" != "yes" ]; then \
+		read -p "This REPLACES the site's current database and uploads with $(BACKUP). Type yes to continue: " answer; \
+		[ "$$answer" = "yes" ] || { echo "Cancelled."; exit 1; }; \
+	fi
+	docker compose stop web
+	gunzip -c $(BACKUP)/db.sql.gz | docker compose exec -T db sh -c 'psql -q -v ON_ERROR_STOP=1 --single-transaction -U "$$POSTGRES_USER" "$$POSTGRES_DB"' > /dev/null
+	docker compose run --rm --no-deps -T --entrypoint sh web -c 'rm -rf /data/media/* /data/private_media/* && tar xzf - -C /data' < $(BACKUP)/files.tgz
+	docker compose start web
+	@echo "Restored from $(BACKUP)"
+
+.PHONY: migrate migrations runserver bootstrap test up down nuke logs compose-seed compose-superuser backup restore
