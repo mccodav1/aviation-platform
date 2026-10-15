@@ -402,7 +402,7 @@ def user_list(request):
     locked = throttle.locked_emails()
     for account in users:
         account.is_locked_out = account.email in locked
-    role_order = {"Superadmin": 0, "Officer": 1, "Site admin": 2, "Staff": 3, "Member": 4}
+    role_order = {"Superadmin": 0, "Officer": 1, "Site admin": 2, "Staff": 3, "Member": 4, "Applicant": 5}
     users.sort(key=lambda user: (role_order[user.role], user.display_name.lower()))
     return render(
         request,

@@ -106,9 +106,13 @@ class User(AbstractUser):
 
     @property
     def role(self):
-        """The account's role, as officers think of it."""
+        """The account's role, as officers think of it. Someone whose
+        membership application hasn't been approved (pending or denied)
+        is an Applicant, not yet a Member."""
         if self.is_superuser:
             return "Superadmin"
+        if self.unapproved_application:
+            return "Applicant"
         choice = self.role_choice
         if choice == "member" and self.is_staff:
             # Admin access but no role group - unusual, so it's called
