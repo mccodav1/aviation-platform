@@ -28,11 +28,16 @@ def format_wind(metar):
     if speed in (None, 0):
         return "Calm"
 
-    # Light, shifting winds come back as wdir "VRB" rather than a number.
-    if not isinstance(direction, (int, float)):
+    # Light, shifting winds are reported as wdir "VRB" rather than a
+    # number. Only that says "Variable" - a missing or unrecognized
+    # direction just shows the speed, rather than claiming anything
+    # about the direction.
+    if direction == "VRB":
         wind = f"Variable at {speed} kt"
-    else:
+    elif isinstance(direction, (int, float)):
         wind = f"{direction:03.0f}° at {speed} kt"
+    else:
+        wind = f"{speed} kt"
 
     if gust:
         wind += f" (gusts {gust} kt)"
