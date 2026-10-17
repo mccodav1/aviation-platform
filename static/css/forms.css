@@ -231,3 +231,25 @@
     font-size: 0.9rem;
     font-weight: 600;
 }
+
+/* Phones: the form card's padding gives the fields more room. */
+@media (max-width: 600px) {
+    .form-page {
+        padding: 2rem 0 3rem;
+    }
+
+    .form-card {
+        padding: 1.75rem 1.25rem;
+    }
+
+    /* The category dropdown gets the full width, with + New Category
+       underneath it. */
+    .resource-category-field {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .resource-category-add-toggle {
+        align-self: flex-start;
+    }
+}

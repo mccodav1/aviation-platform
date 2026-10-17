@@ -265,3 +265,100 @@
     outline-offset: 1px;
 }
 
+
+/* ==========================
+   Phones: one card per account
+   ========================== */
+
+/* The table needs far more width than a phone has, so each row becomes
+   a stacked card - the name on top, then each column as a labeled line
+   (the labels come from the cells' data-label attributes). */
+@media (max-width: 760px) {
+    .user-table-wrap {
+        overflow-x: visible;
+    }
+
+    .user-table thead {
+        display: none;
+    }
+
+    .user-table,
+    .user-table tbody,
+    .user-table tr,
+    .user-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .user-table tr {
+        padding: 0.9rem 0;
+        border-bottom: 1px solid rgb(17 52 86 / 12%);
+    }
+
+    .user-table tbody tr:hover {
+        background: none;
+    }
+
+    .user-table td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+
+        padding: 0.25rem 0;
+
+        border-bottom: none;
+
+        text-align: right;
+        white-space: normal;
+    }
+
+    .user-table td::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+
+        color: #64748b;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    .user-table td.user-name,
+    .user-table td.user-email {
+        min-width: 0;
+    }
+
+    /* No label on these two - the name heads the card, and the
+       buttons speak for themselves. */
+    .user-table td.user-name::before,
+    .user-table td.user-actions::before {
+        display: none;
+    }
+
+    .user-table td.user-name {
+        justify-content: flex-start;
+        padding-bottom: 0.4rem;
+
+        font-size: 1.05rem;
+        text-align: left;
+    }
+
+    .user-table td.user-actions {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        padding-top: 0.6rem;
+    }
+
+    .user-table td.user-actions:empty,
+    .user-table td.user-actions:not(:has(form)) {
+        display: none;
+    }
+
+    .user-actions form {
+        margin: 0;
+    }
+}
