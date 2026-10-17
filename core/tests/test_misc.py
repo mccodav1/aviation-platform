@@ -3,11 +3,13 @@ middleware, and the management commands."""
 
 from datetime import datetime, timedelta, timezone as dt_timezone
 from io import StringIO
+from unittest import mock
 
+from django.core.cache import cache
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.http import HttpResponse
-from django.test import RequestFactory
+from django.test import Client, RequestFactory
 from django.utils import timezone
 
 from core.links import link_error, resolve_link
@@ -45,14 +47,58 @@ class LinkTests(SiteTestCase):
         self.assertIsNotNone(link_error("resource:bylaws"))
 
 
+class WeatherPanelTests(SiteTestCase):
+    """The home page's weather panel (/weather), against a faked API."""
+
+    METAR = {
+        "fltCat": "VFR", "temp": 23.9, "dewp": 5, "wdir": 270, "wspd": 8,
+        "visib": "10+", "altim": 1017, "clouds": [{"cover": "FEW", "base": 2500}],
+    }
+
+    def setUp(self):
+        cache.clear()
+
+    def panel(self, metar=None, error=None):
+        response = mock.Mock()
+        response.json.return_value = [metar] if metar else []
+        with mock.patch.object(weather.requests, "get", return_value=response, side_effect=error):
+            return Client().get("/weather").content.decode()
+
+    def test_full_report(self):
+        html = self.panel(dict(self.METAR))
+        for text in ("270° at 8 kt", '30.03&quot;', "FEW 2,500 ft", "10+ SM", "Full Aviation Weather"):
+            self.assertIn(text, html)
+
+    def test_one_bad_value_keeps_the_rest(self):
+        # A cloud base in a shape format_sky can't handle.
+        metar = dict(self.METAR, clouds=[{"cover": "BKN", "base": "lots"}])
+        with self.assertLogs("core.services.weather", level="ERROR"):
+            html = self.panel(metar)
+        self.assertNotIn("Clouds", html)
+        for text in ("270° at 8 kt", '30.03&quot;', "10+ SM", "Full Aviation Weather"):
+            self.assertIn(text, html)
+        self.assertNotIn("Weather currently unavailable", html)
+
+    def test_unrecognized_wind_direction(self):
+        html = self.panel(dict(self.METAR, wdir="???"))
+        self.assertIn("Wind data unavailable", html)
+        self.assertIn('30.03&quot;', html)
+
+    def test_api_down_still_links_to_full_weather(self):
+        with self.assertLogs("core.services.weather", level="ERROR"):
+            html = self.panel(error=weather.requests.ConnectionError())
+        self.assertIn("Weather currently unavailable", html)
+        self.assertIn("https://aviationweather.gov/data/metar/?id=KSNS", html)
+
+
 class WeatherFormattingTests(SiteTestCase):
 
     def test_wind(self):
         self.assertEqual(weather.format_wind({"wspd": 0}), "Calm")
         self.assertEqual(weather.format_wind({"wspd": 8, "wdir": 90}), "090° at 8 kt")
         self.assertEqual(weather.format_wind({"wspd": 3, "wdir": "VRB"}), "Variable at 3 kt")
-        self.assertEqual(weather.format_wind({"wspd": 8, "wdir": None}), "8 kt")
-        self.assertEqual(weather.format_wind({"wspd": 8, "wdir": "???"}), "8 kt")
+        self.assertEqual(weather.format_wind({"wspd": 8, "wdir": None}), "Wind data unavailable")
+        self.assertEqual(weather.format_wind({"wspd": 8, "wdir": "???"}), "Wind data unavailable")
         self.assertEqual(weather.format_wind({"wspd": 12, "wdir": 270, "wgst": 20}), "270° at 12 kt (gusts 20 kt)")
 
     def test_altimeter_converts_hpa_to_inhg(self):

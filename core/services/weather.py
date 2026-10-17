@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 METAR_URL = "https://aviationweather.gov/api/data/metar"
 
+WIND_UNAVAILABLE = "Wind data unavailable"
+
 def format_altimeter(metar):
     # The API reports altim in hectopascals (e.g. 1017.4), but US METARs
     # are conventionally read in inches of mercury (e.g. "A3004" -> 30.04
@@ -30,14 +32,13 @@ def format_wind(metar):
 
     # Light, shifting winds are reported as wdir "VRB" rather than a
     # number. Only that says "Variable" - a missing or unrecognized
-    # direction just shows the speed, rather than claiming anything
-    # about the direction.
+    # direction says so, rather than guessing.
     if direction == "VRB":
         wind = f"Variable at {speed} kt"
     elif isinstance(direction, (int, float)):
         wind = f"{direction:03.0f}° at {speed} kt"
     else:
-        wind = f"{speed} kt"
+        return WIND_UNAVAILABLE
 
     if gust:
         wind += f" (gusts {gust} kt)"
@@ -83,6 +84,14 @@ def format_observed(metar):
     hours = minutes // 60
     return f"{hours} hr ago" if hours == 1 else f"{hours} hrs ago"
 
+def _formatted(formatter, metar, station, fallback=None):
+    try:
+        return formatter(metar)
+    except (TypeError, ValueError, KeyError, AttributeError):
+        logger.exception("Couldn't format %s for %s", formatter.__name__, station)
+        return fallback
+
+
 def get_metar(station, org_name=None):
     cache_key = f"metar:{station}"
 
@@ -117,9 +126,11 @@ def get_metar(station, org_name=None):
 
         metar = data[0]
 
-        metar["wind_text"] = format_wind(metar)
-        metar["altim_text"] = format_altimeter(metar)
-        metar["sky_text"] = format_sky(metar)
+        # Each one on its own, so a value in a shape we don't expect
+        # costs only that line of the panel, not the whole report.
+        metar["wind_text"] = _formatted(format_wind, metar, station, fallback=WIND_UNAVAILABLE)
+        metar["altim_text"] = _formatted(format_altimeter, metar, station)
+        metar["sky_text"] = _formatted(format_sky, metar, station)
 
         cache.set(cache_key, metar, 300)
 
