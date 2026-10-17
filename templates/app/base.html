@@ -137,6 +137,10 @@
             </a>
             <button type="button" class="nav-toggle" aria-controls="nav-menu" aria-expanded="false" aria-label="Menu">
                 <i class="bi bi-list" aria-hidden="true"></i>
+                {% if unread_inbox_count %}
+                    {# My Account (and its count) is inside the menu, so the count shows here too. #}
+                    <span class="nav-account-badge nav-toggle-badge">{{ unread_inbox_count }}<span class="visually-hidden"> unread message{{ unread_inbox_count|pluralize }}</span></span>
+                {% endif %}
             </button>
         </div>
 

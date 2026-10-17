@@ -555,6 +555,7 @@
 }
 
 .nav-toggle {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -569,6 +570,14 @@
     color: var(--color-secondary);
     font-size: 1.5rem;
     cursor: pointer;
+}
+
+.nav-toggle-badge {
+    position: absolute;
+    top: -.5rem;
+    right: -.5rem;
+
+    border: 2px solid #fff;
 }
 
 .nav-toggle:focus-visible,
