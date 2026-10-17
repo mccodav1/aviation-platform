@@ -60,14 +60,42 @@ services:
     restart: unless-stopped
     ports:
       - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
     volumes:
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      # http.conf until the site has a certificate, then https.conf - see
+      # "Enabling HTTPS" in docs/DEPLOY.md. Only those two values work.
+      - ./docker/nginx/${NGINX_SITE:-http}.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/00-rate-limits.conf:/etc/nginx/conf.d/00-rate-limits.conf:ro
+      - ./docker/nginx/snippets:/etc/nginx/snippets:ro
       - media:/srv/media:ro
+      - certbot_www:/var/www/certbot:ro
+      - letsencrypt:/etc/letsencrypt:ro
+    # Reloads every 6 hours so a certificate the certbot service renewed
+    # gets picked up; a reload doesn't drop connections.
+    command: ["/bin/sh", "-c", "while :; do sleep 6h; nginx -s reload; done & exec nginx -g 'daemon off;'"]
     depends_on:
       - web
+    logging: *logging
+
+  # Renews the Let's Encrypt certificate (see `make cert`) when it's
+  # within 30 days of expiring - a no-op until one exists.
+  certbot:
+    image: certbot/certbot:v3.0.1
+    restart: unless-stopped
+    environment:
+      CERT_DOMAINS: ${CERT_DOMAINS:-}
+      CERT_EMAIL: ${CERT_EMAIL:-}
+    volumes:
+      - certbot_www:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+    entrypoint: ["/bin/sh", "-c", "trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done"]
     logging: *logging
 
 volumes:
   pgdata:
   media:
   private_media:
+  # The Let's Encrypt account and certificate, and the folder its
+  # domain checks are answered from.
+  letsencrypt:
+  certbot_www:
