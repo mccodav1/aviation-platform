@@ -464,13 +464,14 @@ def user_list(request):
 @login_required
 @permission_required("core.add_user", raise_exception=True)
 def user_create(request):
+    can_assign_roles = request.user.has_perm("core.assign_roles")
     if request.method == "POST":
-        form = UserCreateForm(request.POST)
+        form = UserCreateForm(request.POST, can_assign_roles=can_assign_roles)
         if form.is_valid():
             form.save()
             return redirect("core:user_list")
     else:
-        form = UserCreateForm()
+        form = UserCreateForm(can_assign_roles=can_assign_roles)
 
     return render(request, "app/user_form.html", {"form": form})
 

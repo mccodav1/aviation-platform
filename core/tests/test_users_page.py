@@ -148,7 +148,7 @@ class UsersPageTests(SiteTestCase):
     def add_user(self, client, **overrides):
         data = {
             "first_name": "New", "last_name": "Pilot", "email": "New@Example.com",
-            "password1": "Fresh-password-456", "password2": "Fresh-password-456",
+            "password1": "Fresh-password-456", "password2": "Fresh-password-456", "role": "member",
             **overrides,
         }
         return client.post("/users/add", data)
@@ -195,6 +195,26 @@ class UsersPageTests(SiteTestCase):
         self.assertEqual(self.add_user(member_client).status_code, 403)
         self.assertFalse(User.objects.filter(email="new@example.com").exists())
         self.assertRedirects(self.client.get("/users/add"), "/login/?next=/users/add", fetch_redirect_response=False)
+
+    def test_officer_picks_role_when_adding(self):
+        for i, (role, label) in enumerate((("officer", "Officer"), ("site_admin", "Site admin"), ("member", "Member"))):
+            with self.subTest(role=role):
+                self.add_user(self.officer_client, email=f"r{i}@example.com", role=role)
+                account = User.objects.get(email=f"r{i}@example.com")
+                self.assertEqual(account.role, label)
+                self.assertEqual(account.is_staff, role != "member")
+
+    def test_bogus_role_refused_when_adding(self):
+        self.assertEqual(self.add_user(self.officer_client, role="superadmin").status_code, 200)
+        self.assertFalse(User.objects.filter(email="new@example.com").exists())
+
+    def test_role_field_only_for_role_assigners(self):
+        self.assertIn('name="role"', self.officer_client.get("/users/add").content.decode())
+        self.assertNotIn('name="role"', self.site_admin_client.get("/users/add").content.decode())
+
+    def test_site_admin_role_ignored_when_adding(self):
+        self.add_user(self.site_admin_client, role="officer")
+        self.assertEqual(User.objects.get(email="new@example.com").role, "Member")
 
     def test_add_user_page_renders(self):
         self.assertContains(self.officer_client.get("/users/add"), "Create User")
