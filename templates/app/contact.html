@@ -78,35 +78,29 @@
             </div>
         </div>
 
-        <div class="page-block" id="report-bug">
-            <h2>Report a Bug</h2>
-            <p>
-                The site is new, and you might run into something that doesn't
-                work right. If you do, tell us with the message form below. Use
-                the <strong>Report Bug</strong> button at the top of any page,
-                or the button here, and the form will start you off with what
-                to include:
-            </p>
-            <ul class="page-list">
-                <li>which page you were on</li>
-                <li>what you did, and what you expected to happen</li>
-                <li>what happened instead (copy any error message word for word)</li>
-                <li>whether you were on a phone or a computer, and which browser</li>
-            </ul>
-            <div class="contact-cta-row">
-                <a href="{% url 'core:contact' %}?topic=bug#message-form" class="page-cta">
-                    <i class="bi bi-bug"></i>
-                    Start a Bug Report
-                </a>
-            </div>
-        </div>
-
         <div class="form-card contact-form-card" id="message-form">
-            {% if reporting_bug and not sent %}
-                <h2>Report a Bug</h2>
-                <p class="form-subtitle">Fill in what you can below - every detail helps us track it down.</p>
+            {# Plain links, so they work without JS; switching reloads the form. #}
+            <nav class="contact-tabs" aria-label="What kind of message">
+                <a href="{% url 'core:contact' %}#message-form"
+                   class="contact-tab{% if not reporting_bug %} active{% endif %}"
+                   {% if not reporting_bug %}aria-current="page"{% endif %}>
+                    <i class="bi bi-chat-text" aria-hidden="true"></i> Send a Message
+                </a>
+                <a href="{% url 'core:contact' %}?topic=bug#message-form"
+                   class="contact-tab{% if reporting_bug %} active{% endif %}"
+                   {% if reporting_bug %}aria-current="page"{% endif %}>
+                    <i class="bi bi-bug" aria-hidden="true"></i> Report a Bug
+                </a>
+            </nav>
+
+            {% if reporting_bug %}
+                <p class="form-subtitle">
+                    The site is new, so thanks for telling us when something doesn't
+                    work right. Fill in what you can below - which page, what you
+                    did, what happened instead (copy any error message word for
+                    word), and whether you were on a phone or a computer.
+                </p>
             {% else %}
-                <h2>Send a Quick Message</h2>
                 <p class="form-subtitle">Prefer to write it out? Send us a note and we'll get back to you.</p>
             {% endif %}
 

@@ -97,13 +97,16 @@ class BetaTouchesTests(SiteTestCase):
         response = self.client.get("/contact?topic=bug")
         self.assertTrue(response.context["reporting_bug"])
         self.assertIn("What happened instead:", response.context["form"]["message"].value())
-        self.assertContains(response, "<h2>Report a Bug</h2>", count=2)  # the section and the form
+        self.assertRegex(response.content.decode(), r'class="contact-tab active"\s+aria-current="page">\s+<i class="bi bi-bug"')
 
-    def test_plain_contact_page_explains_bug_reports_but_starts_empty(self):
+    def test_plain_contact_page_starts_empty_with_both_tabs(self):
         response = self.client.get("/contact")
-        self.assertContains(response, 'id="report-bug"')
-        self.assertContains(response, "Send a Quick Message")
+        self.assertFalse(response.context["reporting_bug"])
         self.assertIsNone(response.context["form"]["message"].value())
+        html = response.content.decode()
+        self.assertIn('href="/contact#message-form"', html)  # back to a plain message
+        self.assertIn(f'href="{self.BUG_URL}"', html)
+        self.assertRegex(html, r'class="contact-tab active"\s+aria-current="page">\s+<i class="bi bi-chat-text"')
 
     def test_login_page_says_to_contact_an_officer(self):
         self.assertContains(self.client.get("/login/"), 'Forgot your password? <a href="/contact">Contact an officer</a>')
