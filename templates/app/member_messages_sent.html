@@ -6,11 +6,12 @@
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
 <link rel="stylesheet" href="{% static 'css/review.css' %}">
+<link rel="stylesheet" href="{% static 'css/confirm_dialog.css' %}">
 {% endblock %}
 
 {% block content %}
 
-{% include "app/components/page_hero.html" with title="Sent Messages" lede="Every message sent to members' Inboxes, by anyone who can send them." %}
+{% include "app/components/page_hero.html" with title="Sent Messages" lede="Every message sent to members' Inboxes, by anyone who can send them. Deleting one here removes it for every sender; it's erased for good once its recipients have deleted it too." %}
 
 <section class="page-body">
     <div class="container">
@@ -55,6 +56,18 @@
                                 <span class="message-item-seen-by">
                                     Read by {{ message.read_count }} of {{ message.recipient_count }}
                                 </span>
+
+                                {% if perms.core.delete_membermessage %}
+                                    <div class="message-item-actions">
+                                        <form method="post" action="{% url 'core:member_message_delete' message.pk %}"
+                                              data-confirm="Delete &quot;{{ message.subject }}&quot; from the Sent log? It's removed for every officer and site admin. Recipients keep it until they delete it, and then it's erased."
+                                              data-confirm-title="Delete sent message"
+                                              data-confirm-button="Delete">
+                                            {% csrf_token %}
+                                            <button type="submit" class="message-action-button message-action-delete">Delete</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
                             </div>
                         </li>
                     {% endfor %}
@@ -67,4 +80,10 @@
     </div>
 </section>
 
+{% include "app/components/confirm_dialog.html" %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/confirm_dialog.js' %}"></script>
 {% endblock %}

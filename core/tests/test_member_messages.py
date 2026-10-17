@@ -128,3 +128,56 @@ class MemberMessageTests(SiteTestCase):
         form = self.officer_client.get(f"/inbox/compose?to={self.member.pk}&reply={from_member.pk}").context["form"]
         self.assertEqual(form["subject"].value(), "Re: your message")
         self.assertIn("> Is the\n> meeting on?", form["body"].value())
+
+
+class MemberMessageCleanupTests(SiteTestCase):
+    """Deleting from the Sent log, and erasing once nobody has it."""
+
+    setUp = MemberMessageTests.setUp
+    send = MemberMessageTests.send
+
+    def delete_from_sent(self, client, message):
+        return client.post(f"/inbox/sent/{message.pk}/delete")
+
+    def hide(self, user):
+        delivery = MemberMessageDelivery.objects.get(recipient=user)
+        return self.client_for(user).post(f"/inbox/{delivery.pk}/delete")
+
+    def test_sent_log_delete_hides_it_for_every_sender_but_recipients_keep_it(self):
+        self.send(self.officer_client, self.member.pk, subject="Hello Mel")
+        self.delete_from_sent(self.client_for(self.site_admin), MemberMessage.objects.get())
+        self.assertNotContains(self.officer_client.get("/inbox/sent"), "Hello Mel")
+        self.assertContains(self.member_client.get("/inbox"), "Hello Mel")
+        self.assertTrue(MemberMessage.objects.exists())
+
+    def test_erased_once_off_sent_log_and_recipient_deleted_it_either_order(self):
+        for sender_first in (True, False):
+            with self.subTest(sender_first=sender_first):
+                self.send(self.officer_client, self.member.pk)
+                message = MemberMessage.objects.get()
+                if sender_first:
+                    self.delete_from_sent(self.officer_client, message)
+                    self.assertTrue(MemberMessage.objects.exists())
+                    self.hide(self.member)
+                else:
+                    self.hide(self.member)
+                    self.assertTrue(MemberMessage.objects.exists())
+                    self.delete_from_sent(self.officer_client, message)
+                self.assertFalse(MemberMessage.objects.exists())
+                self.assertFalse(MemberMessageDelivery.objects.exists())
+
+    def test_everyone_message_waits_for_every_active_recipient(self):
+        self.send(self.officer_client, "everyone")
+        message = MemberMessage.objects.get()
+        self.delete_from_sent(self.officer_client, message)
+        self.hide(self.member)
+        self.hide(self.site_admin)
+        self.assertTrue(MemberMessage.objects.exists())  # self.other still has it
+        # ...until they're deactivated - they can't log in to delete it.
+        self.officer_client.post(f"/users/{self.other.pk}/deactivate")
+        self.assertFalse(MemberMessage.objects.exists())
+
+    def test_members_cannot_delete_from_sent_log(self):
+        self.send(self.officer_client, self.member.pk)
+        self.assertEqual(self.delete_from_sent(self.member_client, MemberMessage.objects.get()).status_code, 403)
+        self.assertIsNone(MemberMessage.objects.get().removed_from_sent_at)

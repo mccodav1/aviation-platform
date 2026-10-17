@@ -533,6 +533,12 @@ def user_deactivate(request, pk):
     if account.pk != request.user.pk and account.is_active:
         account.is_active = False
         account.save(update_fields=["is_active"])
+        # They can't log in to delete messages any more, so any that were
+        # only waiting on them can go (see MemberMessage.erase_if_finished).
+        for message in MemberMessage.objects.filter(
+            deliveries__recipient=account, deliveries__hidden_at__isnull=True,
+        ):
+            message.erase_if_finished()
     return redirect("core:user_list")
 
 
@@ -664,6 +670,7 @@ def inbox_delete(request, pk):
     if delivery.hidden_at is None:
         delivery.hidden_at = timezone.now()
         delivery.save(update_fields=["hidden_at"])
+        delivery.message.erase_if_finished()
     return redirect("core:inbox")
 
 
@@ -717,6 +724,7 @@ def member_messages_sent(request):
         raise Http404
     messages = (
         request.organization.member_messages
+        .filter(removed_from_sent_at__isnull=True)
         .select_related("sender")
         .annotate(
             recipient_count=Count("deliveries"),
@@ -735,3 +743,17 @@ def member_messages_sent(request):
         "app/member_messages_sent.html",
         {"sent_messages": messages, "just_sent": request.GET.get("sent") == "1"},
     )
+
+
+@login_required
+@permission_required("core.delete_membermessage", raise_exception=True)
+@require_POST
+def member_message_delete(request, pk):
+    # Off the Sent log for everyone who sees it; recipients keep their
+    # copies until they delete them too, and then it's erased.
+    message = get_object_or_404(MemberMessage, pk=pk, organization=request.organization)
+    if message.removed_from_sent_at is None:
+        message.removed_from_sent_at = timezone.now()
+        message.save(update_fields=["removed_from_sent_at"])
+        message.erase_if_finished()
+    return redirect("core:member_messages_sent")

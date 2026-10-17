@@ -701,12 +701,27 @@ class MemberMessage(models.Model):
     body = models.TextField()
     sent_to_everyone = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    # Deleted from the (shared) Sent log. The message itself is erased
+    # once that's happened and no recipient still has it - see
+    # erase_if_finished.
+    removed_from_sent_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at"]
 
     def __str__(self):
         return self.subject
+
+    def erase_if_finished(self):
+        """Erases the message, every copy included, once it's off the
+        Sent log and no recipient still has it in their Inbox. A
+        deactivated account counts as done with it - they can't log in to
+        delete it themselves."""
+        still_wanted = self.deliveries.filter(hidden_at__isnull=True, recipient__is_active=True).exists()
+        if self.removed_from_sent_at is not None and not still_wanted:
+            self.delete()
+            return True
+        return False
 
     @classmethod
     def send(cls, organization, sender, subject, body, recipient=None):
