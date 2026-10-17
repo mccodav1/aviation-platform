@@ -114,7 +114,7 @@ class AccountUrlTests(SiteTestCase):
         user = self.make_user("pat@example.com", first_name="Pat", last_name="Lee")
         html = self.client_for(user).get("/").content.decode()
         self.assertIn('href="/password_change/"', html)
-        self.assertIn('<span class="nav-account-name">Pat Lee</span>', html)
+        self.assertRegex(html, r'class="nav-account-name"[^>]*>Pat Lee</a>')
         self.assertNotIn("nav-account-name", self.client.get("/").content.decode())
 
     def test_password_change_requires_login(self):

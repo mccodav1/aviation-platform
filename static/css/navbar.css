@@ -256,39 +256,40 @@
    Join Button
    ========================== */
 
-/* Who's logged in - links to their account page (change password). */
+/* Log Out with who's logged in in small text underneath - stacked so
+   it takes no more width than the button. The name links to their
+   account page (change password). */
 .nav-account {
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
-    gap: .45rem;
+    gap: .2rem;
+}
 
-    max-width: 14rem;
+.nav-account-name {
+    /* Never wider than the button: a long name is cut off instead. */
+    width: 0;
+    min-width: 100%;
+    overflow: hidden;
 
-    color: var(--color-secondary);
-    font-weight: 600;
+    color: #64748b;
+    font-size: .72rem;
+    text-align: center;
     text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     transition: color .2s ease;
 }
 
-.nav-account i {
-    font-size: 1.4rem;
-}
-
-.nav-account-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.nav-account:hover,
-.nav-account.active {
+.nav-account-name:hover,
+.nav-account-name.active {
     color: var(--color-primary);
 }
 
-.nav-account:focus-visible {
+.nav-account-name:focus-visible {
     outline: 2px solid var(--color-secondary);
-    outline-offset: 4px;
+    outline-offset: 2px;
 }
 
 .nav-logout-form {
