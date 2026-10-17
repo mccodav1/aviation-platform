@@ -2,7 +2,7 @@
     position: relative;
     height: clamp(560px, 62vh, 720px);
     flex-shrink: 0; /* main is a flex column - never compress the hero */
-    margin-top: -84px; /* cancel main's navbar-clearing padding - bleed under the fixed navbar */
+    margin-top: calc(-1 * var(--nav-height)); /* cancel main's navbar-clearing padding - bleed under the fixed navbar */
     overflow: hidden;
 
     display: flex;

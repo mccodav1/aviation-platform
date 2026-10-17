@@ -35,7 +35,8 @@
         </a>
 
 
-        <div class="nav-actions">
+        {# The full bar when it fits; otherwise a drop-down menu opened by .nav-toggle (see nav_menu.js). #}
+        <div class="nav-actions" id="nav-menu">
             <nav>
                 {% for item in organization.enabled_navigation_items %}
                     <a href="{{ item.url|resolve_link }}"
@@ -51,6 +52,7 @@
                         <a class="nav-icon{% if request.resolver_match.url_name == 'user_list' %} active{% endif %}" href="{% url 'core:user_list' %}"
                            aria-label="Users" title="Users">
                             <i class="bi bi-people"></i>
+                            <span class="nav-icon-label">Users</span>
                         </a>
                     {% endif %}
 
@@ -59,6 +61,7 @@
                            aria-label="Applications{% if unseen_join_request_count %} ({{ unseen_join_request_count }} new){% endif %}"
                            title="Applications{% if unseen_join_request_count %} ({{ unseen_join_request_count }} new){% endif %}">
                             <i class="bi bi-person-plus{% if unseen_join_request_count %}-fill{% endif %}"></i>
+                            <span class="nav-icon-label">Applications</span>
                             {% if unseen_join_request_count %}
                                 <span class="nav-icon-badge">{{ unseen_join_request_count }}</span>
                             {% endif %}
@@ -70,6 +73,7 @@
                            aria-label="Messages{% if unseen_contact_message_count %} ({{ unseen_contact_message_count }} new){% endif %}"
                            title="Messages{% if unseen_contact_message_count %} ({{ unseen_contact_message_count }} new){% endif %}">
                             <i class="bi bi-envelope{% if unseen_contact_message_count %}-fill{% endif %}"></i>
+                            <span class="nav-icon-label">Messages</span>
                             {% if unseen_contact_message_count %}
                                 <span class="nav-icon-badge">{{ unseen_contact_message_count }}</span>
                             {% endif %}
@@ -118,8 +122,21 @@
             {% endif %}
         </div>
 
+        {# Only shown while the bar is collapsed into the menu. #}
+        <div class="nav-compact-controls">
+            <a class="nav-bug-compact" href="{% url 'core:contact' %}?topic=bug#message-form" aria-label="Report Bug">
+                <i class="bi bi-bug-fill" aria-hidden="true"></i>
+                <span class="nav-bug-compact-label">Report Bug</span>
+            </a>
+            <button type="button" class="nav-toggle" aria-controls="nav-menu" aria-expanded="false" aria-label="Menu">
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
+        </div>
+
     </div>
 </header>
+{# Here rather than at the end of the page, so the bar is collapsed (if it needs to be) before the first paint. #}
+<script src="{% static 'js/nav_menu.js' %}"></script>
 
 <main>
 {% block content %}
