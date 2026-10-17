@@ -271,11 +271,11 @@
 
     padding: .6rem 1rem;
 
-    background: #fff;
+    background: var(--color-secondary);
     border: 2px solid var(--color-secondary);
     border-radius: 8px;
 
-    color: var(--color-secondary);
+    color: #fff;
     font-size: .95rem;
     font-weight: 700;
 
@@ -283,7 +283,7 @@
     cursor: pointer;
     user-select: none;
 
-    transition: color .2s ease, border-color .2s ease;
+    transition: background .2s ease, border-color .2s ease;
 }
 
 .nav-account-toggle::-webkit-details-marker {
@@ -292,8 +292,8 @@
 
 .nav-account-toggle:hover,
 .nav-account[open] .nav-account-toggle {
+    background: var(--color-primary);
     border-color: var(--color-primary);
-    color: var(--color-primary);
 }
 
 .nav-account-toggle:focus-visible {
