@@ -368,8 +368,28 @@
         gap: 0.75rem;
     }
 
+    /* Officer controls: one wrapping row along the bottom of the card,
+       instead of a column pinned to the right edge. */
     .meeting-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        align-self: stretch;
+        gap: .75rem 1.25rem;
+
         margin-left: 0;
-        align-self: flex-start;
+        padding-top: .9rem;
+
+        border-top: 1px solid rgb(17 52 86 / 10%);
+    }
+
+    .meetings-toolbar {
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .meeting-files {
+        flex-wrap: wrap;
+        gap: .6rem 1.25rem;
     }
 }

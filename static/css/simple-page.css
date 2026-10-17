@@ -115,3 +115,19 @@
 .page-link:hover {
     color: var(--color-primary);
 }
+
+/* Phones: less padding around and inside the blocks, so the text gets
+   the width. */
+@media (max-width: 600px) {
+    .page-hero {
+        padding: 3rem 0 2.25rem;
+    }
+
+    .page-body {
+        padding: 2rem 0 3rem;
+    }
+
+    .page-block {
+        padding: 1.35rem 1.25rem;
+    }
+}

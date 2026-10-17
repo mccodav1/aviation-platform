@@ -309,4 +309,24 @@
     .about-feature-content ul {
         text-align: left;
     }
+
+    /* Two officers to a row, smaller photos, rather than one big circle
+       per screenful. */
+    .about-officers h2 {
+        margin-bottom: 1.5rem;
+    }
+
+    .about-officers-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.75rem 1rem;
+    }
+
+    .about-officer-photo {
+        width: 96px;
+        height: 96px;
+    }
+
+    .about-officer-photo-placeholder i {
+        font-size: 2rem;
+    }
 }
