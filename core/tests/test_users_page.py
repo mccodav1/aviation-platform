@@ -142,3 +142,82 @@ class UsersPageTests(SiteTestCase):
         self.assertEqual(response.context["locked_count"], 1)
         self.site_admin_client.post(f"/users/{self.member.pk}/unlock")
         self.assertEqual(self.site_admin_client.get("/users").context["locked_count"], 0)
+
+    # ---- adding accounts ----
+
+    def add_user(self, client, **overrides):
+        data = {
+            "first_name": "New", "last_name": "Pilot", "email": "New@Example.com",
+            "password1": "Fresh-password-456", "password2": "Fresh-password-456", "role": "member",
+            **overrides,
+        }
+        return client.post("/users/add", data)
+
+    def test_officer_and_site_admin_add_users(self):
+        for i, client in enumerate((self.officer_client, self.site_admin_client)):
+            with self.subTest(client=client):
+                response = self.add_user(client, email=f"new{i}@example.com")
+                self.assertRedirects(response, "/users", fetch_redirect_response=False)
+                account = User.objects.get(email=f"new{i}@example.com")
+                self.assertTrue(account.is_active)
+                self.assertEqual(account.role, "Member")
+                self.assertFalse(account.is_staff)
+                self.assertTrue(self.client.login(username=f"new{i}@example.com", password="Fresh-password-456"))
+
+    def test_email_stored_lowercase_and_duplicates_refused(self):
+        self.add_user(self.officer_client)
+        self.assertTrue(User.objects.filter(email="new@example.com").exists())
+        response = self.add_user(self.officer_client, email="NEW@example.com")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("email", response.context["form"].errors)
+        self.assertEqual(User.objects.filter(email="new@example.com").count(), 1)
+
+    def test_add_user_validates_passwords_and_names(self):
+        for overrides in (
+            {"password2": "Something-else-789"},
+            {"password1": "short", "password2": "short"},
+            {"first_name": ""},
+        ):
+            with self.subTest(overrides=overrides):
+                self.assertEqual(self.add_user(self.officer_client, **overrides).status_code, 200)
+                self.assertFalse(User.objects.filter(email="new@example.com").exists())
+
+    def test_add_user_cannot_grant_privileges(self):
+        self.add_user(self.officer_client, is_superuser="on", is_staff="on", groups="1")
+        account = User.objects.get(email="new@example.com")
+        self.assertFalse(account.is_superuser)
+        self.assertFalse(account.is_staff)
+        self.assertFalse(account.groups.exists())
+
+    def test_add_user_refused_without_permission(self):
+        member_client = self.client_for(self.member)
+        self.assertEqual(member_client.get("/users/add").status_code, 403)
+        self.assertEqual(self.add_user(member_client).status_code, 403)
+        self.assertFalse(User.objects.filter(email="new@example.com").exists())
+        self.assertRedirects(self.client.get("/users/add"), "/login/?next=/users/add", fetch_redirect_response=False)
+
+    def test_officer_picks_role_when_adding(self):
+        for i, (role, label) in enumerate((("officer", "Officer"), ("site_admin", "Site admin"), ("member", "Member"))):
+            with self.subTest(role=role):
+                self.add_user(self.officer_client, email=f"r{i}@example.com", role=role)
+                account = User.objects.get(email=f"r{i}@example.com")
+                self.assertEqual(account.role, label)
+                self.assertEqual(account.is_staff, role != "member")
+
+    def test_bogus_role_refused_when_adding(self):
+        self.assertEqual(self.add_user(self.officer_client, role="superadmin").status_code, 200)
+        self.assertFalse(User.objects.filter(email="new@example.com").exists())
+
+    def test_role_field_only_for_role_assigners(self):
+        self.assertIn('name="role"', self.officer_client.get("/users/add").content.decode())
+        self.assertNotIn('name="role"', self.site_admin_client.get("/users/add").content.decode())
+
+    def test_site_admin_role_ignored_when_adding(self):
+        self.add_user(self.site_admin_client, role="officer")
+        self.assertEqual(User.objects.get(email="new@example.com").role, "Member")
+
+    def test_add_user_page_renders(self):
+        self.assertContains(self.officer_client.get("/users/add"), "Create User")
+
+    def test_add_button_shown_with_permission(self):
+        self.assertIn('href="/users/add"', self.site_admin_client.get("/users").content.decode())

@@ -1,0 +1,47 @@
+{% extends "app/base.html" %}
+
+{% block title %}Add User | {{ organization.name }}{% endblock %}
+
+{% block content %}
+
+<section class="form-page">
+    <div class="container">
+        <div class="form-card">
+            <h1>Add User</h1>
+            <p class="form-subtitle">The account is active right away{% if not form.role %}, as a Member - an officer can change its role on the Users page{% endif %}. Pass the password on to them yourself - they can change it once they've logged in, by clicking their name at the top of the page.</p>
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <div class="form-field-help">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="form-submit">Create User</button>
+            </form>
+
+            <p class="form-back-link">
+                <a href="{% url 'core:user_list' %}">&larr; Back to Users</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

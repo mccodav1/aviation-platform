@@ -11,13 +11,19 @@
 
 {% block content %}
 
-{% include "app/components/page_hero.html" with title="Users" lede="Every account on the site. Change roles, deactivate, reactivate or unlock accounts here; names, emails and passwords are changed in the admin." %}
+{% include "app/components/page_hero.html" with title="Users" lede="Every account on the site. Add accounts, change roles, deactivate, reactivate or unlock accounts here; names, emails and passwords are changed in the admin." %}
 
 <section class="page-body">
     {# The widest container - this table has a lot of columns. #}
     <div class="container-wide">
 
         <div class="page-block user-list-block">
+            {% if perms.core.add_user %}
+                <div class="user-list-toolbar">
+                    <a class="join-button" href="{% url 'core:user_create' %}">+ Add User</a>
+                </div>
+            {% endif %}
+
             <div class="user-list-summary">
                 <span><strong>{{ users|length }}</strong> account{{ users|length|pluralize }}</span>
                 <span><strong>{{ active_count }}</strong> active</span>

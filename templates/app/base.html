@@ -79,10 +79,29 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-                <form method="post" action="{% url 'logout' %}" class="nav-logout-form">
-                    {% csrf_token %}
-                    <button type="submit" class="join-button">Log Out</button>
-                </form>
+                {# Account menu: who's logged in, change password, log out. #}
+                <details class="nav-account">
+                    <summary class="nav-account-toggle" title="Logged in as {{ user.email }}">
+                        My Account
+                        <i class="bi bi-chevron-down nav-account-caret" aria-hidden="true"></i>
+                    </summary>
+                    <div class="nav-account-menu">
+                        <div class="nav-account-who">
+                            <span class="nav-account-who-label">Logged in as</span>
+                            <strong>{{ user.display_name }}</strong>
+                            {% if user.get_full_name %}<span>{{ user.email }}</span>{% endif %}
+                        </div>
+                        <a class="nav-account-item{% if request.resolver_match.url_name == 'password_change' %} active{% endif %}" href="{% url 'password_change' %}">
+                            <i class="bi bi-key" aria-hidden="true"></i> Change password
+                        </a>
+                        <form method="post" action="{% url 'logout' %}" class="nav-logout-form">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-account-item">
+                                <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Log Out
+                            </button>
+                        </form>
+                    </div>
+                </details>
             {% else %}
                 <div class="nav-buttons">
                     <a class="login-button" href="{% url 'login' %}">Login</a>
@@ -137,6 +156,9 @@
 
 </footer>
 
+{% if user.is_authenticated %}
+<script src="{% static 'js/nav_account.js' %}"></script>
+{% endif %}
 {% block extra_scripts %}{% endblock %}
 
 </body>

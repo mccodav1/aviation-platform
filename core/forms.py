@@ -5,7 +5,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth import password_validation
-from django.contrib.auth.forms import AuthenticationForm, UsernameField
+from django.contrib.auth.forms import AuthenticationForm, BaseUserCreationForm, UsernameField
 from django.db import transaction
 
 from . import throttle
@@ -117,6 +117,43 @@ class JoinRequestForm(forms.ModelForm):
         )
         join_request.save()
         return join_request
+
+
+class UserCreateForm(BaseUserCreationForm):
+    """The Users page's "Add user": an active account, with a password
+    the officer sets and passes on to the new user. Only someone who can
+    assign roles gets the Role field; for anyone else the new account is
+    a Member."""
+
+    class Meta(BaseUserCreationForm.Meta):
+        model = User
+        fields = ("first_name", "last_name", "email")
+        widgets = {
+            "email": forms.EmailInput(attrs={"autocomplete": "off"}),
+        }
+
+    def __init__(self, *args, can_assign_roles=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Optional on the model, but the Users page lists people by name.
+        self.fields["first_name"].required = True
+        self.fields["last_name"].required = True
+        if can_assign_roles:
+            self.fields["role"] = forms.ChoiceField(choices=User.ROLE_CHOICES, initial="member")
+
+    def clean_email(self):
+        # The model lowercases on save, so check case-insensitively here
+        # or a differently-cased duplicate would fail at the database.
+        email = self.cleaned_data["email"].strip().lower()
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("An account with this email already exists.")
+        return email
+
+    @transaction.atomic
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        if commit and "role" in self.cleaned_data:
+            user.set_role(self.cleaned_data["role"])
+        return user
 
 
 class ThrottledLoginMixin:
