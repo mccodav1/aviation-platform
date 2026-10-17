@@ -17,7 +17,7 @@ from django.views.decorators.http import require_POST
 from meetings.services import get_month_calendar, get_next_meeting
 
 from . import throttle
-from .forms import ContactForm, JoinRequestForm, ResourceForm
+from .forms import ContactForm, JoinRequestForm, ResourceForm, UserCreateForm
 from .models import ContactMessage, JoinRequest, Resource, ResourceCategory, User
 from .services.weather import format_observed, get_metar
 
@@ -459,6 +459,20 @@ def user_list(request):
             "role_choices": User.ROLE_CHOICES,
         },
     )
+
+
+@login_required
+@permission_required("core.add_user", raise_exception=True)
+def user_create(request):
+    if request.method == "POST":
+        form = UserCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("core:user_list")
+    else:
+        form = UserCreateForm()
+
+    return render(request, "app/user_form.html", {"form": form})
 
 
 def _manageable_user(request, pk):

@@ -8,6 +8,10 @@
     max-width: none;
 }
 
+.user-list-toolbar {
+    margin-bottom: 1.25rem;
+}
+
 .user-list-summary {
     display: flex;
     flex-wrap: wrap;
