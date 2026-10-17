@@ -608,6 +608,16 @@
     .calendar-weekdays span::first-letter {
         font-size: 0.7rem;
     }
+
+    /* Too narrow for a readable title ("Oc..."), so each event is a
+       short colored bar marking the day; tapping it still opens it,
+       and View All Events below lists them in full. */
+    .calendar-event {
+        height: 0.55rem;
+        padding: 0;
+
+        font-size: 0;
+    }
 }
 
 /* ==========================

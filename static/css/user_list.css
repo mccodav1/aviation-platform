@@ -37,6 +37,10 @@
 
 /* Scrolls sideways on a narrow screen instead of squashing columns. */
 .user-table-wrap {
+    /* position: relative keeps the header's .visually-hidden "Actions"
+       label (position: absolute) inside this scroll box - otherwise it
+       escapes it and makes the whole page scroll sideways. */
+    position: relative;
     overflow-x: auto;
 }
 
