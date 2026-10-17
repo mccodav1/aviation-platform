@@ -1,19 +1,23 @@
 # Deploying
 
-The deployed stack is three compose services, built from this repo's
+The deployed stack is four compose services, built from this repo's
 source on the server (no image registry):
 
 ```
-browser -> nginx (:80) -> web (gunicorn + Django) -> db (Postgres)
+browser -> nginx (:80/:443) -> web (gunicorn + Django) -> db (Postgres)
               |                   |
          media volume (ro)   media + private_media volumes
 ```
 
 - **nginx** serves `/media/` straight off the media volume and proxies
-  everything else to gunicorn. It never mounts `private_media`.
+  everything else to gunicorn. It never mounts `private_media`. It also
+  rate-limits logins and the public Join/Contact forms per IP (see
+  "Rate limits" below), and terminates HTTPS once it's turned on.
 - **web** runs `migrate` and `ensure_superuser` on every start, then gunicorn. Static files are
   collected into the image at build time and served by WhiteNoise.
 - **db** is Postgres 17; its data lives in the `pgdata` volume.
+- **certbot** renews the HTTPS certificate when it's close to expiring.
+  It does nothing until `make cert` has fetched one.
 
 All configuration lives in `.env`. See `.env.example` for every setting,
 split into MANDATORY and OPTIONAL.
@@ -41,7 +45,17 @@ so the site looks the way it does in development. It refuses to run once
 content exists, because re-loading fixtures would overwrite officers'
 edits.
 
-Open port 80 in the Lightsail firewall (networking tab).
+In the Lightsail firewall (networking tab), open only ports 22 (SSH),
+80 and 443. Postgres and gunicorn are never published, so nothing else
+needs to be reachable.
+
+Make `DJANGO_SUPERUSER_PASSWORD` long and random. `/admin` is the first
+thing bots try, and this password skips the usual strength checks. It's
+only used to create the account the first time; after that, change it in
+`/admin`.
+
+Before giving anyone an account, turn on HTTPS (below). Over plain HTTP,
+every password typed on the site crosses the network readable.
 
 ## Updating
 
@@ -64,15 +78,75 @@ A migration that already ran is not undone by this. Reverse it with
    if it should still work).
 3. `docker compose up -d` to restart with the new value.
 
-nginx's server block is a catch-all, so it needs no change for this.
+nginx's server blocks are catch-alls, so they need no change for this.
+Once HTTPS is on, the domain also has to be on the certificate: add it
+to `CERT_DOMAINS` and run `make cert` again.
 
-## Enabling HTTPS (later)
+## Enabling HTTPS
 
-Add a `listen 443 ssl` server block with the certificate to
-`docker/nginx/default.conf`, publish port 443 in `compose.yaml`, then set
-`DJANGO_HTTPS=true` in `.env`. That turns on secure cookies, the
-HTTP-to-HTTPS redirect, and HSTS. Don't set it before TLS works, or
-logging in will break.
+Free certificates from Let's Encrypt, fetched once by `make cert` and
+renewed automatically by the certbot service. Needs a domain name - a
+bare IP can't get one.
+
+1. Point the domain (and `www.`, if wanted) at the server, and add both
+   to `DJANGO_ALLOWED_HOSTS` (see above). Check that
+   `http://yourdomain/` loads.
+2. In `.env`, set the certificate's domains and an email for expiry
+   warnings:
+
+   ```
+   CERT_DOMAINS=salinaspilots.org,www.salinaspilots.org
+   CERT_EMAIL=you@example.com
+   ```
+
+3. `make cert`. Let's Encrypt checks the domain over port 80, so the
+   stack has to be up and port 80 open. It ends with "Successfully
+   received certificate".
+4. Switch nginx and Django over, in `.env`:
+
+   ```
+   NGINX_SITE=https
+   DJANGO_HTTPS=true
+   ```
+
+5. `make up`. `http://` now redirects to `https://`, and Django turns on
+   secure-only cookies and HSTS.
+
+Do step 4 only after step 3 succeeds: nginx won't start on `https`
+without the certificate, and Django with `DJANGO_HTTPS=true` but no
+HTTPS makes logging in impossible. To back out, set both back
+(`NGINX_SITE=http`, `DJANGO_HTTPS=false`) and `make up`. Browsers that
+already visited over HTTPS keep insisting on it for up to 30 days
+(HSTS), so back out only to fix HTTPS, not to stay on HTTP.
+
+Renewal needs no attention: certbot checks twice a day and renews within
+30 days of expiry, and nginx reloads every 6 hours to pick it up. Let's
+Encrypt emails `CERT_EMAIL` if renewal ever stops working.
+
+## Rate limits
+
+nginx limits how often one IP address can submit (POST) these forms. Loading
+pages is never limited.
+
+| Form                          | Limit                                  |
+|-------------------------------|----------------------------------------|
+| `/login/`, `/admin/login/`    | a burst of 10, then one every 6 seconds |
+| `/join`, `/contact`           | a burst of 5, then one every 20 seconds |
+
+Past that, nginx shows a short "Too many tries - wait a minute" page
+(status 429). The numbers are in `docker/nginx/00-rate-limits.conf`.
+This sits on top of Django's own login lockout (5 wrong passwords for one
+email from one IP locks that pair out for 15 minutes; officers can clear
+it with Unlock on the Users page).
+
+The Join and Contact forms also have a hidden honeypot field that only
+bots fill in. Those submissions are dropped without being saved, behind
+the usual thank-you page (see `HoneypotMixin` in `core/forms.py`).
+
+If the site ever sits behind a load balancer or CDN (Lightsail's
+included), nginx sees that service's address instead of the visitor's,
+so every visitor would share one limit. The rate limits would need
+nginx's `real_ip` settings first.
 
 ## Day-to-day
 
@@ -91,6 +165,9 @@ Back up these three volumes. Everything else is rebuilt from the repo.
 | `pgdata`        | The Postgres database                                      |
 | `media`         | Public uploads: logo, hero/card/about images               |
 | `private_media` | Gated uploads: meeting agendas/minutes and every Resource file |
+
+The `letsencrypt` volume holds the HTTPS certificate. It's worth keeping,
+but not critical: if it's lost, `make cert` gets a new one.
 
 `staticfiles/` is a build artifact (regenerated by `collectstatic` in
 every image build) and deliberately not a volume.

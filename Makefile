@@ -41,6 +41,16 @@ logs:
 	docker compose logs -f
 
 # One-time content seed for a fresh deployment (see bootstrap_site).
+# Gets (or re-gets, after changing CERT_DOMAINS) the HTTPS certificate
+# for CERT_DOMAINS from Let's Encrypt. Needs DNS pointing here and the
+# stack up on port 80 - see "Enabling HTTPS" in docs/DEPLOY.md.
+cert:
+	docker compose run --rm --entrypoint sh certbot -c '\
+		[ -n "$$CERT_DOMAINS" ] && [ -n "$$CERT_EMAIL" ] || { echo "Set CERT_DOMAINS and CERT_EMAIL in .env first." >&2; exit 1; }; \
+		certbot certonly --webroot -w /var/www/certbot --cert-name site \
+			-d "$$CERT_DOMAINS" --email "$$CERT_EMAIL" \
+			--agree-tos --no-eff-email --non-interactive'
+
 compose-seed:
 	docker compose exec web python manage.py bootstrap_site
 
@@ -76,4 +86,4 @@ restore:
 	docker compose start web
 	@echo "Restored from $(BACKUP)"
 
-.PHONY: migrate migrations runserver bootstrap test up down nuke logs compose-seed compose-superuser backup restore
+.PHONY: migrate migrations runserver bootstrap test up down nuke logs cert compose-seed compose-superuser backup restore

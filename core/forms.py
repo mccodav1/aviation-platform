@@ -14,7 +14,30 @@ from .widgets import PrivateClearableFileInput
 from .models import ContactMessage, JoinRequest, Resource, ResourceCategory, User
 
 
-class ContactForm(forms.ModelForm):
+class HoneypotMixin:
+    """Adds a spam trap to a public form: a text field hidden from people
+    (see .form-field-trap in forms.css, and honeypot_field.html) that a
+    form-filling bot fills in like any other. The view checks
+    caught_bot before validating and, if it's set, acts as though the
+    form went through without saving anything - so the bot gets no hint
+    that it was caught."""
+
+    honeypot_field = "website"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields[self.honeypot_field] = forms.CharField(
+            required=False,
+            label="Leave this field empty",
+            widget=forms.TextInput(attrs={"autocomplete": "off", "tabindex": "-1"}),
+        )
+
+    @property
+    def caught_bot(self):
+        return bool(self.data.get(self.honeypot_field, "").strip())
+
+
+class ContactForm(HoneypotMixin, forms.ModelForm):
     class Meta:
         model = ContactMessage
         fields = ["name", "email", "message"]
@@ -34,7 +57,7 @@ class ContactForm(forms.ModelForm):
         return contact_message
 
 
-class JoinRequestForm(forms.ModelForm):
+class JoinRequestForm(HoneypotMixin, forms.ModelForm):
     """The Join page's application. Saving it also creates the
     applicant's account - inactive until an officer approves - with the
     password they choose here, so there's nothing to set up afterwards."""

@@ -101,13 +101,17 @@
                 {% csrf_token %}
 
                 {% for field in form %}
-                    <div class="form-field">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                        {% for error in field.errors %}
-                            <div class="form-errors">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+                    {% if field.name == form.honeypot_field %}
+                        {% include "app/components/honeypot_field.html" %}
+                    {% else %}
+                        <div class="form-field">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% for error in field.errors %}
+                                <div class="form-errors">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 {% endfor %}
 
                 <div class="contact-cta-row">
