@@ -91,8 +91,8 @@ bare IP can't get one.
 1. Point the domain (and `www.`, if wanted) at the server, and add both
    to `DJANGO_ALLOWED_HOSTS` (see above). Check that
    `http://yourdomain/` loads.
-2. In `.env`, set the certificate's domains and an email for expiry
-   warnings:
+2. In `.env`, set the certificate's domains and an email to register the
+   Let's Encrypt account with:
 
    ```
    CERT_DOMAINS=salinaspilots.org,www.salinaspilots.org
@@ -120,8 +120,18 @@ already visited over HTTPS keep insisting on it for up to 30 days
 (HSTS), so back out only to fix HTTPS, not to stay on HTTP.
 
 Renewal needs no attention: certbot checks twice a day and renews within
-30 days of expiry, and nginx reloads every 6 hours to pick it up. Let's
-Encrypt emails `CERT_EMAIL` if renewal ever stops working.
+30 days of expiry, and nginx reloads every 6 hours to pick it up.
+
+Nothing warns you if renewal stops working - Let's Encrypt stopped
+sending expiry emails in 2025. To check it now and then:
+
+```
+docker compose run --rm --entrypoint certbot certbot certificates           # expiry date
+docker compose run --rm --entrypoint certbot certbot renew --dry-run        # practice renewal
+```
+
+A free uptime monitor that watches certificate expiry (e.g. UptimeRobot)
+can warn you automatically.
 
 ## Rate limits
 

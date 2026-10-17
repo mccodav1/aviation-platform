@@ -78,3 +78,32 @@ class NavbarIconTests(SiteTestCase):
         html = self.client_for(self.make_user("m@example.com")).get("/about").content.decode()
         self.assertIn("Log Out", html)
         self.assertNotIn('class="login-button"', html)
+
+
+class BetaTouchesTests(SiteTestCase):
+    """The Report Bug button, the Contact page's bug-report section, and
+    the login page's forgotten-password note."""
+
+    BUG_URL = "/contact?topic=bug#message-form"
+
+    def test_report_bug_button_on_every_page(self):
+        member = self.client_for(self.make_user("m@example.com"))
+        for client in (self.client, member):
+            for url in ("/", "/about", "/contact", "/login/"):
+                with self.subTest(url=url, logged_in=client is member):
+                    self.assertContains(client.get(url), f'class="nav-bug-button" href="{self.BUG_URL}"')
+
+    def test_bug_report_starts_message_with_template(self):
+        response = self.client.get("/contact?topic=bug")
+        self.assertTrue(response.context["reporting_bug"])
+        self.assertIn("What happened instead:", response.context["form"]["message"].value())
+        self.assertContains(response, "<h2>Report a Bug</h2>", count=2)  # the section and the form
+
+    def test_plain_contact_page_explains_bug_reports_but_starts_empty(self):
+        response = self.client.get("/contact")
+        self.assertContains(response, 'id="report-bug"')
+        self.assertContains(response, "Send a Quick Message")
+        self.assertIsNone(response.context["form"]["message"].value())
+
+    def test_login_page_says_to_contact_an_officer(self):
+        self.assertContains(self.client.get("/login/"), 'Forgot your password? <a href="/contact">Contact an officer</a>')

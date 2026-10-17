@@ -267,10 +267,21 @@ def privacy_policy(request):
 def terms(request):
     return under_construction(request, "Terms of Use")
 
+BUG_REPORT_TEMPLATE = (
+    "Bug report\n"
+    "Page: \n"
+    "What I did: \n"
+    "What I expected: \n"
+    "What happened instead: \n"
+    "Phone or computer, and browser: \n"
+)
+
+
 def contact(request):
     organization = request.organization
     if not organization:
         raise Http404
+    reporting_bug = request.GET.get("topic") == "bug"
 
     if request.method == "POST":
         form = ContactForm(request.POST, organization=organization)
@@ -282,7 +293,10 @@ def contact(request):
             _notify_contact_message(contact_message)
             return redirect(f"{reverse('core:contact')}?sent=1")
     else:
-        form = ContactForm(organization=organization)
+        # The navbar's Report Bug button lands here with ?topic=bug, and
+        # starts the message off with what a useful bug report covers.
+        initial = {"message": BUG_REPORT_TEMPLATE} if reporting_bug else {}
+        form = ContactForm(organization=organization, initial=initial)
 
     return render(
         request,
@@ -291,6 +305,7 @@ def contact(request):
             "form": form,
             "next_meeting": get_next_meeting(organization),
             "sent": request.GET.get("sent") == "1",
+            "reporting_bug": reporting_bug,
         },
     )
 
