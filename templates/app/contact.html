@@ -42,7 +42,9 @@
                 </a>
             {% endif %}
 
-            <div class="card">
+            {# Google Maps' documented search URL - opens the Maps app on phones. #}
+            <a href="https://www.google.com/maps/search/?api=1&amp;query={{ "30 Mortensen Avenue, Salinas, CA 93905"|urlencode }}"
+               class="card" target="_blank" rel="noopener">
                 <div class="card-body">
                     <div class="card-title-row">
                         <span class="card-icon"><i class="bi bi-geo-alt"></i></span>
@@ -52,8 +54,9 @@
                         Salinas Municipal Airport ({{ organization.airport_icao }})<br>
                         30 Mortensen Avenue, Salinas, CA 93905
                     </p>
+                    <div class="card-link">Open in Google Maps <span class="arrow">&rarr;</span></div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="page-block">

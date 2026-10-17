@@ -110,3 +110,9 @@ class BetaTouchesTests(SiteTestCase):
 
     def test_login_page_says_to_contact_an_officer(self):
         self.assertContains(self.client.get("/login/"), 'Forgot your password? <a href="/contact">Contact an officer</a>')
+
+    def test_find_us_opens_google_maps(self):
+        self.assertContains(
+            self.client.get("/contact"),
+            'href="https://www.google.com/maps/search/?api=1&amp;query=30%20Mortensen%20Avenue%2C%20Salinas%2C%20CA%2093905"',
+        )
