@@ -1,8 +1,13 @@
 .hero {
     position: relative;
-    height: clamp(560px, 62vh, 720px);
+    /* A minimum, with room left for the navbar on top - a fixed height
+       cut the text off on screens not tall enough for it (e.g. 1280x800
+       laptops). The bottom matches the 3.5rem the text and buttons are
+       nudged down by (see .hero-content p / .hero-actions). */
+    min-height: clamp(560px, 62vh, 720px);
+    padding: calc(var(--nav-height) + 1.5rem) 0 3.5rem;
     flex-shrink: 0; /* main is a flex column - never compress the hero */
-    margin-top: -84px; /* cancel main's navbar-clearing padding - bleed under the fixed navbar */
+    margin-top: calc(-1 * var(--nav-height)); /* cancel main's navbar-clearing padding - bleed under the fixed navbar */
     overflow: hidden;
 
     display: flex;
@@ -603,6 +608,16 @@
     .calendar-weekdays span::first-letter {
         font-size: 0.7rem;
     }
+
+    /* Too narrow for a readable title ("Oc..."), so each event is a
+       short colored bar marking the day; tapping it still opens it,
+       and View All Events below lists them in full. */
+    .calendar-event {
+        height: 0.55rem;
+        padding: 0;
+
+        font-size: 0;
+    }
 }
 
 /* ==========================
@@ -735,5 +750,64 @@
 @media (max-width: 560px) {
     .highlights-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Narrower screens: the hero sizes to its content instead of a fixed
+   height - the desktop version's centered, nudged-down text and buttons
+   ran up under the navbar and off the bottom. */
+@media (max-width: 1100px) {
+    .hero {
+        height: auto;
+        padding: calc(var(--nav-height) + 3rem) 0 3.5rem;
+    }
+
+    .hero .container {
+        transform: none;
+    }
+
+    .hero-content p,
+    .hero-actions {
+        transform: none;
+    }
+
+    .hero-content p {
+        font-size: 1.25rem;
+    }
+}
+
+/* Phones: a headline and paragraph scaled for the screen, and the
+   buttons stacked full width. */
+@media (max-width: 700px) {
+    .hero {
+        padding: calc(var(--nav-height) + 2.5rem) 0 3rem;
+    }
+
+    .hero .container {
+        width: 100%;
+        padding: 0 1.25rem;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(3rem, 15vw, 4rem);
+    }
+
+    .hero-content h1 + h1 {
+        margin-bottom: 1.25rem;
+    }
+
+    .hero-content p {
+        font-size: 1.1rem;
+        letter-spacing: 0.02em;
+    }
+
+    .hero-actions {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .hero-button {
+        flex: 1 1 auto;
+        text-align: center;
     }
 }

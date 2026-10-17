@@ -8,7 +8,7 @@
     left: 0;
     right: 0;
 
-    height: 84px;
+    height: var(--nav-height);
 
     background: #fff;
     border-bottom: 1px solid #e6ebef;
@@ -45,6 +45,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    /* Also the closest the logo and the links may get before the bar
+       counts as not fitting (see nav_menu.js). */
+    gap: 2rem;
 
     padding: 0 2rem;
 }
@@ -55,6 +58,7 @@
 
 .logo {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     height: 100%;
 }
@@ -71,6 +75,7 @@
 
 .nav-actions {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     gap: 2.5rem;
 }
@@ -94,6 +99,7 @@
     letter-spacing: .04em;
     text-transform: uppercase;
     text-decoration: none;
+    white-space: nowrap;
 
     transition: color .2s ease;
 }
@@ -470,4 +476,230 @@
 .join-button:focus-visible {
     outline: 2px solid var(--color-secondary);
     outline-offset: 3px;
+}
+/* ==========================
+   Collapsed (menu) layout
+   ========================== */
+
+/* nav_menu.js adds .nav-collapsed whenever the full bar above doesn't
+   fit. The bar then shows just the logo, a compact Report Bug button and
+   the menu button; everything else moves into a drop-down panel under
+   the bar, opened with .nav-open. */
+
+.nav-compact-controls,
+.nav-icon-label {
+    display: none;
+}
+
+.navbar.nav-collapsed .nav-compact-controls {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: .6rem;
+}
+
+.nav-bug-compact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+
+    height: 2.6rem;
+    min-width: 2.6rem;
+    padding: 0 .8rem;
+
+    background: #f59e0b;
+    border: 2px solid #d97706;
+    border-radius: 8px;
+
+    color: #1f2937;
+    font-size: .8rem;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.nav-bug-compact i {
+    font-size: 1.15rem;
+}
+
+.nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2.75rem;
+    height: 2.75rem;
+
+    background: #fff;
+    border: 2px solid var(--color-secondary);
+    border-radius: 8px;
+
+    color: var(--color-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.nav-toggle:focus-visible,
+.nav-bug-compact:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 3px;
+}
+
+/* The panel. */
+.navbar.nav-collapsed .nav-actions {
+    display: none;
+
+    position: absolute;
+    top: 100%;
+    right: 0;
+
+    width: min(100%, 24rem);
+    max-height: calc(100dvh - var(--nav-height));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+
+    padding: .5rem 0 1.25rem;
+
+    background: #fff;
+    border: 1px solid #e6ebef;
+    border-top: none;
+    border-bottom-left-radius: 12px;
+    box-shadow: 0 18px 36px rgb(17 52 86 / 18%);
+}
+
+.navbar.nav-collapsed.nav-open .nav-actions {
+    display: flex;
+}
+
+/* The home page's see-through bar goes solid while the menu is open. */
+.page-home .navbar.nav-open {
+    background: #fff;
+    border-bottom-color: #e6ebef;
+}
+
+/* Page links: full-width rows, with the active one marked by a bar at
+   the left instead of the underline. */
+.navbar.nav-collapsed nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    height: auto;
+}
+
+.navbar.nav-collapsed nav a {
+    padding: .85rem 1.5rem;
+    border-left: 4px solid transparent;
+}
+
+.navbar.nav-collapsed nav a::after {
+    display: none;
+}
+
+.navbar.nav-collapsed nav a.active {
+    border-left-color: var(--color-primary);
+    background: #f8fafc;
+}
+
+/* Officer links, with their names spelled out. */
+.navbar.nav-collapsed .nav-review-links {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+
+    margin-top: .5rem;
+    padding-top: .5rem;
+
+    border-top: 1px solid #e6ebef;
+}
+
+.navbar.nav-collapsed .nav-icon {
+    align-items: center;
+    gap: .85rem;
+
+    padding: .75rem 1.5rem;
+
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.navbar.nav-collapsed .nav-icon i {
+    font-size: 1.25rem;
+}
+
+.navbar.nav-collapsed .nav-icon-label {
+    display: inline;
+}
+
+.navbar.nav-collapsed .nav-icon-badge {
+    position: static;
+}
+
+/* Report Bug already sits in the bar itself. */
+.navbar.nav-collapsed .nav-actions .nav-bug-button {
+    display: none;
+}
+
+/* My Account: a full-width row that opens in place. */
+.navbar.nav-collapsed .nav-account {
+    margin-top: .75rem;
+    padding: 1rem 1.5rem 0;
+
+    border-top: 1px solid #e6ebef;
+}
+
+.navbar.nav-collapsed .nav-account-toggle {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.navbar.nav-collapsed .nav-account-menu {
+    position: static;
+
+    min-width: 0;
+    margin-top: .5rem;
+
+    box-shadow: none;
+}
+
+/* Login / Join, side by side across the panel. */
+.navbar.nav-collapsed .nav-buttons {
+    margin-top: .75rem;
+    padding: 1.25rem 1.5rem 0;
+
+    border-top: 1px solid #e6ebef;
+}
+
+.navbar.nav-collapsed .nav-buttons a {
+    flex: 1;
+}
+
+/* Phones: a smaller logo, and Report Bug down to its icon. */
+@media (max-width: 600px) {
+    .nav-inner {
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+
+    .logo img {
+        height: auto;
+        max-height: 85%;
+        max-width: calc(100vw - 9rem);
+    }
+
+    .nav-bug-compact-label {
+        display: none;
+    }
+
+    .navbar.nav-collapsed .nav-actions {
+        width: 100%;
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+    }
 }

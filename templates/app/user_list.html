@@ -56,8 +56,8 @@
                         {% for account in users %}
                             <tr class="{% if not account.is_active %}user-row-inactive{% endif %}">
                                 <td class="user-name">{{ account.get_full_name|default:"-" }}</td>
-                                <td class="user-email"><a href="mailto:{{ account.email }}">{{ account.email }}</a></td>
-                                <td class="user-roles">
+                                <td class="user-email" data-label="Email"><a href="mailto:{{ account.email }}">{{ account.email }}</a></td>
+                                <td class="user-roles" data-label="Role">
                                     {% if perms.core.assign_roles and not account.is_superuser and account.pk != user.pk and not account.unapproved_application %}
                                         <form method="post" action="{% url 'core:user_set_role' account.pk %}" class="user-role-form"
                                               data-confirm="Change {{ account.display_name }}'s role? This changes what they can see and do on the site."
@@ -76,14 +76,14 @@
                                         <span class="user-role user-role-{{ account.role|slugify }}">{{ account.role }}</span>
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td data-label="Status">
                                     <span class="user-status user-status-{{ account.account_status|slugify }}">{{ account.account_status }}</span>
                                     {% if account.is_locked_out %}
                                         <span class="user-status user-status-locked-out" title="Too many failed logins - locked out for up to {{ lockout_minutes }} minutes from the address(es) involved">Locked out</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ account.date_joined|date:"M j, Y" }}</td>
-                                <td>{% if account.last_login %}{{ account.last_login|date:"M j, Y g:i A" }}{% else %}<span class="user-never">Never</span>{% endif %}</td>
+                                <td data-label="Joined">{{ account.date_joined|date:"M j, Y" }}</td>
+                                <td data-label="Last login">{% if account.last_login %}{{ account.last_login|date:"M j, Y g:i A" }}{% else %}<span class="user-never">Never</span>{% endif %}</td>
                                 {% if perms.core.change_user %}
                                     <td class="user-actions">
                                         {% if not account.is_superuser or user.is_superuser %}
