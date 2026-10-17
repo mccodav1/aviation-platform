@@ -1,0 +1,70 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}Sent Messages | {{ organization.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
+<link rel="stylesheet" href="{% static 'css/review.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% include "app/components/page_hero.html" with title="Sent Messages" lede="Every message sent to members' Inboxes, by anyone who can send them." %}
+
+<section class="page-body">
+    <div class="container">
+
+        <div class="inbox-toolbar">
+            {% if perms.core.add_membermessage %}
+                <a class="join-button" href="{% url 'core:member_message_compose' %}">+ New Message</a>
+            {% endif %}
+            <a class="inbox-toolbar-link" href="{% url 'core:inbox' %}">&larr; Your Inbox</a>
+        </div>
+
+        {% if just_sent %}
+            <div class="form-success inbox-sent-notice">
+                <i class="bi bi-check-circle"></i>
+                Message sent.
+            </div>
+        {% endif %}
+
+        <div class="page-block message-section">
+            {% if sent_messages %}
+                <ul class="message-list">
+                    {% for message in sent_messages %}
+                        <li class="message-item message-item-seen">
+                            <div class="message-item-header">
+                                <span class="message-item-from">{{ message.subject }}</span>
+                                <span class="message-item-email">
+                                    {% if message.sent_to_everyone %}
+                                        to everyone
+                                    {% elif message.single_delivery %}
+                                        to {{ message.single_delivery.0.recipient.display_name }}
+                                    {% else %}
+                                        to a deleted account
+                                    {% endif %}
+                                    &middot; from {{ message.sender.display_name|default:"a former officer" }}
+                                </span>
+                                <span class="message-item-date">{{ message.created_at|date:"M j, Y g:i A" }}</span>
+                            </div>
+
+                            <p class="message-item-body">{{ message.body|linebreaksbr }}</p>
+
+                            <div class="message-item-footer">
+                                <span class="message-item-seen-by">
+                                    Read by {{ message.read_count }} of {{ message.recipient_count }}
+                                </span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Nothing sent yet.</p>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

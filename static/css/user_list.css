@@ -211,13 +211,24 @@
 
 .user-action-unlock,
 .user-action-reactivate,
-.user-action-save {
+.user-action-save,
+.user-action-message {
     color: var(--color-secondary);
+}
+
+/* A link styled as one of these buttons. */
+.user-action-message {
+    display: inline-block;
+    margin-left: 0.35rem;
+
+    text-decoration: none;
+    vertical-align: middle;
 }
 
 .user-action-unlock:hover,
 .user-action-reactivate:hover,
-.user-action-save:hover {
+.user-action-save:hover,
+.user-action-message:hover {
     background: var(--color-secondary);
     color: #fff;
 }

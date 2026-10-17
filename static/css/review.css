@@ -103,11 +103,20 @@
     transition: background 0.2s ease, color 0.2s ease;
 }
 
-.message-action-seen {
+.message-action-seen,
+.message-action-reply {
     color: var(--color-secondary);
 }
 
-.message-action-seen:hover {
+/* Reply is a link styled as one of these buttons. */
+.message-action-reply {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.message-action-seen:hover,
+.message-action-reply:hover {
     background: var(--color-secondary);
     color: #fff;
 }
@@ -180,4 +189,32 @@
 
 .application-details a {
     color: var(--color-secondary);
+}
+
+/* ==========================
+   Inbox
+   ========================== */
+
+/* New Message / Sent messages, above the Inbox's blocks and matching
+   their width. */
+.inbox-toolbar,
+.inbox-sent-notice {
+    max-width: 42rem;
+    margin: 0 auto 1.5rem;
+}
+
+.inbox-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+}
+
+.inbox-toolbar-link {
+    color: var(--color-secondary);
+    font-weight: 700;
+}
+
+.inbox-toolbar-link:hover {
+    color: var(--color-primary);
 }

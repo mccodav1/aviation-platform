@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager, Group
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from django.utils.text import slugify
 
@@ -676,6 +676,77 @@ class ContactMessage(SeenTracking):
 
     def __str__(self):
         return f"{self.name} - {self.created_at:%Y-%m-%d}"
+
+
+class MemberMessage(models.Model):
+    """A message an officer or site admin sends to one account, or to
+    every active account, read on the recipients' Inbox page. One-way -
+    members respond through the Contact page. Each recipient gets their
+    own MemberMessageDelivery (and so their own read status), made when
+    it's sent: "everyone" means everyone active at that moment."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="member_messages",
+    )
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="sent_member_messages",
+    )
+    subject = models.CharField(max_length=200)
+    body = models.TextField()
+    sent_to_everyone = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.subject
+
+    @classmethod
+    def send(cls, organization, sender, subject, body, recipient=None):
+        """Sends to `recipient`, or to every active account (other than
+        the sender) when it's None."""
+        if recipient is not None:
+            recipients = [recipient]
+        else:
+            recipients = User.objects.filter(is_active=True).exclude(pk=sender.pk)
+        with transaction.atomic():
+            message = cls.objects.create(
+                organization=organization,
+                sender=sender,
+                subject=subject,
+                body=body,
+                sent_to_everyone=recipient is None,
+            )
+            MemberMessageDelivery.objects.bulk_create(
+                MemberMessageDelivery(message=message, recipient=user) for user in recipients
+            )
+        return message
+
+
+class MemberMessageDelivery(models.Model):
+    """One recipient's copy of a MemberMessage. Deleting it removes the
+    message from that person's Inbox only."""
+
+    message = models.ForeignKey(MemberMessage, on_delete=models.CASCADE, related_name="deliveries")
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="inbox_deliveries",
+    )
+    read_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-message__created_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["message", "recipient"], name="one_delivery_per_recipient"),
+        ]
 
 
 class JoinRequest(SeenTracking):

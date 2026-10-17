@@ -1,0 +1,44 @@
+{% extends "app/base.html" %}
+
+{% block title %}New Message | {{ organization.name }}{% endblock %}
+
+{% block content %}
+
+<section class="form-page">
+    <div class="container">
+        <div class="form-card member-message-card">
+            <h1>New Message</h1>
+            <p class="form-subtitle">It goes to the Inbox of the person you choose, or of everyone with an active account. They can't reply to it on the site - they'd use the Contact page.</p>
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="form-submit">Send Message</button>
+            </form>
+
+            <p class="form-back-link">
+                <a href="{% url 'core:inbox' %}">&larr; Back to Inbox</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -16,6 +16,10 @@
         {% endif %}
 
         <div class="message-item-actions">
+            {% if contact_message.reply_to_account %}
+                <a class="message-action-button message-action-reply"
+                   href="{% url 'core:member_message_compose' %}?to={{ contact_message.reply_to_account }}&amp;reply={{ contact_message.pk }}">Reply</a>
+            {% endif %}
             {% include "app/components/review_actions.html" with item=contact_message seen_url="core:contact_message_mark_seen" unseen_url="core:contact_message_mark_unseen" delete_url="core:contact_message_delete" can_change=perms.core.change_contactmessage can_delete=perms.core.delete_contactmessage delete_title="Delete message" delete_prompt="Delete this message from "|add:contact_message.name|add:"? This can't be undone." %}
         </div>
     </div>

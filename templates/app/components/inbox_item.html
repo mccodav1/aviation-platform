@@ -1,0 +1,25 @@
+{% with message=delivery.message %}
+<li class="message-item{% if delivery.read_at %} message-item-seen{% endif %}">
+    <div class="message-item-header">
+        <span class="message-item-from">{{ message.subject }}</span>
+        <span class="message-item-email">
+            from {{ message.sender.display_name|default:"a former officer" }}{% if message.sent_to_everyone %} &middot; to everyone{% endif %}
+        </span>
+        <span class="message-item-date">{{ message.created_at|date:"M j, Y g:i A" }}</span>
+    </div>
+
+    <p class="message-item-body">{{ message.body|linebreaksbr }}</p>
+
+    <div class="message-item-footer">
+        <div class="message-item-actions">
+            <form method="post" action="{% url 'core:inbox_delete' delivery.pk %}"
+                  data-confirm="Delete &quot;{{ message.subject }}&quot; from your Inbox? This can't be undone."
+                  data-confirm-title="Delete message"
+                  data-confirm-button="Delete">
+                {% csrf_token %}
+                <button type="submit" class="message-action-button message-action-delete">Delete</button>
+            </form>
+        </div>
+    </div>
+</li>
+{% endwith %}

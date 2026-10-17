@@ -122,6 +122,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.organization',
                 'core.context_processors.unseen_review_counts',
+                'core.context_processors.unread_inbox_count',
                 'meetings.context_processors.meetings',
             ],
         },

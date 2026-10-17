@@ -277,8 +277,9 @@ waiting on it:
 - **Roles are a ladder of groups:** Member (no group) < Site admin
   ("Site Admins") < Officer ("Club Officers") < Superadmin (superuser).
   Each can do everything the one below can. Site admins get
-  meetings/events, resources, site content, and account support
-  (unlocking accounts, resetting passwords, creating accounts); officers
+  meetings/events, resources, site content, account support
+  (unlocking accounts, resetting passwords, creating accounts), and
+  sending messages to members' Inboxes (to one account, or everyone); officers
   add membership applications, contact messages, and changing someone's
   role; superusers can do everything, and are the only ones who can
   delete users. An account holds one role.

@@ -335,6 +335,36 @@
     outline-offset: 3px;
 }
 
+/* Unread Inbox messages - on the My Account button and its Inbox item. */
+.nav-account-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 1.2rem;
+    height: 1.2rem;
+    padding: 0 .35rem;
+
+    background: var(--color-primary);
+    border-radius: 999px;
+
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.nav-account-item .nav-account-badge {
+    margin-left: auto;
+}
+
+/* The button itself turns red on hover and while open. */
+.nav-account-toggle:hover .nav-account-badge,
+.nav-account[open] .nav-account-toggle .nav-account-badge {
+    background: #fff;
+    color: var(--color-primary);
+}
+
 .nav-account-caret {
     font-size: .75rem;
     transition: transform .2s ease;

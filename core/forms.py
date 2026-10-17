@@ -309,3 +309,35 @@ class ResourceForm(forms.ModelForm):
         if commit:
             resource.save()
         return resource
+
+
+class MemberMessageForm(forms.Form):
+    """Writing a message to one account's Inbox, or to everyone's."""
+
+    EVERYONE = "everyone"
+
+    to = forms.ChoiceField(label="To")
+    subject = forms.CharField(max_length=200)
+    body = forms.CharField(label="Message", widget=forms.Textarea(attrs={"rows": 8}))
+
+    def __init__(self, *args, sender, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._accounts = {
+            str(account.pk): account
+            for account in User.objects.filter(is_active=True).exclude(pk=sender.pk).order_by("first_name", "last_name", "email")
+        }
+        everyone = f"Everyone ({len(self._accounts)} active account{'s' if len(self._accounts) != 1 else ''})"
+        self.fields["to"].choices = [
+            ("", "-- choose who to send it to --"),
+            (self.EVERYONE, everyone),
+            ("One person", [
+                (pk, f"{account.get_full_name()} ({account.email})" if account.get_full_name() else account.email)
+                for pk, account in self._accounts.items()
+            ]),
+        ]
+
+    @property
+    def recipient(self):
+        """The chosen account, or None for everyone."""
+        to = self.cleaned_data["to"]
+        return None if to == self.EVERYONE else self._accounts[to]

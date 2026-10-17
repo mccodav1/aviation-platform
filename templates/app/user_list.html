@@ -86,6 +86,9 @@
                                 <td>{% if account.last_login %}{{ account.last_login|date:"M j, Y g:i A" }}{% else %}<span class="user-never">Never</span>{% endif %}</td>
                                 {% if perms.core.change_user %}
                                     <td class="user-actions">
+                                        {% if perms.core.add_membermessage and account.is_active and account.pk != user.pk %}
+                                            <a class="user-action-button user-action-message" href="{% url 'core:member_message_compose' %}?to={{ account.pk }}">Message</a>
+                                        {% endif %}
                                         {% if not account.is_superuser or user.is_superuser %}
                                             {% if account.is_locked_out %}
                                                 <form method="post" action="{% url 'core:user_unlock' account.pk %}">

@@ -1,0 +1,65 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}Inbox | {{ organization.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/simple-page.css' %}">
+<link rel="stylesheet" href="{% static 'css/review.css' %}">
+<link rel="stylesheet" href="{% static 'css/confirm_dialog.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% include "app/components/page_hero.html" with title="Inbox" lede="Messages to you from the club's officers." %}
+
+<section class="page-body">
+    <div class="container">
+
+        {% if perms.core.add_membermessage or perms.core.view_membermessage %}
+            <div class="inbox-toolbar">
+                {% if perms.core.add_membermessage %}
+                    <a class="join-button" href="{% url 'core:member_message_compose' %}">+ New Message</a>
+                {% endif %}
+                {% if perms.core.view_membermessage %}
+                    <a class="inbox-toolbar-link" href="{% url 'core:member_messages_sent' %}">Sent messages &rarr;</a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="page-block message-section">
+            <h2>New{% if new_items %} ({{ new_items|length }}){% endif %}</h2>
+
+            {% if new_items %}
+                <ul class="message-list">
+                    {% for delivery in new_items %}
+                        {% include "app/components/inbox_item.html" %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No new messages.</p>
+            {% endif %}
+        </div>
+
+        {% if read_items %}
+            <div class="page-block message-section">
+                <h2>Earlier</h2>
+
+                <ul class="message-list">
+                    {% for delivery in read_items %}
+                        {% include "app/components/inbox_item.html" %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% include "app/components/confirm_dialog.html" %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/confirm_dialog.js' %}"></script>
+{% endblock %}

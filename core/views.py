@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
+from django.db.models import Count, Prefetch, Q
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -17,8 +18,16 @@ from django.views.decorators.http import require_POST
 from meetings.services import get_month_calendar, get_next_meeting
 
 from . import throttle
-from .forms import ContactForm, JoinRequestForm, ResourceForm, UserCreateForm
-from .models import ContactMessage, JoinRequest, Resource, ResourceCategory, User
+from .forms import ContactForm, JoinRequestForm, MemberMessageForm, ResourceForm, UserCreateForm
+from .models import (
+    ContactMessage,
+    JoinRequest,
+    MemberMessage,
+    MemberMessageDelivery,
+    Resource,
+    ResourceCategory,
+    User,
+)
 from .services.weather import format_observed, get_metar
 
 logger = logging.getLogger(__name__)
@@ -349,6 +358,16 @@ def contact_messages(request):
     if not request.organization:
         raise Http404
     items = list(request.organization.contact_messages.select_related("seen_by"))
+    # A Reply button for each message whose sender has an active account
+    # here - the reply goes to their Inbox. (Anyone else can only be
+    # answered by email, outside the site.)
+    if request.user.has_perm("core.add_membermessage"):
+        accounts = dict(
+            User.objects.filter(is_active=True, email__in={item.email.lower() for item in items})
+            .values_list("email", "pk")
+        )
+        for item in items:
+            item.reply_to_account = accounts.get(item.email.lower())
     return render(
         request,
         "app/contact_messages.html",
@@ -612,4 +631,101 @@ def under_construction(request, page_title, page_description=None):
             "page_title": page_title,
             "page_description": page_description,
         },
+    )
+
+# ---- Inbox: messages from officers/site admins to members ----
+
+@login_required
+def inbox(request):
+    # Opening the Inbox counts as reading what's in it - the new ones are
+    # listed under New this once, then marked read.
+    deliveries = list(request.user.inbox_deliveries.select_related("message__sender"))
+    new_items = [delivery for delivery in deliveries if delivery.read_at is None]
+    if new_items:
+        MemberMessageDelivery.objects.filter(pk__in=[d.pk for d in new_items]).update(read_at=timezone.now())
+    return render(
+        request,
+        "app/inbox.html",
+        {
+            "new_items": new_items,
+            "read_items": [delivery for delivery in deliveries if delivery.read_at is not None],
+        },
+    )
+
+
+@login_required
+@require_POST
+def inbox_delete(request, pk):
+    # Only ever the user's own copy.
+    get_object_or_404(MemberMessageDelivery, pk=pk, recipient=request.user).delete()
+    return redirect("core:inbox")
+
+
+@login_required
+@permission_required("core.add_membermessage", raise_exception=True)
+def member_message_compose(request):
+    if not request.organization:
+        raise Http404
+
+    if request.method == "POST":
+        form = MemberMessageForm(request.POST, sender=request.user)
+        if form.is_valid():
+            MemberMessage.send(
+                request.organization,
+                request.user,
+                form.cleaned_data["subject"],
+                form.cleaned_data["body"],
+                recipient=form.recipient,
+            )
+            return redirect(f"{reverse('core:member_messages_sent')}?sent=1")
+    else:
+        form = MemberMessageForm(sender=request.user, initial=_compose_initial(request))
+
+    return render(request, "app/member_message_form.html", {"form": form})
+
+
+def _compose_initial(request):
+    """Prefills from the links that lead here: ?to=<account> (the Users
+    page's Message button) and ?reply=<contact message> (Reply on the
+    Messages page), which also quotes the message being answered."""
+    initial = {}
+    if request.GET.get("to"):
+        initial["to"] = request.GET["to"]
+    reply_to = request.GET.get("reply")
+    if reply_to and request.user.has_perm("core.view_contactmessage"):
+        original = ContactMessage.objects.filter(pk=reply_to, organization=request.organization).first()
+        if original:
+            quoted = "\n".join(f"> {line}" for line in original.message.splitlines())
+            initial["subject"] = "Re: your message"
+            initial["body"] = (
+                f"\n\n---\n{original.name} wrote on "
+                f"{timezone.localtime(original.created_at):%B %-d, %Y}:\n{quoted}"
+            )
+    return initial
+
+
+@login_required
+@permission_required("core.view_membermessage", raise_exception=True)
+def member_messages_sent(request):
+    if not request.organization:
+        raise Http404
+    messages = (
+        request.organization.member_messages
+        .select_related("sender")
+        .annotate(
+            recipient_count=Count("deliveries"),
+            read_count=Count("deliveries", filter=Q(deliveries__read_at__isnull=False)),
+        )
+        # The one recipient of a message to one person (a message to
+        # everyone just says so, so its deliveries aren't loaded).
+        .prefetch_related(Prefetch(
+            "deliveries",
+            queryset=MemberMessageDelivery.objects.filter(message__sent_to_everyone=False).select_related("recipient"),
+            to_attr="single_delivery",
+        ))
+    )
+    return render(
+        request,
+        "app/member_messages_sent.html",
+        {"sent_messages": messages, "just_sent": request.GET.get("sent") == "1"},
     )

@@ -26,6 +26,10 @@ SHARED_PERMISSIONS = [
     ("core", "view_user"),
     ("core", "add_user"),
     ("core", "change_user"),
+    # Sending messages to members' Inboxes (add), and seeing what's been
+    # sent (view).
+    ("core", "add_membermessage"),
+    ("core", "view_membermessage"),
 ]
 
 # Officers additionally handle membership applications (reviewing,
