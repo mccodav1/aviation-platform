@@ -38,6 +38,16 @@
     margin-bottom: 1.25rem;
 }
 
+/* The honeypot on public forms (see HoneypotMixin) - moved off-screen
+   rather than display:none, which some bots know to skip. */
+.form-field-trap {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
 .form-field-help {
     margin: 0.35rem 0 0;
 

@@ -274,6 +274,9 @@ def contact(request):
 
     if request.method == "POST":
         form = ContactForm(request.POST, organization=organization)
+        if form.caught_bot:
+            logger.info("Dropped a contact message caught by the spam trap")
+            return redirect(f"{reverse('core:contact')}?sent=1")
         if form.is_valid():
             contact_message = form.save()
             _notify_contact_message(contact_message)
@@ -545,6 +548,9 @@ def join(request):
 
     if request.method == "POST":
         form = JoinRequestForm(request.POST, organization=organization)
+        if form.caught_bot:
+            logger.info("Dropped a membership application caught by the spam trap")
+            return redirect(f"{reverse('core:join')}?sent=1#apply")
         if form.is_valid():
             form.save()
             # Back to the form's own section, where the thank-you shows.

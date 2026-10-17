@@ -1,0 +1,5 @@
+{# The spam trap from HoneypotMixin: invisible, unreachable by Tab, and hidden from screen readers, so only a bot fills it in. #}
+<div class="form-field-trap" aria-hidden="true">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+</div>
