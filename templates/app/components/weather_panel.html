@@ -29,10 +29,12 @@
                 </div>
             {% endif %}
 
-            <div class="weather-stat">
-                <span class="weather-stat-label">Clouds</span>
-                <span class="weather-stat-value">{{ metar.sky_text }}</span>
-            </div>
+            {% if metar.sky_text %}
+                <div class="weather-stat">
+                    <span class="weather-stat-label">Clouds</span>
+                    <span class="weather-stat-value">{{ metar.sky_text }}</span>
+                </div>
+            {% endif %}
 
             <div class="weather-stat">
                 <span class="weather-stat-label">Visibility</span>
@@ -53,7 +55,11 @@
                 </div>
             {% endif %}
         </div>
+    {% else %}
+        <p>Weather currently unavailable.</p>
+    {% endif %}
 
+    {% if organization.airport_icao %}
         <a
             href="https://aviationweather.gov/data/metar/?id={{ organization.airport_icao }}"
             class="info-panel-link"
@@ -62,7 +68,5 @@
         >
             Full Aviation Weather →
         </a>
-    {% else %}
-        <p>Weather currently unavailable.</p>
     {% endif %}
 </div>
