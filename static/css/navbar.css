@@ -256,7 +256,7 @@
    Join Button
    ========================== */
 
-/* Account menu (logged in): a button with the user's first name, about
+/* Account menu (logged in): an "Account" button, about
    as wide as the Log Out button it replaced, opening a small menu with
    who they are, Change password and Log Out. A <details> element, so it
    works without JS; nav_account.js closes it on an outside click or Esc. */
@@ -303,13 +303,6 @@
 
 .nav-account-toggle .bi-person-circle {
     font-size: 1.2rem;
-}
-
-.nav-account-name {
-    max-width: 9rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .nav-account-caret {
