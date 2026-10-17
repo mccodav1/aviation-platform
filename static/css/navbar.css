@@ -256,40 +256,145 @@
    Join Button
    ========================== */
 
-/* Log Out with who's logged in in small text underneath - stacked so
-   it takes no more width than the button. The name links to their
-   account page (change password). */
+/* Account menu (logged in): a button with the user's first name, about
+   as wide as the Log Out button it replaced, opening a small menu with
+   who they are, Change password and Log Out. A <details> element, so it
+   works without JS; nav_account.js closes it on an outside click or Esc. */
 .nav-account {
+    position: relative;
+}
+
+.nav-account-toggle {
     display: inline-flex;
-    flex-direction: column;
     align-items: center;
-    gap: .2rem;
+    gap: .45rem;
+
+    padding: .6rem 1rem;
+
+    background: #fff;
+    border: 2px solid var(--color-secondary);
+    border-radius: 8px;
+
+    color: var(--color-secondary);
+    font-size: .95rem;
+    font-weight: 700;
+
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+
+    transition: color .2s ease, border-color .2s ease;
 }
 
-.nav-account-name {
-    /* Never wider than the button: a long name is cut off instead. */
-    width: 0;
-    min-width: 100%;
-    overflow: hidden;
-
-    color: #64748b;
-    font-size: .72rem;
-    text-align: center;
-    text-decoration: none;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    transition: color .2s ease;
+.nav-account-toggle::-webkit-details-marker {
+    display: none;
 }
 
-.nav-account-name:hover,
-.nav-account-name.active {
+.nav-account-toggle:hover,
+.nav-account[open] .nav-account-toggle {
+    border-color: var(--color-primary);
     color: var(--color-primary);
 }
 
-.nav-account-name:focus-visible {
+.nav-account-toggle:focus-visible {
     outline: 2px solid var(--color-secondary);
-    outline-offset: 2px;
+    outline-offset: 3px;
+}
+
+.nav-account-toggle .bi-person-circle {
+    font-size: 1.2rem;
+}
+
+.nav-account-name {
+    max-width: 9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-account-caret {
+    font-size: .75rem;
+    transition: transform .2s ease;
+}
+
+.nav-account[open] .nav-account-caret {
+    transform: rotate(180deg);
+}
+
+.nav-account-menu {
+    position: absolute;
+    top: calc(100% + .5rem);
+    right: 0;
+
+    min-width: 15rem;
+    padding: .4rem;
+
+    background: #fff;
+    border: 1px solid rgb(17 52 86 / 12%);
+    border-radius: 10px;
+    box-shadow: 0 10px 24px rgb(17 52 86 / 14%);
+
+    z-index: 1001;
+}
+
+.nav-account-who {
+    display: flex;
+    flex-direction: column;
+    gap: .1rem;
+
+    padding: .6rem .75rem .75rem;
+    margin-bottom: .3rem;
+
+    border-bottom: 1px solid rgb(17 52 86 / 10%);
+
+    color: #64748b;
+    font-size: .85rem;
+    overflow-wrap: anywhere;
+}
+
+.nav-account-who strong {
+    color: var(--color-secondary);
+    font-size: .95rem;
+}
+
+.nav-account-who-label {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.nav-account-menu .nav-logout-form {
+    display: block;
+}
+
+.nav-account-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+
+    width: 100%;
+    padding: .6rem .75rem;
+
+    background: none;
+    border: 0;
+    border-radius: 6px;
+
+    color: var(--color-secondary);
+    font: inherit;
+    font-size: .92rem;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.nav-account-item:hover,
+.nav-account-item:focus-visible,
+.nav-account-item.active {
+    background: #f1f5f9;
+    color: var(--color-primary);
+    outline: none;
 }
 
 .nav-logout-form {
