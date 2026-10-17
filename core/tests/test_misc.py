@@ -50,7 +50,9 @@ class WeatherFormattingTests(SiteTestCase):
     def test_wind(self):
         self.assertEqual(weather.format_wind({"wspd": 0}), "Calm")
         self.assertEqual(weather.format_wind({"wspd": 8, "wdir": 90}), "090° at 8 kt")
-        self.assertEqual(weather.format_wind({"wspd": 8, "wdir": None}), "Variable at 8 kt")
+        self.assertEqual(weather.format_wind({"wspd": 3, "wdir": "VRB"}), "Variable at 3 kt")
+        self.assertEqual(weather.format_wind({"wspd": 8, "wdir": None}), "8 kt")
+        self.assertEqual(weather.format_wind({"wspd": 8, "wdir": "???"}), "8 kt")
         self.assertEqual(weather.format_wind({"wspd": 12, "wdir": 270, "wgst": 20}), "270° at 12 kt (gusts 20 kt)")
 
     def test_altimeter_converts_hpa_to_inhg(self):
