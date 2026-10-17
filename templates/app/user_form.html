@@ -8,7 +8,7 @@
     <div class="container">
         <div class="form-card">
             <h1>Add User</h1>
-            <p class="form-field-help">The account is active right away{% if not form.role %}, as a Member - an officer can change its role on the Users page{% endif %}. Pass the password on to them yourself.</p>
+            <p class="form-subtitle">The account is active right away{% if not form.role %}, as a Member - an officer can change its role on the Users page{% endif %}. Pass the password on to them yourself - they can change it once they've logged in, by clicking their name at the top of the page.</p>
 
             {% if form.non_field_errors %}
                 <div class="form-errors">

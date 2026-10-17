@@ -103,6 +103,20 @@ class AccountUrlTests(SiteTestCase):
         user.refresh_from_db()
         self.assertTrue(user.check_password("Brand-new-pass-456"))
 
+    def test_password_change_page_shows_who_is_logged_in(self):
+        user = self.make_user("pat@example.com", first_name="Pat", last_name="Lee")
+        response = self.client_for(user).get("/password_change/")
+        self.assertContains(response, "Logged in as <strong>Pat Lee</strong> (pat@example.com)")
+        self.assertTemplateUsed(response, "registration/password_change_form.html")
+        self.assertContains(response, 'class="form-card"')  # the site's page, not the admin's
+
+    def test_nav_shows_logged_in_user(self):
+        user = self.make_user("pat@example.com", first_name="Pat", last_name="Lee")
+        html = self.client_for(user).get("/").content.decode()
+        self.assertIn('href="/password_change/"', html)
+        self.assertIn('<span class="nav-account-name">Pat Lee</span>', html)
+        self.assertNotIn("nav-account-name", self.client.get("/").content.decode())
+
     def test_password_change_requires_login(self):
         self.assertRedirectsToLogin(self.client.get("/password_change/"))
 

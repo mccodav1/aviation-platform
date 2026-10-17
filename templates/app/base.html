@@ -79,10 +79,17 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-                <form method="post" action="{% url 'logout' %}" class="nav-logout-form">
-                    {% csrf_token %}
-                    <button type="submit" class="join-button">Log Out</button>
-                </form>
+                <div class="nav-buttons">
+                    <a class="nav-account{% if request.resolver_match.url_name == 'password_change' %} active{% endif %}" href="{% url 'password_change' %}"
+                       title="Logged in as {{ user.email }} - account and password">
+                        <i class="bi bi-person-circle"></i>
+                        <span class="nav-account-name">{{ user.display_name }}</span>
+                    </a>
+                    <form method="post" action="{% url 'logout' %}" class="nav-logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="join-button">Log Out</button>
+                    </form>
+                </div>
             {% else %}
                 <div class="nav-buttons">
                     <a class="login-button" href="{% url 'login' %}">Login</a>

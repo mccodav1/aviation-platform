@@ -256,6 +256,41 @@
    Join Button
    ========================== */
 
+/* Who's logged in - links to their account page (change password). */
+.nav-account {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+
+    max-width: 14rem;
+
+    color: var(--color-secondary);
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: color .2s ease;
+}
+
+.nav-account i {
+    font-size: 1.4rem;
+}
+
+.nav-account-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-account:hover,
+.nav-account.active {
+    color: var(--color-primary);
+}
+
+.nav-account:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 4px;
+}
+
 .nav-logout-form {
     display: inline-flex;
     margin: 0;
