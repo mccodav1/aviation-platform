@@ -28,7 +28,8 @@ def format_wind(metar):
     if speed in (None, 0):
         return "Calm"
 
-    if direction is None:
+    # Light, shifting winds come back as wdir "VRB" rather than a number.
+    if not isinstance(direction, (int, float)):
         wind = f"Variable at {speed} kt"
     else:
         wind = f"{direction:03.0f}° at {speed} kt"
