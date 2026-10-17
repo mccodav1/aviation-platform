@@ -301,10 +301,6 @@
     outline-offset: 3px;
 }
 
-.nav-account-toggle .bi-person-circle {
-    font-size: 1.2rem;
-}
-
 .nav-account-caret {
     font-size: .75rem;
     transition: transform .2s ease;
