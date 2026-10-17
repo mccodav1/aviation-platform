@@ -731,8 +731,9 @@ class MemberMessage(models.Model):
 
 
 class MemberMessageDelivery(models.Model):
-    """One recipient's copy of a MemberMessage. Deleting it removes the
-    message from that person's Inbox only."""
+    """One recipient's copy of a MemberMessage. The Inbox's Delete only
+    hides it (hidden_at) - the row stays, so the Sent log can still say
+    who a message went to and whether they read it."""
 
     message = models.ForeignKey(MemberMessage, on_delete=models.CASCADE, related_name="deliveries")
     recipient = models.ForeignKey(
@@ -741,6 +742,7 @@ class MemberMessageDelivery(models.Model):
         related_name="inbox_deliveries",
     )
     read_at = models.DateTimeField(null=True, blank=True)
+    hidden_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["-message__created_at"]

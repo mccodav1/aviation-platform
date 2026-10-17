@@ -71,14 +71,29 @@ class MemberMessageTests(SiteTestCase):
         self.send(self.officer_client, self.other.pk, subject="Just for other")
         self.assertNotContains(self.member_client.get("/inbox"), "Just for other")
 
-    def test_delete_removes_only_your_copy(self):
-        self.send(self.officer_client, "everyone")
+    def test_delete_hides_only_your_copy(self):
+        self.send(self.officer_client, "everyone", subject="Fly-in")
         mine = MemberMessageDelivery.objects.get(recipient=self.member)
         theirs = MemberMessageDelivery.objects.get(recipient=self.other)
         self.assertEqual(self.member_client.post(f"/inbox/{theirs.pk}/delete").status_code, 404)
         self.member_client.post(f"/inbox/{mine.pk}/delete")
-        self.assertFalse(MemberMessageDelivery.objects.filter(pk=mine.pk).exists())
-        self.assertTrue(MemberMessageDelivery.objects.filter(pk=theirs.pk).exists())
+        self.assertNotContains(self.member_client.get("/inbox"), "Fly-in")
+        self.assertContains(self.client_for(self.other).get("/inbox"), "Fly-in")
+
+    def test_deleted_unread_message_stops_counting_as_unread(self):
+        self.send(self.officer_client, self.member.pk)
+        self.member_client.post(f"/inbox/{MemberMessageDelivery.objects.get().pk}/delete")
+        self.assertNotContains(self.member_client.get("/"), 'class="nav-account-badge"')
+
+    def test_sent_log_still_names_recipient_after_they_delete_it(self):
+        # The reported bug: it said "to a deleted account".
+        self.send(self.officer_client, self.member.pk, subject="To Mel")
+        self.member_client.get("/inbox")
+        self.member_client.post(f"/inbox/{MemberMessageDelivery.objects.get().pk}/delete")
+        html = self.officer_client.get("/inbox/sent").content.decode()
+        self.assertIn("to Mel Member", html)
+        self.assertNotIn("deleted account", html)
+        self.assertIn("Read by 1 of 1", html)
 
     def test_inbox_requires_login(self):
         self.assertRedirectsToLogin(self.client.get("/inbox"))

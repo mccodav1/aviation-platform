@@ -31,4 +31,4 @@ def unread_inbox_count(request):
     # The My Account menu's Inbox count.
     if not request.user.is_authenticated:
         return {}
-    return {"unread_inbox_count": request.user.inbox_deliveries.filter(read_at__isnull=True).count()}
+    return {"unread_inbox_count": request.user.inbox_deliveries.filter(read_at__isnull=True, hidden_at__isnull=True).count()}

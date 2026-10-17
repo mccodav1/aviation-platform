@@ -639,7 +639,9 @@ def under_construction(request, page_title, page_description=None):
 def inbox(request):
     # Opening the Inbox counts as reading what's in it - the new ones are
     # listed under New this once, then marked read.
-    deliveries = list(request.user.inbox_deliveries.select_related("message__sender"))
+    deliveries = list(
+        request.user.inbox_deliveries.filter(hidden_at__isnull=True).select_related("message__sender")
+    )
     new_items = [delivery for delivery in deliveries if delivery.read_at is None]
     if new_items:
         MemberMessageDelivery.objects.filter(pk__in=[d.pk for d in new_items]).update(read_at=timezone.now())
@@ -656,8 +658,12 @@ def inbox(request):
 @login_required
 @require_POST
 def inbox_delete(request, pk):
-    # Only ever the user's own copy.
-    get_object_or_404(MemberMessageDelivery, pk=pk, recipient=request.user).delete()
+    # Only ever the user's own copy, and only hidden - see
+    # MemberMessageDelivery.
+    delivery = get_object_or_404(MemberMessageDelivery, pk=pk, recipient=request.user)
+    if delivery.hidden_at is None:
+        delivery.hidden_at = timezone.now()
+        delivery.save(update_fields=["hidden_at"])
     return redirect("core:inbox")
 
 
