@@ -119,6 +119,11 @@ class AccountUrlTests(SiteTestCase):
         self.assertIn("pat@example.com", html)
         self.assertNotIn("nav-account-name", self.client.get("/").content.decode())
 
+    def test_nav_says_account_when_user_has_no_name(self):
+        html = self.client_for(self.make_user("pat@example.com")).get("/").content.decode()
+        self.assertIn('<span class="nav-account-name">Account</span>', html)
+        self.assertIn("<strong>pat@example.com</strong>", html)
+
     def test_password_change_requires_login(self):
         self.assertRedirectsToLogin(self.client.get("/password_change/"))
 
