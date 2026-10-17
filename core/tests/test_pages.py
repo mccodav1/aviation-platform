@@ -78,3 +78,41 @@ class NavbarIconTests(SiteTestCase):
         html = self.client_for(self.make_user("m@example.com")).get("/about").content.decode()
         self.assertIn("Log Out", html)
         self.assertNotIn('class="login-button"', html)
+
+
+class BetaTouchesTests(SiteTestCase):
+    """The Report Bug button, the Contact page's bug-report section, and
+    the login page's forgotten-password note."""
+
+    BUG_URL = "/contact?topic=bug#message-form"
+
+    def test_report_bug_button_on_every_page(self):
+        member = self.client_for(self.make_user("m@example.com"))
+        for client in (self.client, member):
+            for url in ("/", "/about", "/contact", "/login/"):
+                with self.subTest(url=url, logged_in=client is member):
+                    self.assertContains(client.get(url), f'class="nav-bug-button" href="{self.BUG_URL}"')
+
+    def test_bug_report_starts_message_with_template(self):
+        response = self.client.get("/contact?topic=bug")
+        self.assertTrue(response.context["reporting_bug"])
+        self.assertIn("What happened instead:", response.context["form"]["message"].value())
+        self.assertRegex(response.content.decode(), r'class="contact-tab active"\s+aria-current="page">\s+<i class="bi bi-bug"')
+
+    def test_plain_contact_page_starts_empty_with_both_tabs(self):
+        response = self.client.get("/contact")
+        self.assertFalse(response.context["reporting_bug"])
+        self.assertIsNone(response.context["form"]["message"].value())
+        html = response.content.decode()
+        self.assertIn('href="/contact#message-form"', html)  # back to a plain message
+        self.assertIn(f'href="{self.BUG_URL}"', html)
+        self.assertRegex(html, r'class="contact-tab active"\s+aria-current="page">\s+<i class="bi bi-chat-text"')
+
+    def test_login_page_says_to_contact_an_officer(self):
+        self.assertContains(self.client.get("/login/"), 'Forgot your password? <a href="/contact">Contact an officer</a>')
+
+    def test_find_us_opens_google_maps(self):
+        self.assertContains(
+            self.client.get("/contact"),
+            'href="https://www.google.com/maps/search/?api=1&amp;query=30%20Mortensen%20Avenue%2C%20Salinas%2C%20CA%2093905"',
+        )

@@ -256,6 +256,40 @@
    Join Button
    ========================== */
 
+/* Report Bug (beta) - deliberately louder than everything else in the
+   bar, so it's the first thing someone looks for when something breaks. */
+.nav-bug-button {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+
+    padding: .6rem 1rem;
+
+    background: #f59e0b;
+    border: 2px solid #d97706;
+    border-radius: 8px;
+
+    color: #1f2937;
+    font-size: .85rem;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: background .2s ease, transform .15s ease;
+}
+
+.nav-bug-button:hover {
+    background: #fbbf24;
+    transform: translateY(-1px);
+}
+
+.nav-bug-button:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 3px;
+}
+
 /* Account menu (logged in): a "My Account" button, about
    as wide as the Log Out button it replaced, opening a small menu with
    who they are, Change password and Log Out. A <details> element, so it

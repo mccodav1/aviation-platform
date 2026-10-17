@@ -78,6 +78,12 @@
                 </div>
             {% endif %}
 
+            {# Beta: always on screen, so anyone who hits a problem knows where to say so. #}
+            <a class="nav-bug-button" href="{% url 'core:contact' %}?topic=bug#message-form">
+                <i class="bi bi-bug-fill" aria-hidden="true"></i>
+                Report Bug
+            </a>
+
             {% if user.is_authenticated %}
                 {# Account menu: who's logged in, change password, log out. #}
                 <details class="nav-account">

@@ -42,7 +42,9 @@
                 </a>
             {% endif %}
 
-            <div class="card">
+            {# Google Maps' documented search URL - opens the Maps app on phones. #}
+            <a href="https://www.google.com/maps/search/?api=1&amp;query={{ "30 Mortensen Avenue, Salinas, CA 93905"|urlencode }}"
+               class="card" target="_blank" rel="noopener">
                 <div class="card-body">
                     <div class="card-title-row">
                         <span class="card-icon"><i class="bi bi-geo-alt"></i></span>
@@ -52,8 +54,9 @@
                         Salinas Municipal Airport ({{ organization.airport_icao }})<br>
                         30 Mortensen Avenue, Salinas, CA 93905
                     </p>
+                    <div class="card-link">Open in Google Maps <span class="arrow">&rarr;</span></div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="page-block">
@@ -78,9 +81,31 @@
             </div>
         </div>
 
-        <div class="form-card contact-form-card">
-            <h2>Send a Quick Message</h2>
-            <p class="form-subtitle">Prefer to write it out? Send us a note and we'll get back to you.</p>
+        <div class="form-card contact-form-card" id="message-form">
+            {# Plain links, so they work without JS; switching reloads the form. #}
+            <nav class="contact-tabs" aria-label="What kind of message">
+                <a href="{% url 'core:contact' %}#message-form"
+                   class="contact-tab{% if not reporting_bug %} active{% endif %}"
+                   {% if not reporting_bug %}aria-current="page"{% endif %}>
+                    <i class="bi bi-chat-text" aria-hidden="true"></i> Send a Message
+                </a>
+                <a href="{% url 'core:contact' %}?topic=bug#message-form"
+                   class="contact-tab{% if reporting_bug %} active{% endif %}"
+                   {% if reporting_bug %}aria-current="page"{% endif %}>
+                    <i class="bi bi-bug" aria-hidden="true"></i> Report a Bug
+                </a>
+            </nav>
+
+            {% if reporting_bug %}
+                <p class="form-subtitle">
+                    The site is new, so thanks for telling us when something doesn't
+                    work right. Fill in what you can below - which page, what you
+                    did, what happened instead (copy any error message word for
+                    word), and whether you were on a phone or a computer.
+                </p>
+            {% else %}
+                <p class="form-subtitle">Prefer to write it out? Send us a note and we'll get back to you.</p>
+            {% endif %}
 
             {% if sent %}
                 <div class="form-success">
